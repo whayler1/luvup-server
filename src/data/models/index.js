@@ -13,6 +13,9 @@ import UserLogin from './UserLogin';
 import UserClaim from './UserClaim';
 import UserProfile from './UserProfile';
 
+import Listing from './Listing';
+import Location from './Location';
+
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
   as: 'logins',
@@ -34,9 +37,16 @@ User.hasOne(UserProfile, {
   onDelete: 'cascade',
 });
 
+Listing.hasOne(Location, {
+  foreignKey: 'listingId',
+  as: 'location',
+  onUpdate: 'cascade',
+  onDelete: 'cascade',
+});
+
 function sync(...args) {
   return sequelize.sync(...args);
 }
 
 export default { sync };
-export { User, UserLogin, UserClaim, UserProfile };
+export { User, UserLogin, UserClaim, UserProfile, Listing, Location };
