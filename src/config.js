@@ -7,6 +7,8 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
+console.log('\n\n---- process.env.PORT', process.env.PORT);
+
 /* eslint-disable max-len */
 
 if (process.env.BROWSER) {
