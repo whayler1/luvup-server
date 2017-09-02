@@ -192,16 +192,19 @@ app.use((err, req, res, next) => {
 // Launch the server
 // -----------------------------------------------------------------------------
 const promise = models.sync().catch(err => console.error(err.stack));
+console.log('launch the server');
 if (!module.hot) {
+  console.log('module is hot');
   promise.then(
     () => {
+      console.log('calling app listen', config.port);
       app.listen(config.port, () => {
         console.info(
           `The server is running at http://localhost:${config.port}/`,
         );
       });
     },
-    err => console.log('\n\n--- You ad an error', err),
+    err => console.log('\n\n--- You had an error', err),
   );
 }
 
