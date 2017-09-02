@@ -195,14 +195,14 @@ const promise = models.sync().catch(err => console.error(err.stack));
 console.log('launch the server');
 if (!module.hot) {
   console.log('module is hot');
+
+  console.log('calling app listen', config.port);
+  app.listen(config.port, () => {
+    console.info(`The server is running at http://localhost:${config.port}/`);
+  });
   promise.then(
     () => {
-      console.log('calling app listen', config.port);
-      app.listen(config.port, () => {
-        console.info(
-          `The server is running at http://localhost:${config.port}/`,
-        );
-      });
+      console.log('success syncing models');
     },
     err => console.log('\n\n--- You had an error', err),
   );
