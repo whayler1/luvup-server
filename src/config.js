@@ -8,6 +8,9 @@
  */
 
 console.log('\n\n---- process.env.PORT', process.env.PORT);
+console.log('---- process.env.FACEBOOK_APP_ID', process.env.FACEBOOK_APP_ID);
+console.log('FACEBOOK_APP_SECRET', process.env.FACEBOOK_APP_SECRET);
+console.log('process.env.DATABASE_URL', process.env.DATABASE_URL);
 
 /* eslint-disable max-len */
 
