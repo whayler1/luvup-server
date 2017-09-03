@@ -446,8 +446,8 @@ const serverConfig = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': isDebug ? '"development"' : '"production"',
       'process.env.BROWSER': false,
-      'process.env.FACEBOOK_APP_ID': '558934927645511',
-      'process.env.FACEBOOK_APP_SECRET': '"01bfda2cf63428acf768d00f0f719a5a"',
+      // 'process.env.FACEBOOK_APP_ID': '558934927645511',
+      // 'process.env.FACEBOOK_APP_SECRET': '"01bfda2cf63428acf768d00f0f719a5a"',
       __DEV__: isDebug,
     }),
 
