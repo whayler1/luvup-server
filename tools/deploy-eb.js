@@ -33,7 +33,7 @@ async function deploy() {
   // Zip the contents of the build folder
   await spawn('zip', ['-9', '-r', 'build.zip', '.'], options);
 
-  // Deploy the zip to eb
+  // Deploy the zip to eb //
   await spawn('eb', ['deploy', '--staged'], {
     stdio: ['ignore', 'inherit', 'inherit'],
   });
