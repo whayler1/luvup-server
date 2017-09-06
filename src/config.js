@@ -1,17 +1,3 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
-console.log('\n\n---- process.env.PORT', process.env.PORT);
-console.log('---- process.env.FACEBOOK_APP_ID', process.env.FACEBOOK_APP_ID);
-console.log('FACEBOOK_APP_SECRET', process.env.FACEBOOK_APP_SECRET);
-console.log('process.env.DATABASE_URL', process.env.DATABASE_URL);
-
 /* eslint-disable max-len */
 
 if (process.env.BROWSER) {
