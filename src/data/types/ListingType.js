@@ -5,7 +5,7 @@ import {
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
-// import BarType from './BarType';
+import LocationType from './LocationType';
 
 const ListingType = new ObjectType({
   name: 'Listing',
@@ -13,6 +13,7 @@ const ListingType = new ObjectType({
     id: { type: new NonNull(ID) },
     userId: { type: new NonNull(ID) },
     name: { type: StringType },
+    location: { type: LocationType },
   },
 });
 

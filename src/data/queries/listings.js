@@ -15,10 +15,15 @@ const listings = {
     offset: { type: GraphQLInt },
   },
   resolve: async ({ request }, { limit, offset }) => {
-    const items = await Listing.findAndCountAll({ limit, offset });
-    console.log('\n\n ------ items', items);
+    const res = await Listing.findAndCountAll({ limit, offset });
+    const promises = res.rows.map(listing => {
+      const promise = listing.getLocation();
+      promise.then(location => Object.assign(listing, { location }));
+      return promise;
+    });
+    await Promise.all(promises);
 
-    return items;
+    return res;
   },
 };
 

@@ -1,6 +1,6 @@
 import graphql, { GraphQLString, GraphQLID } from 'graphql';
 import ListingType from '../types/ListingType';
-import { Listing } from '../models';
+import { Listing, Location } from '../models';
 
 const createListing = {
   type: ListingType,
@@ -13,7 +13,17 @@ const createListing = {
       userId: user.id,
       name,
     });
-    return listing;
+    const location = await Location.create({
+      listingId: listing.id,
+    });
+    await listing.setLocation(location);
+    const loc = await listing.getLocation();
+    console.log('\n\n loc', loc);
+
+    return {
+      ...listing,
+      location: loc,
+    };
   },
 };
 
