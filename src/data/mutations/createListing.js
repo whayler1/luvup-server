@@ -1,4 +1,5 @@
 import graphql, { GraphQLString, GraphQLID } from 'graphql';
+import _ from 'lodash';
 import ListingType from '../types/ListingType';
 import { Listing, Location } from '../models';
 
@@ -18,10 +19,11 @@ const createListing = {
     });
     await listing.setLocation(location);
     const loc = await listing.getLocation();
-    console.log('\n\n loc', loc);
+    // console.log('\n\n loc', loc);
+    console.log('\n\nlisting', listing);
 
     return {
-      ...listing,
+      ..._.pick(listing, 'name', 'id', 'userId'),
       location: loc,
     };
   },
