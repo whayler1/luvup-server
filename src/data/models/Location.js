@@ -29,7 +29,7 @@ const Location = Model.define('Location', {
   },
 
   zipcode: {
-    type: DataType.INTEGER,
+    type: DataType.TEXT,
   },
 
   latitude: {

@@ -6,8 +6,10 @@ import {
 import me from './queries/me';
 import foo from './queries/foo';
 import news from './queries/news';
+import listings from './queries/listings';
 
 import fooMutation from './mutations/foo';
+import createListing from './mutations/createListing';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -16,12 +18,14 @@ const schema = new Schema({
       me,
       news,
       foo,
+      listings,
     },
   }),
   mutation: new ObjectType({
     name: 'Mutation',
     fields: {
       fooMutation,
+      createListing,
     },
   }),
 });
