@@ -10,6 +10,7 @@ import listings from './queries/listings';
 
 import fooMutation from './mutations/foo';
 import createListing from './mutations/createListing';
+import updateListing from './mutations/updateListing';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -26,6 +27,7 @@ const schema = new Schema({
     fields: {
       fooMutation,
       createListing,
+      updateListing,
     },
   }),
 });
