@@ -16,6 +16,23 @@ import UserProfile from './UserProfile';
 import Listing from './Listing';
 import Location from './Location';
 
+import Coin from './Coin';
+
+User.hasMany(Coin, {
+  foreignKey: 'userId',
+  as: 'coins',
+  onUpdate: 'cascade',
+  onDelete: 'cascade',
+});
+
+Coin.belongsTo(User, {
+  as: 'sender',
+});
+
+Coin.belongsTo(User, {
+  as: 'recipient',
+});
+
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
   as: 'logins',
@@ -49,4 +66,4 @@ function sync(...args) {
 }
 
 export default { sync };
-export { User, UserLogin, UserClaim, UserProfile, Listing, Location };
+export { User, UserLogin, UserClaim, UserProfile, Listing, Location, Coin };
