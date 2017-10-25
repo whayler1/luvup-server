@@ -1,5 +1,6 @@
 {
-  "name": "web",
+  "name": "luvup",
+  "description": "Train your lover",
   "version": "0.0.0",
   "private": true,
   "engines": {

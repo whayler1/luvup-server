@@ -26,10 +26,14 @@ User.hasMany(Coin, {
 });
 
 Coin.belongsTo(User, {
+  foreignKey: 'senderId',
+  targetKey: 'id',
   as: 'sender',
 });
 
 Coin.belongsTo(User, {
+  foreignKey: 'recipientId',
+  tarngetKey: 'id',
   as: 'recipient',
 });
 

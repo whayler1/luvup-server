@@ -13,6 +13,11 @@ const Coin = Model.define('Coin', {
     defaultValue: false,
   },
 
+  userId: {
+    type: DataType.UUID,
+    primaryKey: true,
+  },
+
   // userId: {
   //   type: DataType.UUID,
   //   primaryKey: true,
