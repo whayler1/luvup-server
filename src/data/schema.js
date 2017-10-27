@@ -7,6 +7,7 @@ import me from './queries/me';
 import foo from './queries/foo';
 import news from './queries/news';
 import listings from './queries/listings';
+import coins from './queries/coins';
 
 import fooMutation from './mutations/foo';
 import createListing from './mutations/createListing';
@@ -21,6 +22,7 @@ const schema = new Schema({
       news,
       foo,
       listings,
+      coins,
     },
   }),
   mutation: new ObjectType({
