@@ -1,22 +1,27 @@
 import DataType from 'sequelize';
 import Model from '../sequelize';
 
-const Coin = Model.define('Coin', {
+const LoverRequest = Model.define('LoverRequest', {
   id: {
     type: DataType.UUID,
     defaultValue: DataType.UUIDV1,
     primaryKey: true,
   },
 
-  isUsed: {
+  isAccepted: {
     type: DataType.BOOLEAN,
     defaultValue: false,
   },
 
-  userId: {
+  senderId: {
     type: DataType.UUID,
-    primaryKey: true,
+    notNull: true,
+  },
+
+  recipientId: {
+    type: DataType.UUID,
+    notNull: true,
   },
 });
 
-export default Coin;
+export default LoverRequest;

@@ -1,12 +1,3 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 import sequelize from '../sequelize';
 import User from './User';
 import UserLogin from './UserLogin';
@@ -18,9 +9,37 @@ import Location from './Location';
 
 import Coin from './Coin';
 
-User.hasMany(Coin, {
+User.hasMany(User, {
   foreignKey: 'userId',
-  as: 'coins',
+  sourceKey: 'id',
+  as: 'ex',
+});
+
+User.hasOne(User, {
+  foreignKey: 'userId',
+  sourceKey: 'id',
+  as: 'lover',
+});
+
+// User.hasMany(Coin, {
+//   foreignKey: 'userId',
+//   as: 'coins',
+//   onUpdate: 'cascade',
+//   onDelete: 'cascade',
+// });
+
+User.hasMany(Coin, {
+  foreignKey: 'recipientId',
+  sourceKey: 'id',
+  as: 'receivedCoins',
+  onUpdate: 'cascade',
+  onDelete: 'cascade',
+});
+
+User.hasMany(Coin, {
+  foreignKey: 'senderId',
+  sourceKey: 'id',
+  as: 'sentCoins',
   onUpdate: 'cascade',
   onDelete: 'cascade',
 });
