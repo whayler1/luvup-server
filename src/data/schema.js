@@ -12,9 +12,10 @@ import myUnusedCoins from './queries/myUnusedCoins';
 import mySentCoins from './queries/mySentCoins';
 
 import fooMutation from './mutations/foo';
-import createListing from './mutations/createListing';
+import createUser from './mutations/createUser';
 import createCoin from './mutations/createCoin';
 import updateListing from './mutations/updateListing';
+import requestLover from './mutations/requestLover';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -33,7 +34,7 @@ const schema = new Schema({
     name: 'Mutation',
     fields: {
       fooMutation,
-      createListing,
+      createUser,
       createCoin,
       updateListing,
     },

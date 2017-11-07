@@ -3,6 +3,9 @@ import User from './User';
 import UserLogin from './UserLogin';
 import UserClaim from './UserClaim';
 import UserProfile from './UserProfile';
+import UserLocal from './UserLocal';
+
+import LoverRequest from './LoverRequest';
 
 import Listing from './Listing';
 import Location from './Location';
@@ -21,12 +24,17 @@ User.hasOne(User, {
   as: 'lover',
 });
 
-// User.hasMany(Coin, {
-//   foreignKey: 'userId',
-//   as: 'coins',
-//   onUpdate: 'cascade',
-//   onDelete: 'cascade',
-// });
+User.hasOne(LoverRequest, {
+  foreignKey: 'recipientId',
+  sourceKey: 'id',
+  as: 'loverRequest',
+});
+
+User.hasOne(LoverRequest, {
+  foreignKey: 'senderId',
+  sourceKey: 'id',
+  as: 'requestedLover',
+});
 
 User.hasMany(Coin, {
   foreignKey: 'recipientId',
@@ -77,11 +85,9 @@ User.hasOne(UserProfile, {
   onDelete: 'cascade',
 });
 
-Listing.hasOne(Location, {
-  foreignKey: 'listingId',
-  as: 'location',
-  onUpdate: 'cascade',
-  onDelete: 'cascade',
+User.hasOne(UserLocal, {
+  foreignKey: 'userId',
+  as: 'local',
 });
 
 function sync(...args) {
@@ -89,4 +95,14 @@ function sync(...args) {
 }
 
 export default { sync };
-export { User, UserLogin, UserClaim, UserProfile, Listing, Location, Coin };
+export {
+  User,
+  UserLogin,
+  UserClaim,
+  UserProfile,
+  UserLocal,
+  Listing,
+  Location,
+  Coin,
+  LoverRequest,
+};

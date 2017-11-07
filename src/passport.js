@@ -15,8 +15,40 @@
 
 import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { User, UserLogin, UserClaim, UserProfile } from './data/models';
+import { Strategy as LocalStrategy } from 'passport-local';
+import {
+  User,
+  UserLogin,
+  UserClaim,
+  UserProfile,
+  UserLocal,
+} from './data/models';
 import config from './config';
+
+passport.use(
+  new LocalStrategy((username, password, done) => {
+    console.log('LocalStrategy', username, password);
+    const foo = async () => {
+      console.log('async func');
+      const userLocal = await UserLocal.find({ where: { username } });
+      console.log('\n\nuserLocal:', userLocal.password);
+
+      if (userLocal.password !== password) {
+        return done(null, false);
+      }
+
+      console.log('\n\nafter if');
+      const user = await User.find({ where: { id: userLocal.userId } });
+      console.log('user:', user.id);
+
+      return done(null, { id: user.id });
+      // passport.serializeUser(function(user, done) {
+      //   done(null, user.id);
+      // });
+    };
+    foo().catch(done);
+  }),
+);
 
 /**
  * Sign in with Facebook.
