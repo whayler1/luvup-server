@@ -101,9 +101,10 @@ app.post(
     session: false,
   }),
   (req, res) => {
-    console.log('next func', req);
+    // console.log('next func', req);
     const expiresIn = 60 * 60 * 24 * 180; // 180 days
     const token = jwt.sign(req.user, config.auth.jwt.secret, { expiresIn });
+    // console.log('\n\n req.user', req.user);
     res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
     res.redirect('/');
   },

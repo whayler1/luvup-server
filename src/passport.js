@@ -27,24 +27,21 @@ import config from './config';
 
 passport.use(
   new LocalStrategy((username, password, done) => {
-    console.log('LocalStrategy', username, password);
+    // console.log('LocalStrategy', username, password);
     const foo = async () => {
-      console.log('async func');
+      // console.log('async func');
       const userLocal = await UserLocal.find({ where: { username } });
-      console.log('\n\nuserLocal:', userLocal.password);
+      // console.log('\n\nuserLocal:', userLocal.password);
 
       if (userLocal.password !== password) {
         return done(null, false);
       }
 
-      console.log('\n\nafter if');
+      // console.log('\n\nafter if');
       const user = await User.find({ where: { id: userLocal.userId } });
-      console.log('user:', user.id);
+      console.log('\n\n--- user:', user.id, user.email);
 
-      return done(null, { id: user.id });
-      // passport.serializeUser(function(user, done) {
-      //   done(null, user.id);
-      // });
+      return done(null, { id: user.id, email: user.email });
     };
     foo().catch(done);
   }),

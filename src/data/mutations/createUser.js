@@ -23,12 +23,6 @@ const createUser = {
         include: [{ model: UserLocal, as: 'local' }],
       },
     );
-
-    // await user.createLocal({
-    //   username,
-    //   password,
-    // })
-
     return user;
   },
 };
