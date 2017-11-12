@@ -10,7 +10,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import s from './Home.css';
+// import s from './Home.css';
 
 class Home extends React.Component {
   static propTypes = {
@@ -25,27 +25,33 @@ class Home extends React.Component {
 
   render() {
     return (
-      <div className={s.root}>
-        <div className={s.container}>
-          <h1>React.js News</h1>
-          {this.props.news.map(item =>
-            <article key={item.link} className={s.newsItem}>
-              <h1 className={s.newsTitle}>
-                <a href={item.link}>
-                  {item.title}
-                </a>
-              </h1>
-              <div
-                className={s.newsDesc}
-                // eslint-disable-next-line react/no-danger
-                dangerouslySetInnerHTML={{ __html: item.content }}
-              />
-            </article>,
-          )}
-        </div>
+      <div style={{ 'text-align': 'center' }}>
+        <h1>Luvup</h1>
+        <sub>&copy; 2017 Terrible Solutions, LLC</sub>
       </div>
     );
+    // return (
+    //   <div className={s.root}>
+    //     <div className={s.container}>
+    //       <h1>React.js News</h1>
+    //       {this.props.news.map(item =>
+    //         <article key={item.link} className={s.newsItem}>
+    //           <h1 className={s.newsTitle}>
+    //             <a href={item.link}>
+    //               {item.title}
+    //             </a>
+    //           </h1>
+    //           <div
+    //             className={s.newsDesc}
+    //             // eslint-disable-next-line react/no-danger
+    //             dangerouslySetInnerHTML={{ __html: item.content }}
+    //           />
+    //         </article>,
+    //       )}
+    //     </div>
+    //   </div>
+    // );
   }
 }
 
-export default withStyles(s)(Home);
+export default withStyles({})(Home);

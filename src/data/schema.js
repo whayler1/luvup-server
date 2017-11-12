@@ -16,6 +16,7 @@ import createUser from './mutations/createUser';
 import createCoin from './mutations/createCoin';
 import updateListing from './mutations/updateListing';
 import requestLover from './mutations/requestLover';
+import login from './mutations/login';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -37,6 +38,7 @@ const schema = new Schema({
       createUser,
       createCoin,
       updateListing,
+      login,
     },
   }),
 });
