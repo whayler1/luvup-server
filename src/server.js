@@ -110,7 +110,10 @@ app.post(
     // console.log('\n\n req.user', req.user);
     res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
     // res.redirect('/');
-    return res.status(200).json({ msg: 'success' });
+    return res.status(200).json({
+      jwt: token,
+      user: req.user,
+    });
   },
 );
 

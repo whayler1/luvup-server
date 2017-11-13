@@ -27,13 +27,10 @@ import config from './config';
 
 passport.use(
   new LocalStrategy((username, password, done) => {
-    // console.log('LocalStrategy', username, password);
     const foo = async () => {
-      // console.log('async func');
       const userLocal = await UserLocal.find({ where: { username } });
-      // console.log('\n\nuserLocal:', userLocal.password);
 
-      if (userLocal.password !== password) {
+      if (!userLocal || userLocal.password !== password) {
         return done(null, false);
       }
 
