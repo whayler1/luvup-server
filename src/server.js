@@ -97,16 +97,20 @@ app.get(
 app.post(
   '/login',
   passport.authenticate('local', {
-    failureRedirect: '/login?failure=true',
+    // failureRedirect: '/login?failure=true',
     session: false,
   }),
   (req, res) => {
-    // console.log('next func', req);
+    if (!req.user) {
+      return res.status(400).json({ error: 'no user found' });
+    }
+
     const expiresIn = 60 * 60 * 24 * 180; // 180 days
     const token = jwt.sign(req.user, config.auth.jwt.secret, { expiresIn });
     // console.log('\n\n req.user', req.user);
     res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
-    res.redirect('/');
+    // res.redirect('/');
+    return res.status(200).json({ msg: 'success' });
   },
 );
 
