@@ -38,7 +38,7 @@ passport.use(
       const user = await User.find({ where: { id: userLocal.userId } });
       console.log('\n\n--- user:', user.id, user.email);
 
-      return done(null, { id: user.id, email: user.email });
+      return done(null, { id: user.id, email: user.email, username });
     };
     foo().catch(done);
   }),
