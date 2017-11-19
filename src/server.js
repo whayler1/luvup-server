@@ -122,14 +122,14 @@ app.post(
 );
 
 app.post('/reauth', async (req, res) => {
-  if (!req.id_token) {
+  console.log('req', req.cookies.id_token);
+  if (!req.cookies.id_token) {
     return res.sendStatus(400);
   }
-
-  const verification = await new Promise(resolve =>
-    jwt.verify(req.id_token, config.auth.jwt.secret, (err, result) => {
+  const verification = await new Promise((resolve, reject) =>
+    jwt.verify(req.cookies.id_token, config.auth.jwt.secret, (err, result) => {
       if (err) {
-        resolve({
+        reject({
           ok: false,
           result: err,
         });
@@ -141,19 +141,21 @@ app.post('/reauth', async (req, res) => {
       }
     }),
   );
-  console.log('verification');
+  console.log('--> verification', verification);
 
   const { ok, result } = verification;
-
+  console.log('ok', ok);
   if (!ok) {
+    console.log('not ok');
     return res.status(400).json({
       error: result,
     });
   }
-  const id_token = addJwtCookie(res, result);
+  // const id_token = addJwtCookie(res, result);
   res.user = result;
+  console.log('res user', res.user);
   return res.json({
-    id_token,
+    id_token: req.cookies.id_token,
     user: result,
   });
 });
