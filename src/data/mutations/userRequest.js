@@ -38,7 +38,7 @@ const userRequest = {
     email: { type: GraphQLString },
   },
   resolve: async ({ request }, { email }) => {
-    const existingUserRequest = await UserRequest.find({ email });
+    const existingUserRequest = await UserRequest.findOne({ where: { email } });
 
     if (existingUserRequest) {
       const user = await existingUserRequest.getUser();
