@@ -7,8 +7,8 @@ import { UserRequest } from '../models';
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'justin@luvup.io',
-    pass: 'ifeelforyou',
+    user: process.env.INVITE_FROM_EMAIL,
+    pass: process.env.INVITE_FROM_PASSWORD,
   },
 });
 
