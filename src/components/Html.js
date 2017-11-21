@@ -46,6 +46,10 @@ class Html extends React.Component {
           </title>
           <meta name="description" content={description} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta
+            name="google-site-verification"
+            content="e65z3WHO5tZ6ORtb0eylOJOJOoYlV0hAWmF0ZRcbyOo"
+          />
           {scripts.map(script =>
             <link key={script} rel="preload" href={script} as="script" />,
           )}
