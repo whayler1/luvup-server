@@ -4,6 +4,7 @@ import UserLogin from './UserLogin';
 import UserClaim from './UserClaim';
 import UserProfile from './UserProfile';
 import UserLocal from './UserLocal';
+import UserRequest from './UserRequest';
 
 import LoverRequest from './LoverRequest';
 
@@ -11,6 +12,10 @@ import Listing from './Listing';
 import Location from './Location';
 
 import Coin from './Coin';
+
+UserRequest.hasOne(User, {
+  foreignKey: 'id',
+});
 
 User.hasMany(User, {
   foreignKey: 'userId',
@@ -101,6 +106,7 @@ export {
   UserClaim,
   UserProfile,
   UserLocal,
+  UserRequest,
   Listing,
   Location,
   Coin,
