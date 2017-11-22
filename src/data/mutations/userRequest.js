@@ -1,35 +1,15 @@
 import graphql, { GraphQLString, GraphQLID } from 'graphql';
 import _ from 'lodash';
-import nodemailer from 'nodemailer';
+// import nodemailer from 'nodemailer';
 import UserRequestType from '../types/UserRequestType';
 import { UserRequest } from '../models';
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.INVITE_FROM_EMAIL,
-    pass: process.env.INVITE_FROM_PASSWORD,
-  },
-});
+import emailHelper from '../helpers/email';
 
 const sendInviteEmail = (to, code) =>
-  new Promise((resolve, reject) => {
-    const mailOptions = {
-      from: 'justin@luvup.io',
-      to,
-      subject: 'Welcome to Luvup!',
-      html: `<p>Your create user pin is <strong>${code}</strong></p>`,
-    };
-
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log('send mail error', err);
-        reject(err);
-      } else {
-        console.log('send mail success', info);
-        resolve(info);
-      }
-    });
+  emailHelper.sendEmail({
+    to,
+    subject: 'Welcome to Luvup!',
+    html: `<p>Your create user pin is <strong>${code}</strong></p>`,
   });
 
 const userRequest = {

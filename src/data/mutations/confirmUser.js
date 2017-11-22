@@ -2,6 +2,7 @@ import graphql, { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 import UserRequestType from '../types/UserRequestType';
 import UserType from '../types/UserType';
 import { UserRequest, UserLocal } from '../models';
+import emailHelper from '../helpers/email';
 
 const confirmUser = {
   type: new GraphQLObjectType({
@@ -30,6 +31,11 @@ const confirmUser = {
     if (!code) {
       return { error: 'missing code' };
     }
+
+    if (password.length < 8) {
+      return { error: 'password too short' };
+    }
+
     const userRequest = await UserRequest.findOne({ where: { email } });
 
     if (userRequest) {
@@ -57,6 +63,13 @@ const confirmUser = {
           include: [{ model: UserLocal, as: 'local' }],
         },
       );
+      emailHelper
+        .sendEmail({
+          to: email,
+          subject: 'Luvup Signup Complete!',
+          html: '<p>You are now a member of Luvup!</p>',
+        })
+        .end(err => console.error('Error sending signup complete email', err));
       return { user };
     }
 
