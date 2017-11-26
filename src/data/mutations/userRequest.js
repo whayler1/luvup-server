@@ -1,9 +1,10 @@
 import graphql, { GraphQLString, GraphQLID } from 'graphql';
 import _ from 'lodash';
-// import nodemailer from 'nodemailer';
 import UserRequestType from '../types/UserRequestType';
 import { UserRequest } from '../models';
 import emailHelper from '../helpers/email';
+
+const getUserCode = () => Math.floor(Math.random() * 900000) + 100000;
 
 const sendInviteEmail = (to, code) =>
   emailHelper.sendEmail({
@@ -26,40 +27,37 @@ const userRequest = {
       if (user) {
         return {
           email: null,
-          isUsed: true,
+          error: 'used',
         };
       }
+      await existingUserRequest.update({ code: getUserCode() });
       try {
         await sendInviteEmail(email, existingUserRequest.code);
         return {
           email,
-          isUsed: false,
         };
       } catch (err) {
-        console.log('isErrorSendingEmail 1', err);
+        console.log('\n err sending email 1:', err);
         return {
           email,
-          isUsed: false,
-          isErrorSendingEmail: true,
+          error: 'email error',
         };
       }
     }
     const newUserRequest = await UserRequest.create({
       email,
-      code: Math.floor(Math.random() * 900000) + 100000,
+      code: getUserCode(),
     });
     try {
       await sendInviteEmail(email, newUserRequest.code);
       return {
         email,
-        isUsed: false,
       };
     } catch (err) {
-      console.log('isErrorSendingEmail 2', err);
+      console.log('\n err sending email 2:', err);
       return {
         email,
-        isUsed: false,
-        isErrorSendingEmail: true,
+        error: 'email error',
       };
     }
   },

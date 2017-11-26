@@ -9,8 +9,7 @@ const UserRequest = new ObjectType({
   name: 'UserRequest',
   fields: {
     email: { type: StringType },
-    isUsed: { type: GraphQLBoolean },
-    isErrorSendingEmail: { type: GraphQLBoolean },
+    error: { type: StringType },
   },
 });
 

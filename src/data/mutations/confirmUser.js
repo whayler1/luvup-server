@@ -1,4 +1,5 @@
 import graphql, { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+import moment from 'moment';
 import UserRequestType from '../types/UserRequestType';
 import UserType from '../types/UserType';
 import { UserRequest, UserLocal } from '../models';
@@ -39,6 +40,10 @@ const confirmUser = {
     const userRequest = await UserRequest.findOne({ where: { email } });
 
     if (userRequest) {
+      const diff = moment().diff(moment(userRequest.updatedAt), 'days');
+      if (diff > 0) {
+        return { error: 'expired code' };
+      }
       if (userRequest.code !== code) {
         return { error: 'invalid code' };
       }
@@ -63,13 +68,15 @@ const confirmUser = {
           include: [{ model: UserLocal, as: 'local' }],
         },
       );
-      emailHelper
-        .sendEmail({
+      try {
+        await emailHelper.sendEmail({
           to: email,
           subject: 'Luvup Signup Complete!',
           html: '<p>You are now a member of Luvup!</p>',
-        })
-        .end(err => console.error('Error sending signup complete email', err));
+        });
+      } catch (err) {
+        console.error('Error sending confirm user email', err);
+      }
       return { user };
     }
 
