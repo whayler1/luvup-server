@@ -1,18 +1,10 @@
 /**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
-/**
  * Passport.js reference implementation.
  * The database schema used in this sample is available at
  * https://github.com/membership/membership.db/tree/master/postgres
  */
 
+import bcrypt from 'bcrypt';
 import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as LocalStrategy } from 'passport-local';
@@ -29,14 +21,16 @@ passport.use(
   new LocalStrategy((username, password, done) => {
     const foo = async () => {
       const userLocal = await UserLocal.find({ where: { username } });
-
-      if (!userLocal || userLocal.password !== password) {
+      if (!userLocal) {
         return done(null, false);
       }
 
-      // console.log('\n\nafter if');
+      const isPwordMatch = await bcrypt.compare(password, userLocal.password);
+      if (!isPwordMatch) {
+        return done(null, false);
+      }
+
       const user = await User.find({ where: { id: userLocal.userId } });
-      console.log('\n\n--- user:', user.id, user.email);
 
       return done(null, { id: user.id, email: user.email, username });
     };

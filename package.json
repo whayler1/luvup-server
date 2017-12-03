@@ -10,6 +10,7 @@
   "browserslist": [">1%", "last 4 versions", "Firefox ESR", "not ie < 9"],
   "dependencies": {
     "babel-polyfill": "^6.23.0",
+    "bcrypt": "^1.0.3",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
     "classnames": "^2.2.5",

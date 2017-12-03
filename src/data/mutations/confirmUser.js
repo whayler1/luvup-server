@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import graphql, { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 import moment from 'moment';
 import UserRequestType from '../types/UserRequestType';
@@ -56,12 +57,17 @@ const confirmUser = {
         return { error: 'username taken' };
       }
 
+      const salt = await bcrypt.genSalt();
+      console.log('\n\n salt ---', salt);
+      const hash = await bcrypt.hash(password, salt);
+      console.log('\n\nhash:', hash);
+
       const user = await userRequest.createUser(
         {
           email,
           local: {
             username,
-            password,
+            password: hash,
           },
         },
         {
