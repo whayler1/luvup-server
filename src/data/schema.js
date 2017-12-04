@@ -11,6 +11,7 @@ import mySentCoins from './queries/mySentCoins';
 import createUser from './mutations/createUser';
 import userRequest from './mutations/userRequest';
 import confirmUser from './mutations/confirmUser';
+import sendNewPassword from './mutations/sendNewPassword';
 import createCoin from './mutations/createCoin';
 import requestLover from './mutations/requestLover';
 import login from './mutations/login';
@@ -30,6 +31,7 @@ const schema = new Schema({
     fields: {
       userRequest,
       confirmUser,
+      sendNewPassword,
       createCoin,
       login,
     },

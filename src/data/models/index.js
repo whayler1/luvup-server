@@ -4,6 +4,7 @@ import UserLogin from './UserLogin';
 import UserClaim from './UserClaim';
 import UserProfile from './UserProfile';
 import UserLocal from './UserLocal';
+import UserPasswordReset from './UserPasswordReset';
 import UserRequest from './UserRequest';
 
 import LoverRequest from './LoverRequest';
@@ -27,6 +28,12 @@ User.hasOne(User, {
   foreignKey: 'userId',
   sourceKey: 'id',
   as: 'lover',
+});
+
+User.hasOne(UserPasswordReset, {
+  foreignKey: 'userId',
+  sourceKey: 'id',
+  as: 'userPasswordReset',
 });
 
 User.hasOne(LoverRequest, {
@@ -106,6 +113,7 @@ export {
   UserClaim,
   UserProfile,
   UserLocal,
+  UserPasswordReset,
   UserRequest,
   Listing,
   Location,
