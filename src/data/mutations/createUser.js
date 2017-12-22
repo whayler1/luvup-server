@@ -13,9 +13,7 @@ const createUser = {
   },
   resolve: async ({ request }, { username, password, email }) => {
     const salt = await bcrypt.genSalt();
-    console.log('\n\n salt ---', salt);
     const hash = await bcrypt.hash(password, salt);
-    console.log('\n\nhash:', hash);
 
     const user = await User.create(
       {

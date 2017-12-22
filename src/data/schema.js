@@ -12,6 +12,7 @@ import createUser from './mutations/createUser';
 import userRequest from './mutations/userRequest';
 import confirmUser from './mutations/confirmUser';
 import sendNewPassword from './mutations/sendNewPassword';
+import resetPassword from './mutations/resetPassword';
 import createCoin from './mutations/createCoin';
 import requestLover from './mutations/requestLover';
 import login from './mutations/login';
@@ -32,6 +33,7 @@ const schema = new Schema({
       userRequest,
       confirmUser,
       sendNewPassword,
+      resetPassword,
       createCoin,
       login,
     },

@@ -9,7 +9,7 @@ import graphql, {
 import moment from 'moment';
 import UserRequestType from '../types/UserRequestType';
 import UserType from '../types/UserType';
-import { UserRequest, UserLocal, User } from '../models';
+import { UserRequest, UserPasswordReset, UserLocal, User } from '../models';
 import emailHelper from '../helpers/email';
 
 const sendNewPassword = {
@@ -46,9 +46,19 @@ const sendNewPassword = {
 
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(resetPassword, salt);
-    const userPasswordReset = await user.createUserPasswordReset({
-      resetPassword: hash,
-    });
+
+    const userPasswordReset = await user.getUserPasswordReset();
+
+    if (userPasswordReset) {
+      await userPasswordReset.update({
+        isUsed: false,
+        resetPassword: hash,
+      });
+    } else {
+      await user.createUserPasswordReset({
+        resetPassword: hash,
+      });
+    }
 
     try {
       await emailHelper.sendEmail({
