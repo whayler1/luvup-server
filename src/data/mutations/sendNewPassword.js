@@ -31,10 +31,16 @@ const sendNewPassword = {
       return { error: 'no email' };
     }
 
-    const user = await User.findOne({ where: { email } });
+    let user = await User.findOne({ where: { email } });
 
     if (!user) {
-      return { error: 'invalid email' };
+      const userLocal = await UserLocal.findOne({ where: { username: email } });
+
+      if (!userLocal) {
+        return { error: 'invalid email' };
+      }
+
+      user = await User.findOne({ where: { id: userLocal.userId } });
     }
 
     const resetPassword = passgen({

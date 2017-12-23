@@ -38,13 +38,22 @@ const resetPassword = {
       return { error: 'no new password' };
     }
 
-    const user = await User.findOne({ where: { email } });
+    let user = await User.findOne({ where: { email } });
+    let userLocal;
 
     if (!user) {
-      return { error: 'invalid email' };
+      userLocal = await UserLocal.find({ where: { username: email } });
+
+      if (!userLocal) {
+        return { error: 'invalid email' };
+      }
+      user = await User.findOne({ where: { id: userLocal.userId } });
     }
 
-    const userLocal = await user.getLocal();
+    if (!userLocal) {
+      userLocal = await user.getLocal();
+    }
+
     if (!userLocal) {
       return { error: 'no local user' };
     }

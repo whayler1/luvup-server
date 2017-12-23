@@ -7,7 +7,7 @@ import config from '../../config';
 const me = {
   type: UserType,
   resolve: async ({ request }) => {
-    console.log('request', request);
+    // console.log('request', request);
     const verify = await new Promise(resolve =>
       jwt.verify(
         request.cookies.id_token,
@@ -30,12 +30,14 @@ const me = {
       ),
     );
 
-    console.log('\n\nverify', verify);
+    const user = await User.find({ id: verify.result.id });
+    const local = await UserLocal.find({ where: { userId: verify.result.id } });
 
     return (
       request.user && {
         id: verify.result.id,
         email: verify.result.email,
+        local,
       }
     );
   },

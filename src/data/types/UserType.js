@@ -19,6 +19,14 @@ const UserType = new ObjectType({
   fields: {
     id: { type: new NonNull(ID) },
     email: { type: StringType },
+    local: {
+      type: new ObjectType({
+        name: 'UserLocal',
+        fields: {
+          username: { type: StringType },
+        },
+      }),
+    },
   },
 });
 
