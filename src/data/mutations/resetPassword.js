@@ -59,11 +59,9 @@ const resetPassword = {
     }
 
     const isPwordMatch = await bcrypt.compare(oldPassword, userLocal.password);
-    console.log('\n\n userLocal.password', userLocal.password);
 
     if (!isPwordMatch) {
       const userPasswordReset = await user.getUserPasswordReset();
-      console.log('\n\n userPasswordReset', userPasswordReset.resetPassword);
       if (!userPasswordReset) {
         return { error: 'no reset password' };
       }
@@ -90,7 +88,6 @@ const resetPassword = {
         html: `<p>Your Luvup password has been reset. If this password was not reset by you please contact <a href="mailto:justin@luvup.io">justin@luvup.io</a>.</p>`,
       });
     } catch (err) {
-      console.error('Error password has been reset email', err);
       return {
         success: true,
         error: 'error sending email',

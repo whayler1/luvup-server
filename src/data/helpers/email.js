@@ -14,15 +14,19 @@ const defaultOptions = {
 
 const sendEmail = options =>
   new Promise((resolve, reject) => {
-    const mailOptions = Object.assign({}, defaultOptions, options);
+    if (process.env.DISABLE_EMAIL === 'true') {
+      resolve();
+    } else {
+      const mailOptions = Object.assign({}, defaultOptions, options);
 
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(info);
-      }
-    });
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(info);
+        }
+      });
+    }
   });
 
 export default {

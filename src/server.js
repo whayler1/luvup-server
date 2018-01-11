@@ -104,7 +104,6 @@ app.get(
 app.post(
   '/login',
   passport.authenticate('local', {
-    // failureRedirect: '/login?failure=true',
     session: false,
   }),
   (req, res) => {

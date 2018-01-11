@@ -31,6 +31,12 @@ const userRequest = {
         };
       }
       await existingUserRequest.update({ code: getUserCode() });
+      if (process.env.DISABLE_EMAIL === 'true') {
+        console.log('\n\n---\nexisting user code:', existingUserRequest.code);
+        return {
+          email,
+        };
+      }
       try {
         await sendInviteEmail(email, existingUserRequest.code);
         return {
@@ -44,10 +50,17 @@ const userRequest = {
         };
       }
     }
+    const code = getUserCode();
     const newUserRequest = await UserRequest.create({
       email,
-      code: getUserCode(),
+      code,
     });
+    if (process.env.DISABLE_EMAIL === 'true') {
+      console.log('\n\n---\nnew user code:', code);
+      return {
+        email,
+      };
+    }
     try {
       await sendInviteEmail(email, newUserRequest.code);
       return {

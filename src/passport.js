@@ -19,11 +19,24 @@ import config from './config';
 
 passport.use(
   new LocalStrategy((username, password, done) => {
+    console.log('\n\nLocalStrategy', username);
     const foo = async () => {
-      const userLocal = await UserLocal.find({ where: { username } });
+      console.log('\n\nfoo');
+      let userLocal = await UserLocal.find({ where: { username } });
       if (!userLocal) {
-        return done(null, false);
+        console.log('\n\n not userLocal');
+        const user = await User.find({ where: { email: username } });
+
+        if (!user) {
+          return done(null, false);
+        }
+
+        userLocal = await UserLocal.find({ where: { userId: user.id } });
+        if (!userLocal) {
+          return done(null, false);
+        }
       }
+      console.log('\n\nhasUserLocal');
 
       const isPwordMatch = await bcrypt.compare(password, userLocal.password);
       if (!isPwordMatch) {
@@ -34,7 +47,7 @@ passport.use(
 
       return done(null, { id: user.id, email: user.email, username });
     };
-    foo().catch(done);
+    foo().catch(() => done(null, false));
   }),
 );
 

@@ -21,6 +21,7 @@ const confirmUser = {
     code: { type: GraphQLInt },
   },
   resolve: async ({ request }, { email, username, password, code }) => {
+    console.log('confirmUser');
     if (!email) {
       return { error: 'missing email' };
     }
@@ -41,6 +42,7 @@ const confirmUser = {
     const userRequest = await UserRequest.findOne({ where: { email } });
 
     if (userRequest) {
+      console.log('userRequest exists');
       const diff = moment().diff(moment(userRequest.updatedAt), 'days');
       if (diff > 0) {
         return { error: 'expired code' };
