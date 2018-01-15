@@ -32,12 +32,14 @@ const me = {
 
     const user = await User.find({ id: verify.result.id });
     const local = await UserLocal.find({ where: { userId: verify.result.id } });
+    // const lover = await user.getLover();
 
     return (
       request.user && {
         id: verify.result.id,
         email: verify.result.email,
         local,
+        // lover,
       }
     );
   },

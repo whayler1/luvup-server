@@ -6,13 +6,21 @@ import UserProfile from './UserProfile';
 import UserLocal from './UserLocal';
 import UserPasswordReset from './UserPasswordReset';
 import UserRequest from './UserRequest';
-
 import LoverRequest from './LoverRequest';
+import Relationship from './Relationship';
 
-import Listing from './Listing';
 import Location from './Location';
 
 import Coin from './Coin';
+
+Relationship.hasMany(User, {
+  as: 'lover',
+});
+
+User.belongsTo(Relationship, {
+  foreignKey: 'id',
+  as: 'relationship',
+});
 
 UserRequest.hasOne(User, {
   foreignKey: 'id',
@@ -24,10 +32,12 @@ User.hasMany(User, {
   as: 'ex',
 });
 
-User.hasOne(User, {
-  foreignKey: 'userId',
+User.belongsTo(User, {
+  foreignKey: 'loverId',
   sourceKey: 'id',
   as: 'lover',
+  onUpdate: 'cascade',
+  onDelete: 'cascade',
 });
 
 User.hasOne(UserPasswordReset, {
@@ -115,8 +125,8 @@ export {
   UserLocal,
   UserPasswordReset,
   UserRequest,
-  Listing,
   Location,
   Coin,
   LoverRequest,
+  Relationship,
 };
