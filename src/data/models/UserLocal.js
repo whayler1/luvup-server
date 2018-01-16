@@ -11,11 +11,6 @@ import DataType from 'sequelize';
 import Model from '../sequelize';
 
 const UserLocal = Model.define('UserLocal', {
-  userId: {
-    type: DataType.UUID,
-    primaryKey: true,
-  },
-
   username: {
     type: DataType.STRING(50),
     min: 5,

@@ -21,7 +21,7 @@ const confirmUser = {
     code: { type: GraphQLInt },
   },
   resolve: async ({ request }, { email, username, password, code }) => {
-    console.log('confirmUser');
+    console.log('\n\nconfirmUser');
     if (!email) {
       return { error: 'missing email' };
     }
@@ -42,7 +42,7 @@ const confirmUser = {
     const userRequest = await UserRequest.findOne({ where: { email } });
 
     if (userRequest) {
-      console.log('userRequest exists');
+      console.log('\n\nuserRequest exists');
       const diff = moment().diff(moment(userRequest.updatedAt), 'days');
       if (diff > 0) {
         return { error: 'expired code' };
@@ -61,6 +61,8 @@ const confirmUser = {
 
       const salt = await bcrypt.genSalt();
       const hash = await bcrypt.hash(password, salt);
+
+      console.log('\n\ngot to after hash');
 
       const user = await userRequest.createUser(
         {
@@ -81,7 +83,7 @@ const confirmUser = {
           html: '<p>You are now a member of Luvup!</p>',
         });
       } catch (err) {
-        console.error('Error sending confirm user email', err);
+        console.error('\n\nError sending confirm user email', err);
       }
       return { user };
     }

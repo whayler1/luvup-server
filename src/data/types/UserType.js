@@ -15,6 +15,14 @@ const UserType = new ObjectType({
     local: {
       type: UserLocal,
     },
+    relationship: {
+      type: new ObjectType({
+        name: 'Relationship',
+        fields: {
+          id: { type: new NonNull(ID) },
+        },
+      }),
+    },
     // lover: {
     //   type: new ObjectType({
     //     name: 'Lover',

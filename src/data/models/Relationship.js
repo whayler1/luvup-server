@@ -7,6 +7,10 @@ const Relationship = Model.define('Relationship', {
     defaultValue: DataType.UUIDV1,
     primaryKey: true,
   },
+
+  endDate: {
+    type: DataType.DATE,
+  },
 });
 
 export default Relationship;

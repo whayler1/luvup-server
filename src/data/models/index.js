@@ -17,28 +17,25 @@ Relationship.hasMany(User, {
   as: 'lover',
 });
 
-User.belongsTo(Relationship, {
-  foreignKey: 'id',
-  as: 'relationship',
-});
+User.belongsTo(Relationship);
 
 UserRequest.hasOne(User, {
   foreignKey: 'id',
 });
 
-User.hasMany(User, {
-  foreignKey: 'userId',
-  sourceKey: 'id',
-  as: 'ex',
-});
+// User.hasMany(User, {
+//   foreignKey: 'userId',
+//   sourceKey: 'id',
+//   as: 'ex',
+// });
 
-User.belongsTo(User, {
-  foreignKey: 'loverId',
-  sourceKey: 'id',
-  as: 'lover',
-  onUpdate: 'cascade',
-  onDelete: 'cascade',
-});
+// User.belongsTo(User, {
+//   foreignKey: 'loverId',
+//   sourceKey: 'id',
+//   as: 'lover',
+//   onUpdate: 'cascade',
+//   onDelete: 'cascade',
+// });
 
 User.hasOne(UserPasswordReset, {
   foreignKey: 'userId',
@@ -82,7 +79,7 @@ Coin.belongsTo(User, {
 
 Coin.belongsTo(User, {
   foreignKey: 'recipientId',
-  tarngetKey: 'id',
+  targetKey: 'id',
   as: 'recipient',
 });
 
@@ -108,7 +105,6 @@ User.hasOne(UserProfile, {
 });
 
 User.hasOne(UserLocal, {
-  foreignKey: 'userId',
   as: 'local',
 });
 
