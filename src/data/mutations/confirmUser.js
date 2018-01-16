@@ -18,7 +18,7 @@ const confirmUser = {
     email: { type: GraphQLString },
     username: { type: GraphQLString },
     password: { type: GraphQLString },
-    code: { type: GraphQLInt },
+    code: { type: GraphQLString },
   },
   resolve: async ({ request }, { email, username, password, code }) => {
     console.log('\n\nconfirmUser');
@@ -47,7 +47,9 @@ const confirmUser = {
       if (diff > 0) {
         return { error: 'expired code' };
       }
-      if (userRequest.code !== code) {
+
+      const isCodeMatch = await bcrypt.compare(code, userRequest.code);
+      if (!isCodeMatch) {
         return { error: 'invalid code' };
       }
       const existingUser = await userRequest.getUser();

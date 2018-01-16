@@ -23,20 +23,6 @@ UserRequest.hasOne(User, {
   foreignKey: 'id',
 });
 
-// User.hasMany(User, {
-//   foreignKey: 'userId',
-//   sourceKey: 'id',
-//   as: 'ex',
-// });
-
-// User.belongsTo(User, {
-//   foreignKey: 'loverId',
-//   sourceKey: 'id',
-//   as: 'lover',
-//   onUpdate: 'cascade',
-//   onDelete: 'cascade',
-// });
-
 User.hasOne(UserPasswordReset, {
   foreignKey: 'userId',
   sourceKey: 'id',

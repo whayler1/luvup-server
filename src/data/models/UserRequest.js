@@ -15,12 +15,8 @@ const UserRequest = Model.define('UserRequest', {
   },
 
   code: {
-    type: DataType.INTEGER,
+    type: DataType.STRING(255),
     allowNull: false,
-    validate: {
-      min: 100000,
-      max: 999999,
-    },
   },
 });
 
