@@ -7,6 +7,7 @@ import me from './queries/me';
 import coins from './queries/coins';
 import myUnusedCoins from './queries/myUnusedCoins';
 import mySentCoins from './queries/mySentCoins';
+import users from './queries/users';
 
 import createUser from './mutations/createUser';
 import userRequest from './mutations/userRequest';
@@ -25,6 +26,7 @@ const schema = new Schema({
       coins,
       myUnusedCoins,
       mySentCoins,
+      users,
     },
   }),
   mutation: new ObjectType({

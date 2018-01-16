@@ -15,18 +15,18 @@ const UserType = new ObjectType({
     local: {
       type: UserLocal,
     },
-    lover: {
-      type: new ObjectType({
-        name: 'Lover',
-        fields: {
-          id: { type: new NonNull(ID) },
-          email: { type: StringType },
-          local: {
-            type: UserLocal,
-          },
-        },
-      }),
-    },
+    // lover: {
+    //   type: new ObjectType({
+    //     name: 'Lover',
+    //     fields: {
+    //       id: { type: new NonNull(ID) },
+    //       email: { type: StringType },
+    //       local: {
+    //         type: UserLocal,
+    //       },
+    //     },
+    //   }),
+    // },
   },
 });
 
