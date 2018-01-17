@@ -10,6 +10,7 @@ const UserType = new ObjectType({
   fields: {
     id: { type: new NonNull(ID) },
     email: { type: StringType },
+    username: { type: StringType },
     relationship: {
       type: new ObjectType({
         name: 'Relationship',

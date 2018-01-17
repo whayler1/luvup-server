@@ -1,45 +1,32 @@
 import jwt from 'jsonwebtoken';
-import { User } from '../models';
+import _ from 'lodash';
 
+import { User } from '../models';
 import UserType from '../types/UserType';
 import config from '../../config';
 
 const me = {
   type: UserType,
   resolve: async ({ request }) => {
-    // console.log('request', request);
-    const verify = await new Promise(resolve =>
-      jwt.verify(
-        request.cookies.id_token,
-        config.auth.jwt.secret,
-        (err, result) => {
-          if (err) {
-            // console.log('\n\n error', err);
-            resolve({
-              ok: false,
-              result: err,
-            });
-          } else {
-            // console.log('\n\n result', result);
-            resolve({
-              ok: true,
-              result,
-            });
-          }
-        },
-      ),
-    );
+    const id_token = _.at(request, 'cookies.id_token')[0];
+    if (!id_token) {
+      return {};
+    }
 
-    const user = await User.find({ id: verify.result.id });
-    const relationship = await user.getRelationship();
+    const verify = await jwt.verify(id_token, config.auth.jwt.secret);
 
-    return (
-      request.user && {
-        id: verify.result.id,
-        email: verify.result.email,
+    if (verify) {
+      const user = await User.find({ where: { id: verify.id } });
+      const relationship = await user.getRelationship();
+
+      return {
+        id: user.id,
+        email: user.email,
+        username: user.username,
         relationship,
-      }
-    );
+      };
+    }
+    return {};
   },
 };
 

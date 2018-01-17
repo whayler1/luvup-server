@@ -5,8 +5,9 @@ import {
   GraphQLString,
 } from 'graphql';
 import jwt from 'jsonwebtoken';
-import sequelize from '../sequelize';
+import _ from 'lodash';
 
+import sequelize from '../sequelize';
 import UserType from '../types/UserType';
 import { Coin, User } from '../models';
 import config from '../../config';
@@ -25,26 +26,37 @@ const users = {
     offset: { type: GraphQLInt },
   },
   resolve: async ({ request }, { search, limit, offset }) => {
-    const verify = await jwt.verify(
-      request.cookies.id_token,
-      config.auth.jwt.secret,
-    );
+    const id_token = _.at(request, 'cookies.id_token')[0];
+    if (!id_token) {
+      return {};
+    }
 
-    console.log('\n\nverify', verify);
+    const verify = await jwt.verify(id_token, config.auth.jwt.secret);
 
     if (verify) {
       const userRes = await User.findAndCountAll({
         limit,
         offset,
         where: {
-          email: sequelize.where(
-            sequelize.fn('LOWER', sequelize.col('email')),
-            'LIKE',
-            `%${search}%`,
-          ),
+          $or: [
+            {
+              username: sequelize.where(
+                sequelize.fn('LOWER', sequelize.col('username')),
+                'LIKE',
+                `%${search}%`,
+              ),
+            },
+            {
+              email: sequelize.where(
+                sequelize.fn('LOWER', sequelize.col('email')),
+                'LIKE',
+                `%${search}%`,
+              ),
+            },
+          ],
         },
       });
-      console.log('\n\nuserRes', userRes);
+
       return userRes;
     }
     return {};
