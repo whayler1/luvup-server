@@ -9,7 +9,6 @@ import myUnusedCoins from './queries/myUnusedCoins';
 import mySentCoins from './queries/mySentCoins';
 import users from './queries/users';
 
-import createUser from './mutations/createUser';
 import userRequest from './mutations/userRequest';
 import confirmUser from './mutations/confirmUser';
 import sendNewPassword from './mutations/sendNewPassword';

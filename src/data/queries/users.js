@@ -27,9 +27,10 @@ const users = {
   },
   resolve: async ({ request }, { search, limit, offset }) => {
     const id_token = _.at(request, 'cookies.id_token')[0];
-    if (!id_token) {
+    if (!id_token || !search) {
       return {};
     }
+    const searchLowercase = search.toLowerCase();
 
     const verify = await jwt.verify(id_token, config.auth.jwt.secret);
 
@@ -43,14 +44,21 @@ const users = {
               username: sequelize.where(
                 sequelize.fn('LOWER', sequelize.col('username')),
                 'LIKE',
-                `%${search}%`,
+                `%${searchLowercase}%`,
               ),
             },
             {
               email: sequelize.where(
                 sequelize.fn('LOWER', sequelize.col('email')),
                 'LIKE',
-                `%${search}%`,
+                `%${searchLowercase}%`,
+              ),
+            },
+            {
+              fullName: sequelize.where(
+                sequelize.fn('LOWER', sequelize.col('fullName')),
+                'LIKE',
+                `%${searchLowercase}%`,
               ),
             },
           ],

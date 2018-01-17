@@ -17,10 +17,15 @@ const confirmUser = {
   args: {
     email: { type: GraphQLString },
     username: { type: GraphQLString },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString },
     password: { type: GraphQLString },
     code: { type: GraphQLString },
   },
-  resolve: async ({ request }, { email, username, password, code }) => {
+  resolve: async (
+    { request },
+    { email, username, firstName, lastName, password, code },
+  ) => {
     console.log('\n\nconfirmUser');
     if (!email) {
       return { error: 'missing email' };
@@ -30,6 +35,21 @@ const confirmUser = {
     }
     if (!username) {
       return { error: 'missing username' };
+    }
+    if (username.length < 3) {
+      return { error: 'username too short' };
+    }
+    if (!firstName) {
+      return { error: 'missing firstName' };
+    }
+    if (firstName.length < 2) {
+      return { error: 'firstName too short' };
+    }
+    if (!lastName) {
+      return { error: 'missing lastName' };
+    }
+    if (lastName.length < 2) {
+      return { error: 'lastName too short' };
     }
     if (!code) {
       return { error: 'missing code' };
@@ -70,13 +90,16 @@ const confirmUser = {
         email,
         emailConfirmed: true,
         username,
+        firstName,
+        lastName,
+        fullName: `${firstName} ${lastName}`,
         password: hash,
       });
       try {
         await emailHelper.sendEmail({
           to: email,
           subject: 'Luvup Signup Complete!',
-          html: '<p>You are now a member of Luvup!</p>',
+          html: `<p>Congratulations <b>${firstName} ${lastName}</b>. You are now a member of Luvup!</p><p>Your username is <b>${username}</b>.</p>`,
         });
       } catch (err) {
         console.error('\n\nError sending confirm user email', err);

@@ -11,6 +11,8 @@ const UserType = new ObjectType({
     id: { type: new NonNull(ID) },
     email: { type: StringType },
     username: { type: StringType },
+    firstName: { type: StringType },
+    lastName: { type: StringType },
     relationship: {
       type: new ObjectType({
         name: 'Relationship',

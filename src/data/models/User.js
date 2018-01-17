@@ -45,6 +45,10 @@ const User = Model.define(
       min: 2,
     },
 
+    fullName: {
+      type: DataType.STRING(100),
+    },
+
     password: {
       type: DataType.STRING(100),
       allowNull: false,
