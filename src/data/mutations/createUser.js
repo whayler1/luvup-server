@@ -2,7 +2,7 @@ import graphql, { GraphQLString, GraphQLID } from 'graphql';
 import _ from 'lodash';
 import bcrypt from 'bcrypt';
 import UserType from '../types/UserType';
-import { User, UserLocal } from '../models';
+import { User } from '../models';
 
 const createUser = {
   type: UserType,
@@ -15,18 +15,11 @@ const createUser = {
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(password, salt);
 
-    const user = await User.create(
-      {
-        email,
-        local: {
-          username,
-          password: hash,
-        },
-      },
-      {
-        include: [{ model: UserLocal, as: 'local' }],
-      },
-    );
+    const user = await User.create({
+      email,
+      username,
+      password: hash,
+    });
     return user;
   },
 };

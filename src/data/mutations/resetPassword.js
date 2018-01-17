@@ -8,7 +8,7 @@ import graphql, {
 import moment from 'moment';
 import UserRequestType from '../types/UserRequestType';
 import UserType from '../types/UserType';
-import { UserRequest, UserLocal, User } from '../models';
+import { UserRequest, User } from '../models';
 import emailHelper from '../helpers/email';
 
 const resetPassword = {
@@ -39,26 +39,20 @@ const resetPassword = {
     }
 
     let user = await User.findOne({ where: { email } });
-    let userLocal;
 
     if (!user) {
-      userLocal = await UserLocal.find({ where: { username: email } });
+      /**
+       * JW: This reads a little weird, basically the email arg can be the
+       * username or the email.
+       */
+      user = await User.find({ where: { username: email } });
 
-      if (!userLocal) {
+      if (!user) {
         return { error: 'invalid email' };
       }
-      user = await User.findOne({ where: { id: userLocal.userId } });
     }
 
-    if (!userLocal) {
-      userLocal = await user.getLocal();
-    }
-
-    if (!userLocal) {
-      return { error: 'no local user' };
-    }
-
-    const isPwordMatch = await bcrypt.compare(oldPassword, userLocal.password);
+    const isPwordMatch = await bcrypt.compare(oldPassword, user.password);
 
     if (!isPwordMatch) {
       const userPasswordReset = await user.getUserPasswordReset();
@@ -79,7 +73,7 @@ const resetPassword = {
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(newPassword, salt);
 
-    await userLocal.update({ password: hash });
+    await user.update({ password: hash });
 
     try {
       await emailHelper.sendEmail({

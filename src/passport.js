@@ -8,13 +8,7 @@ import bcrypt from 'bcrypt';
 import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as LocalStrategy } from 'passport-local';
-import {
-  User,
-  UserLogin,
-  UserClaim,
-  UserProfile,
-  UserLocal,
-} from './data/models';
+import { User, UserLogin, UserClaim, UserProfile } from './data/models';
 import config from './config';
 
 passport.use(
@@ -22,28 +16,20 @@ passport.use(
     console.log('\n\nLocalStrategy', username);
     const foo = async () => {
       console.log('\n\nfoo');
-      let userLocal = await UserLocal.find({ where: { username } });
-      if (!userLocal) {
-        console.log('\n\n not userLocal');
-        const user = await User.find({ where: { email: username } });
+      let user = await User.find({ where: { username } });
+      if (!user) {
+        user = await User.find({ where: { email: username } });
 
         if (!user) {
           return done(null, false);
         }
-
-        userLocal = await UserLocal.find({ where: { userId: user.id } });
-        if (!userLocal) {
-          return done(null, false);
-        }
       }
-      console.log('\n\nhasUserLocal');
+      console.log('\n\nhas a user');
 
-      const isPwordMatch = await bcrypt.compare(password, userLocal.password);
+      const isPwordMatch = await bcrypt.compare(password, user.password);
       if (!isPwordMatch) {
         return done(null, false);
       }
-
-      const user = await User.find({ where: { id: userLocal.userId } });
 
       return done(null, { id: user.id, email: user.email, username });
     };

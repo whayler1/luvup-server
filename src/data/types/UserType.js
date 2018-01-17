@@ -5,16 +5,11 @@ import {
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
-import UserLocal from './UserLocal';
-
 const UserType = new ObjectType({
   name: 'User',
   fields: {
     id: { type: new NonNull(ID) },
     email: { type: StringType },
-    local: {
-      type: UserLocal,
-    },
     relationship: {
       type: new ObjectType({
         name: 'Relationship',
@@ -23,18 +18,6 @@ const UserType = new ObjectType({
         },
       }),
     },
-    // lover: {
-    //   type: new ObjectType({
-    //     name: 'Lover',
-    //     fields: {
-    //       id: { type: new NonNull(ID) },
-    //       email: { type: StringType },
-    //       local: {
-    //         type: UserLocal,
-    //       },
-    //     },
-    //   }),
-    // },
   },
 });
 

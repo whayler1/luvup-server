@@ -3,7 +3,7 @@ import graphql, { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 import moment from 'moment';
 import UserRequestType from '../types/UserRequestType';
 import UserType from '../types/UserType';
-import { UserRequest, UserLocal } from '../models';
+import { User, UserRequest } from '../models';
 import emailHelper from '../helpers/email';
 
 const confirmUser = {
@@ -56,7 +56,7 @@ const confirmUser = {
       if (existingUser) {
         return { error: 'user request used' };
       }
-      const existingUserName = await UserLocal.find({ where: { username } });
+      const existingUserName = await User.find({ where: { username } });
       if (existingUserName) {
         return { error: 'username taken' };
       }
@@ -66,18 +66,12 @@ const confirmUser = {
 
       console.log('\n\ngot to after hash');
 
-      const user = await userRequest.createUser(
-        {
-          email,
-          local: {
-            username,
-            password: hash,
-          },
-        },
-        {
-          include: [{ model: UserLocal, as: 'local' }],
-        },
-      );
+      const user = await userRequest.createUser({
+        email,
+        emailConfirmed: true,
+        username,
+        password: hash,
+      });
       try {
         await emailHelper.sendEmail({
           to: email,

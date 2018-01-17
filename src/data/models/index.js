@@ -3,7 +3,6 @@ import User from './User';
 import UserLogin from './UserLogin';
 import UserClaim from './UserClaim';
 import UserProfile from './UserProfile';
-import UserLocal from './UserLocal';
 import UserPasswordReset from './UserPasswordReset';
 import UserRequest from './UserRequest';
 import LoverRequest from './LoverRequest';
@@ -90,10 +89,6 @@ User.hasOne(UserProfile, {
   onDelete: 'cascade',
 });
 
-User.hasOne(UserLocal, {
-  as: 'local',
-});
-
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -104,7 +99,6 @@ export {
   UserLogin,
   UserClaim,
   UserProfile,
-  UserLocal,
   UserPasswordReset,
   UserRequest,
   Location,

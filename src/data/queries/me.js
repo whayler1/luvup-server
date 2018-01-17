@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { User, UserLocal } from '../models';
+import { User } from '../models';
 
 import UserType from '../types/UserType';
 import config from '../../config';
@@ -31,14 +31,12 @@ const me = {
     );
 
     const user = await User.find({ id: verify.result.id });
-    const local = await UserLocal.find({ where: { userId: verify.result.id } });
     const relationship = await user.getRelationship();
 
     return (
       request.user && {
         id: verify.result.id,
         email: verify.result.email,
-        local,
         relationship,
       }
     );

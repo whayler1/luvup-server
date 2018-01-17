@@ -9,7 +9,7 @@ import graphql, {
 import moment from 'moment';
 import UserRequestType from '../types/UserRequestType';
 import UserType from '../types/UserType';
-import { UserRequest, UserPasswordReset, UserLocal, User } from '../models';
+import { UserRequest, UserPasswordReset, User } from '../models';
 import emailHelper from '../helpers/email';
 
 const sendNewPassword = {
@@ -34,13 +34,11 @@ const sendNewPassword = {
     let user = await User.findOne({ where: { email } });
 
     if (!user) {
-      const userLocal = await UserLocal.findOne({ where: { username: email } });
+      user = await User.findOne({ where: { username: email } });
 
-      if (!userLocal) {
+      if (!user) {
         return { error: 'invalid email' };
       }
-
-      user = await User.findOne({ where: { id: userLocal.userId } });
     }
 
     const resetPassword = passgen({

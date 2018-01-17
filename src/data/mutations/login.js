@@ -2,7 +2,7 @@ import graphql, { GraphQLString, GraphQLID, GraphQLObjectType } from 'graphql';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 import UserType from '../types/UserType';
-import { User, UserLocal } from '../models';
+import { User } from '../models';
 import passport from '../../passport';
 import config from '../../config';
 
