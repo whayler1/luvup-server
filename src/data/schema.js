@@ -4,17 +4,17 @@ import {
 } from 'graphql';
 
 import me from './queries/me';
-import foo from './queries/foo';
-import news from './queries/news';
-import listings from './queries/listings';
 import coins from './queries/coins';
 import myUnusedCoins from './queries/myUnusedCoins';
 import mySentCoins from './queries/mySentCoins';
+import users from './queries/users';
 
-import fooMutation from './mutations/foo';
 import createUser from './mutations/createUser';
+import userRequest from './mutations/userRequest';
+import confirmUser from './mutations/confirmUser';
+import sendNewPassword from './mutations/sendNewPassword';
+import resetPassword from './mutations/resetPassword';
 import createCoin from './mutations/createCoin';
-import updateListing from './mutations/updateListing';
 import requestLover from './mutations/requestLover';
 import login from './mutations/login';
 
@@ -23,21 +23,20 @@ const schema = new Schema({
     name: 'Query',
     fields: {
       me,
-      news,
-      foo,
-      listings,
       coins,
       myUnusedCoins,
       mySentCoins,
+      users,
     },
   }),
   mutation: new ObjectType({
     name: 'Mutation',
     fields: {
-      fooMutation,
-      createUser,
+      userRequest,
+      confirmUser,
+      sendNewPassword,
+      resetPassword,
       createCoin,
-      updateListing,
       login,
     },
   }),

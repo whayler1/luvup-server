@@ -30,6 +30,13 @@ import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import config from './config';
 
+const addJwtCookie = (res, user) => {
+  const expiresIn = 60 * 60 * 24 * 180; // 180 days
+  const token = jwt.sign(user, config.auth.jwt.secret, { expiresIn });
+  res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
+  return token;
+};
+
 const app = express();
 
 //
@@ -97,7 +104,6 @@ app.get(
 app.post(
   '/login',
   passport.authenticate('local', {
-    // failureRedirect: '/login?failure=true',
     session: false,
   }),
   (req, res) => {
@@ -105,17 +111,48 @@ app.post(
       return res.status(400).json({ error: 'no user found' });
     }
 
-    const expiresIn = 60 * 60 * 24 * 180; // 180 days
-    const token = jwt.sign(req.user, config.auth.jwt.secret, { expiresIn });
-    // console.log('\n\n req.user', req.user);
-    res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
-    // res.redirect('/');
+    const id_token = addJwtCookie(res, req.user);
+
     return res.status(200).json({
-      jwt: token,
+      id_token,
       user: req.user,
     });
   },
 );
+
+app.post('/reauth', async (req, res) => {
+  if (!req.cookies.id_token) {
+    return res.sendStatus(400);
+  }
+  const verification = await new Promise((resolve, reject) =>
+    jwt.verify(req.cookies.id_token, config.auth.jwt.secret, (err, result) => {
+      if (err) {
+        reject({
+          ok: false,
+          result: err,
+        });
+      } else {
+        resolve({
+          ok: true,
+          result,
+        });
+      }
+    }),
+  );
+
+  const { ok, result } = verification;
+  if (!ok) {
+    return res.status(400).json({
+      error: result,
+    });
+  }
+  // const id_token = addJwtCookie(res, result);
+  res.user = result;
+  return res.json({
+    id_token: req.cookies.id_token,
+    user: result,
+  });
+});
 
 //
 // Register API middleware

@@ -28,6 +28,28 @@ const User = Model.define(
       type: DataType.BOOLEAN,
       defaultValue: false,
     },
+
+    username: {
+      type: DataType.STRING(20),
+      allowNull: false,
+      min: 3,
+    },
+
+    firstName: {
+      type: DataType.STRING(50),
+      min: 2,
+    },
+
+    lastName: {
+      type: DataType.STRING(50),
+      min: 2,
+    },
+
+    password: {
+      type: DataType.STRING(100),
+      allowNull: false,
+      min: 8,
+    },
   },
   {
     indexes: [{ fields: ['email'] }],

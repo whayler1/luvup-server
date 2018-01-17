@@ -3,25 +3,29 @@ import User from './User';
 import UserLogin from './UserLogin';
 import UserClaim from './UserClaim';
 import UserProfile from './UserProfile';
-import UserLocal from './UserLocal';
-
+import UserPasswordReset from './UserPasswordReset';
+import UserRequest from './UserRequest';
 import LoverRequest from './LoverRequest';
+import Relationship from './Relationship';
 
-import Listing from './Listing';
 import Location from './Location';
 
 import Coin from './Coin';
 
-User.hasMany(User, {
-  foreignKey: 'userId',
-  sourceKey: 'id',
-  as: 'ex',
+Relationship.hasMany(User, {
+  as: 'lover',
 });
 
-User.hasOne(User, {
+User.belongsTo(Relationship);
+
+UserRequest.hasOne(User, {
+  foreignKey: 'id',
+});
+
+User.hasOne(UserPasswordReset, {
   foreignKey: 'userId',
   sourceKey: 'id',
-  as: 'lover',
+  as: 'userPasswordReset',
 });
 
 User.hasOne(LoverRequest, {
@@ -60,7 +64,7 @@ Coin.belongsTo(User, {
 
 Coin.belongsTo(User, {
   foreignKey: 'recipientId',
-  tarngetKey: 'id',
+  targetKey: 'id',
   as: 'recipient',
 });
 
@@ -85,11 +89,6 @@ User.hasOne(UserProfile, {
   onDelete: 'cascade',
 });
 
-User.hasOne(UserLocal, {
-  foreignKey: 'userId',
-  as: 'local',
-});
-
 function sync(...args) {
   return sequelize.sync(...args);
 }
@@ -100,9 +99,10 @@ export {
   UserLogin,
   UserClaim,
   UserProfile,
-  UserLocal,
-  Listing,
+  UserPasswordReset,
+  UserRequest,
   Location,
   Coin,
   LoverRequest,
+  Relationship,
 };
