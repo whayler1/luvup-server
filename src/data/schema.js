@@ -35,6 +35,7 @@ const schema = new Schema({
       confirmUser,
       sendNewPassword,
       resetPassword,
+      requestLover,
       createCoin,
       login,
     },

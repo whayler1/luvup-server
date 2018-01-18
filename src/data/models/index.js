@@ -28,17 +28,15 @@ User.hasOne(UserPasswordReset, {
   as: 'userPasswordReset',
 });
 
-User.hasOne(LoverRequest, {
-  foreignKey: 'recipientId',
-  sourceKey: 'id',
-  as: 'loverRequest',
+User.hasMany(LoverRequest);
+
+LoverRequest.belongsTo(User, {
+  as: 'recipient',
 });
 
-User.hasOne(LoverRequest, {
-  foreignKey: 'senderId',
-  sourceKey: 'id',
-  as: 'requestedLover',
-});
+// User.hasMany(LoverRequest, {
+//   as: 'requestedLover',
+// });
 
 User.hasMany(Coin, {
   foreignKey: 'recipientId',

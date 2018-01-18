@@ -18,6 +18,8 @@ const users = {
     fields: {
       rows: { type: new GraphQLList(UserType) },
       count: { type: GraphQLInt },
+      limit: { type: GraphQLInt },
+      offset: { type: GraphQLInt },
     },
   }),
   args: {
@@ -65,7 +67,7 @@ const users = {
         },
       });
 
-      return userRes;
+      return Object.assign({}, userRes, { limit, offset });
     }
     return {};
   },

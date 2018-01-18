@@ -20,6 +20,8 @@ module.exports = {
       `http://localhost:${process.env.PORT || 3000}`,
   },
 
+  supportEmail: process.env.SUPPORT_EMAIL || 'justin@luvup.io',
+
   // Database
   databaseUrl: process.env.DATABASE_URL || 'sqlite:database.sqlite',
 

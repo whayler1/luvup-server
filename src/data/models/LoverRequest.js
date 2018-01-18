@@ -12,16 +12,6 @@ const LoverRequest = Model.define('LoverRequest', {
     type: DataType.BOOLEAN,
     defaultValue: false,
   },
-
-  senderId: {
-    type: DataType.UUID,
-    notNull: true,
-  },
-
-  recipientId: {
-    type: DataType.UUID,
-    notNull: true,
-  },
 });
 
 export default LoverRequest;
