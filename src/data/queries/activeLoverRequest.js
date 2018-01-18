@@ -7,7 +7,12 @@ import LoverRequestType from '../types/LoverRequestType';
 import config from '../../config';
 
 const activeLoverRequest = {
-  type: LoverRequestType,
+  type: new GraphQLObjectType({
+    name: 'ActiveLoverRequestResource',
+    fields: {
+      loverRequest: { type: LoverRequestType },
+    },
+  }),
   resolve: async ({ request }) => {
     const id_token = _.at(request, 'cookies.id_token')[0];
     if (!id_token) {
@@ -18,15 +23,19 @@ const activeLoverRequest = {
 
     if (verify) {
       const user = await User.find({ where: { id: verify.id } });
+      console.log('\n\nuser', user);
       const loverRequest = await LoverRequest.findOne({
         where: { UserId: user.id },
       });
+      console.log('\n\nloverRequst', loverRequest);
 
       if (loverRequest && !loverRequest.isActive) {
         const recipient = await loverRequest.getRecipient();
-        return Object.assign({}, loverRequest.dataValues, {
-          recipient: recipient.dataValues,
-        });
+        return {
+          loverRequest: Object.assign({}, loverRequest.dataValues, {
+            recipient: recipient.dataValues,
+          }),
+        };
       }
       return {};
     }

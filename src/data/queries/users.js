@@ -41,6 +41,9 @@ const users = {
         limit,
         offset,
         where: {
+          $not: {
+            id: verify.id,
+          },
           $or: [
             {
               username: sequelize.where(
