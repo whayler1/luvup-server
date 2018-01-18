@@ -17,7 +17,9 @@ const LoverRequestType = new GraphQLObjectType({
     isAccepted: { type: GraphQLBoolean },
     isSenderCanceled: { type: GraphQLBoolean },
     isRecipientCanceled: { type: GraphQLBoolean },
+    sender: { type: UserType },
     recipient: { type: UserType },
+    createdAt: { type: GraphQLString },
   },
 });
 

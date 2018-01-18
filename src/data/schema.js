@@ -10,6 +10,7 @@ import myUnusedCoins from './queries/myUnusedCoins';
 import mySentCoins from './queries/mySentCoins';
 import users from './queries/users';
 import activeLoverRequest from './queries/activeLoverRequest';
+import receivedLoverRequests from './queries/receivedLoverRequests';
 
 // mutations
 import userRequest from './mutations/userRequest';
@@ -30,6 +31,7 @@ const schema = new Schema({
       mySentCoins,
       users,
       activeLoverRequest,
+      receivedLoverRequests,
     },
   }),
   mutation: new ObjectType({
