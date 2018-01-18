@@ -12,6 +12,16 @@ const LoverRequest = Model.define('LoverRequest', {
     type: DataType.BOOLEAN,
     defaultValue: false,
   },
+
+  isSenderCanceled: {
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  },
+
+  isRecipientCanceled: {
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 export default LoverRequest;

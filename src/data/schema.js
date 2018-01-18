@@ -3,12 +3,15 @@ import {
   GraphQLObjectType as ObjectType,
 } from 'graphql';
 
+// queries
 import me from './queries/me';
 import coins from './queries/coins';
 import myUnusedCoins from './queries/myUnusedCoins';
 import mySentCoins from './queries/mySentCoins';
 import users from './queries/users';
+import activeLoverRequest from './queries/activeLoverRequest';
 
+// mutations
 import userRequest from './mutations/userRequest';
 import confirmUser from './mutations/confirmUser';
 import sendNewPassword from './mutations/sendNewPassword';
@@ -26,6 +29,7 @@ const schema = new Schema({
       myUnusedCoins,
       mySentCoins,
       users,
+      activeLoverRequest,
     },
   }),
   mutation: new ObjectType({
