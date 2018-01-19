@@ -1,8 +1,11 @@
 import { graphql } from 'graphql';
+import jwt from 'jsonwebtoken';
+import _ from 'lodash';
 
 import schema from '../schema';
 import models, { User, UserRequest } from '../models';
 import sequelize from '../sequelize';
+import config from '../../config';
 
 xit('should be null when user is not logged in', async () => {
   const query = `
@@ -28,25 +31,32 @@ it('should have user data when logged in', async () => {
     }
   `;
 
-  // const email = 'jwents@gmail.com';
-  // const newUserRequest = await UserRequest.create({
-  //   email,
-  //   code: '123456',
-  // });
-  // const user = await newUserRequest.createUser({
-  //   username: 'foo123',
-  //   firstName: 'Jason',
-  //   lastName: 'Wents',
-  //   fullName: 'Jason Wents',
-  //   email,
-  //   emailConfirmed: true,
-  //   password: 'Testing123',
-  // });
+  const email = 'jwents@gmail.com';
+  const newUserRequest = await UserRequest.create({
+    email,
+    code: '123456',
+  });
+  const user = await newUserRequest.createUser({
+    username: 'foo123',
+    firstName: 'Jason',
+    lastName: 'Wents',
+    fullName: 'Jason Wents',
+    email,
+    emailConfirmed: true,
+    password: 'Testing123',
+  });
 
-  // const context = getContext({ user });
+  const token = jwt.sign(
+    _.pick(user.dataValues, 'id', 'username', 'email', 'firstName', 'lastName'),
+    config.auth.jwt.secret,
+    { expiresIn: 60 },
+  );
+
   const rootValue = {
     request: {
-      id_token: '123',
+      cookies: {
+        id_token: token,
+      },
     },
   };
 
