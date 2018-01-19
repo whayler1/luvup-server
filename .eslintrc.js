@@ -81,7 +81,7 @@ module.exports = {
         trailingComma: 'all',
       },
     ],
-    'camelcase': 'off'
+    'camelcase': 'off',
   },
 
   settings: {
