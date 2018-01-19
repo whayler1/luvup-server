@@ -34,10 +34,6 @@ LoverRequest.belongsTo(User, {
   as: 'recipient',
 });
 
-// User.hasMany(LoverRequest, {
-//   as: 'requestedLover',
-// });
-
 User.hasMany(Coin, {
   foreignKey: 'recipientId',
   sourceKey: 'id',

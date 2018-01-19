@@ -19,6 +19,12 @@ const me = {
       const user = await User.find({ where: { id: verify.id } });
       const relationship = await user.getRelationship();
 
+      if (relationship) {
+        console.log('\n\nrelationship', relationship);
+        // const lovers = await relationship.getLovers();
+        // console.log('\n\nlovers', lovers);
+      }
+
       return {
         id: user.id,
         email: user.email,

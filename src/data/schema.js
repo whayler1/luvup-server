@@ -20,6 +20,7 @@ import resetPassword from './mutations/resetPassword';
 import createCoin from './mutations/createCoin';
 import requestLover from './mutations/requestLover';
 import login from './mutations/login';
+import acceptLoverRequest from './mutations/acceptLoverRequest';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -44,6 +45,7 @@ const schema = new Schema({
       requestLover,
       createCoin,
       login,
+      acceptLoverRequest,
     },
   }),
 });
