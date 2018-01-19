@@ -3,6 +3,7 @@ import {
   GraphQLID as ID,
   GraphQLString as StringType,
   GraphQLNonNull as NonNull,
+  GraphQLList,
 } from 'graphql';
 
 const UserType = new ObjectType({
@@ -18,6 +19,21 @@ const UserType = new ObjectType({
         name: 'Relationship',
         fields: {
           id: { type: new NonNull(ID) },
+          createdAt: { type: StringType },
+          lovers: {
+            type: new GraphQLList(
+              new ObjectType({
+                name: 'Lover',
+                fields: {
+                  id: { type: new NonNull(ID) },
+                  email: { type: StringType },
+                  username: { type: StringType },
+                  firstName: { type: StringType },
+                  lastName: { type: StringType },
+                },
+              }),
+            ),
+          },
         },
       }),
     },

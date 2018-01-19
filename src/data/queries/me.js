@@ -19,20 +19,27 @@ const me = {
       const user = await User.find({ where: { id: verify.id } });
       const relationship = await user.getRelationship();
 
-      if (relationship) {
-        console.log('\n\nrelationship', relationship);
-        // const lovers = await relationship.getLovers();
-        // console.log('\n\nlovers', lovers);
-      }
+      const response = Object.assign({}, user.dataValues);
 
-      return {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        relationship,
-      };
+      if (relationship) {
+        const relationshipDataValues = relationship.dataValues;
+        const lovers = await relationship.getLover({
+          where: {
+            $not: {
+              id: user.id,
+            },
+          },
+        });
+        Object.assign(relationshipDataValues, {
+          lovers: lovers.map(lover => lover.dataValues),
+        });
+        // console.log('\n\nlovers', lovers);
+        // console.log('\n\nrelationship', relationship);
+        Object.assign(response, { relationship: relationshipDataValues });
+      }
+      console.log('response', response);
+
+      return response;
     }
     return {};
   },
