@@ -7,7 +7,7 @@ import models, { User, UserRequest } from '../models';
 import sequelize from '../sequelize';
 import config from '../../config';
 
-xit('should be null when user is not logged in', async () => {
+it('should be null when user is not logged in', async () => {
   const query = `
     query {
       me {
@@ -27,6 +27,9 @@ it('should have user data when logged in', async () => {
     query {
       me {
         id username firstName lastName email
+        relationship {
+          id
+        }
       }
     }
   `;
@@ -62,5 +65,14 @@ it('should have user data when logged in', async () => {
 
   const result = await graphql(schema, query, rootValue, sequelize);
 
-  console.log('result', result.data);
+  expect(result.data).toMatchObject({
+    me: {
+      id: user.id,
+      username: 'foo123',
+      firstName: 'Jason',
+      lastName: 'Wents',
+      email,
+      relationship: null,
+    },
+  });
 });

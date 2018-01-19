@@ -8,7 +8,6 @@ import config from '../../config';
 const me = {
   type: MeType,
   resolve: async ({ request }) => {
-    console.log('-- request', request);
     const id_token = _.at(request, 'cookies.id_token')[0];
     if (!id_token) {
       return {};
