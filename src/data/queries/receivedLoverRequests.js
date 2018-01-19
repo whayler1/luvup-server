@@ -22,6 +22,8 @@ const addSenders = loverRequests =>
 const receivedLoverRequests = {
   type: new GraphQLObjectType({
     name: 'ReceivedLoverRequestsResource',
+    description:
+      'A list of lover requests that have been sent to the active user that have not been accepted or canceled.',
     fields: {
       rows: { type: new GraphQLList(LoverRequestType) },
       count: { type: GraphQLInt },

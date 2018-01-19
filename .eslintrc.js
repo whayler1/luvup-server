@@ -25,6 +25,9 @@ module.exports = {
 
   globals: {
     __DEV__: true,
+    it: true,
+    xit: true,
+    expect: true,
   },
 
   env: {
