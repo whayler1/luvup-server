@@ -2,11 +2,11 @@ import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 
 import { User } from '../models';
-import UserType from '../types/UserType';
+import MeType from '../types/MeType';
 import config from '../../config';
 
 const me = {
-  type: UserType,
+  type: MeType,
   resolve: async ({ request }) => {
     const id_token = _.at(request, 'cookies.id_token')[0];
     if (!id_token) {
@@ -33,11 +33,8 @@ const me = {
         Object.assign(relationshipDataValues, {
           lovers: lovers.map(lover => lover.dataValues),
         });
-        // console.log('\n\nlovers', lovers);
-        // console.log('\n\nrelationship', relationship);
         Object.assign(response, { relationship: relationshipDataValues });
       }
-      console.log('response', response);
 
       return response;
     }
