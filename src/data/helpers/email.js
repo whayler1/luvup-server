@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
 
+import config from '../../config';
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -14,7 +16,7 @@ const defaultOptions = {
 
 const sendEmail = options =>
   new Promise((resolve, reject) => {
-    if (process.env.DISABLE_EMAIL === 'true') {
+    if (config.disableEmail === 'true') {
       resolve();
     } else {
       const mailOptions = Object.assign({}, defaultOptions, options);
