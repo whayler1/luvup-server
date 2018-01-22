@@ -12,11 +12,6 @@ const Coin = Model.define('Coin', {
     type: DataType.BOOLEAN,
     defaultValue: false,
   },
-
-  userId: {
-    type: DataType.UUID,
-    primaryKey: true,
-  },
 });
 
 export default Coin;

@@ -5,9 +5,9 @@ import {
 
 // queries
 import me from './queries/me';
-import coins from './queries/coins';
-import myUnusedCoins from './queries/myUnusedCoins';
-import mySentCoins from './queries/mySentCoins';
+// import coins from './queries/coins';
+// import myUnusedCoins from './queries/myUnusedCoins';
+// import mySentCoins from './queries/mySentCoins';
 import users from './queries/users';
 import activeLoverRequest from './queries/activeLoverRequest';
 import receivedLoverRequests from './queries/receivedLoverRequests';
@@ -15,21 +15,22 @@ import receivedLoverRequests from './queries/receivedLoverRequests';
 // mutations
 import userRequest from './mutations/userRequest';
 import confirmUser from './mutations/confirmUser';
-import sendNewPassword from './mutations/sendNewPassword';
-import resetPassword from './mutations/resetPassword';
-import createCoin from './mutations/createCoin';
+// import sendNewPassword from './mutations/sendNewPassword';
+// import resetPassword from './mutations/resetPassword';
+// import createCoin from './mutations/createCoin';
 import requestLover from './mutations/requestLover';
 import login from './mutations/login';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
+import sendCoin from './mutations/sendCoin';
 
 const schema = new Schema({
   query: new ObjectType({
     name: 'Query',
     fields: {
       me,
-      coins,
-      myUnusedCoins,
-      mySentCoins,
+      // coins,
+      // myUnusedCoins,
+      // mySentCoins,
       users,
       activeLoverRequest,
       receivedLoverRequests,
@@ -40,12 +41,13 @@ const schema = new Schema({
     fields: {
       userRequest,
       confirmUser,
-      sendNewPassword,
-      resetPassword,
+      // sendNewPassword,
+      // resetPassword,
       requestLover,
-      createCoin,
-      login,
+      // createCoin,
+      // login,
       acceptLoverRequest,
+      sendCoin,
     },
   }),
 });

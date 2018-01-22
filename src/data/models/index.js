@@ -7,10 +7,20 @@ import UserPasswordReset from './UserPasswordReset';
 import UserRequest from './UserRequest';
 import LoverRequest from './LoverRequest';
 import Relationship from './Relationship';
-
-import Location from './Location';
-
 import Coin from './Coin';
+
+Coin.belongsTo(User, {
+  as: 'recipient',
+});
+
+Coin.belongsTo(User, {
+  as: 'sender',
+});
+
+Relationship.hasMany(Coin, {
+  as: 'coin',
+  foreignKey: 'relationshipId',
+});
 
 Relationship.hasMany(User, {
   as: 'lover',
@@ -50,18 +60,6 @@ User.hasMany(Coin, {
   onDelete: 'cascade',
 });
 
-Coin.belongsTo(User, {
-  foreignKey: 'senderId',
-  targetKey: 'id',
-  as: 'sender',
-});
-
-Coin.belongsTo(User, {
-  foreignKey: 'recipientId',
-  targetKey: 'id',
-  as: 'recipient',
-});
-
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
   as: 'logins',
@@ -95,7 +93,6 @@ export {
   UserProfile,
   UserPasswordReset,
   UserRequest,
-  Location,
   Coin,
   LoverRequest,
   Relationship,
