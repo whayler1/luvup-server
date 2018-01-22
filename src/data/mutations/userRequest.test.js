@@ -5,7 +5,6 @@ import uuidv1 from 'uuid/v1';
 
 import schema from '../schema';
 import models, { User, UserRequest } from '../models';
-import sequelize from '../sequelize';
 import config from '../../config';
 
 beforeAll(() => {

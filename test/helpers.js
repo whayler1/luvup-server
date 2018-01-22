@@ -2,9 +2,7 @@ import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 import uuidv1 from 'uuid/v1';
 
-// import schema from '../schema';
 import models, { User, UserRequest, Relationship } from '../src/data/models';
-// import sequelize from '../sequelize';
 import config from '../src/config';
 
 export const createUser = async (
