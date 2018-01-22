@@ -17,8 +17,6 @@ const sendInviteEmail = (to, code) =>
 
 const userRequest = {
   type: UserRequestType,
-  description:
-    'Request access to the platform using your email. This will send a code to the email account that can be used with the confirmUser endpoint to create an account.',
   args: {
     email: { type: GraphQLString },
   },

@@ -29,6 +29,7 @@ module.exports = {
     xit: true,
     expect: true,
     beforeAll: true,
+    afterAll: true,
   },
 
   env: {
