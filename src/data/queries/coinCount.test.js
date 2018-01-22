@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 import schema from '../schema';
 import sequelize from '../sequelize';
+import { Coin } from '../models';
 import {
   createUser,
   deleteUser,
@@ -10,15 +11,17 @@ import {
   createRelationship,
 } from '../../../test/helpers';
 
-const createCoins = (count, relationship, user, lover) =>
-  Promise.all(
-    _.times(count, () =>
-      relationship.createCoin({
-        senderId: lover.id,
-        recipientId: user.id,
-      }),
-    ),
-  );
+// const createCoins = (count, relationship, user, lover) =>
+//   Promise.all(
+//     _.times(count, () =>
+//       relationship.createCoin({
+//         senderId: lover.id,
+//         recipientId: user.id,
+//       }),
+//     ),
+//   );
+
+const destroyCoins = coins => Promise.all(coins.map(coin => coin.destroy()));
 
 it('should return the number of coins a user has received in their current relationship', async () => {
   const user = await createUser();
@@ -28,7 +31,13 @@ it('should return the number of coins a user has received in their current relat
   const id_token = loginUser(user);
   const count = 4;
 
-  await createCoins(count, relationship, user, lover);
+  const coinOptions = {
+    senderId: lover.id,
+    recipientId: user.id,
+    relationshipId: relationship.id,
+  };
+
+  const coins = await Coin.bulkCreate(_.times(count, () => coinOptions));
 
   const query = `{
     coinCount {
@@ -51,4 +60,9 @@ it('should return the number of coins a user has received in their current relat
       count,
     },
   });
+
+  await deleteUser(user);
+  await deleteUser(lover);
+  await relationship.destroy();
+  await Coin.destroy({ where: coinOptions });
 });
