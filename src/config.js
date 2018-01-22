@@ -20,6 +20,10 @@ module.exports = {
       `http://localhost:${process.env.PORT || 3000}`,
   },
 
+  // This is for if you are running the server locally and don't have
+  // internet access or can't send emails for some reason.
+  disableEmail: process.env.DISABLE_EMAIL || false,
+
   supportEmail: process.env.SUPPORT_EMAIL || 'justin@luvup.io',
 
   // Database

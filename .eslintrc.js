@@ -25,6 +25,11 @@ module.exports = {
 
   globals: {
     __DEV__: true,
+    it: true,
+    xit: true,
+    expect: true,
+    beforeAll: true,
+    afterAll: true,
   },
 
   env: {
@@ -77,7 +82,7 @@ module.exports = {
         trailingComma: 'all',
       },
     ],
-    'camelcase': 'off'
+    camelcase: 'off',
   },
 
   settings: {

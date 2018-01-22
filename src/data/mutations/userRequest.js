@@ -4,6 +4,7 @@ import _ from 'lodash';
 import UserRequestType from '../types/UserRequestType';
 import { UserRequest } from '../models';
 import emailHelper from '../helpers/email';
+import config from '../../config';
 
 const getUserCode = () => String(Math.floor(Math.random() * 900000) + 100000);
 
@@ -37,7 +38,7 @@ const userRequest = {
 
       await existingUserRequest.update({ code: hash });
 
-      if (process.env.DISABLE_EMAIL === 'true') {
+      if (config.disableEmail === 'true') {
         console.log('\n\n---\nexisting user code:', userCode);
         return {
           email,
@@ -64,7 +65,7 @@ const userRequest = {
       email,
       code: hash,
     });
-    if (process.env.DISABLE_EMAIL === 'true') {
+    if (config.disableEmail === 'true') {
       console.log('\n\n---\nnew user code:', userCode);
       return {
         email,
