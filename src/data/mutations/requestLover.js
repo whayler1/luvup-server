@@ -35,9 +35,6 @@ const requestLover = {
     const recipient = await User.find({ where: { id: recipientId } });
     await loverRequest.setRecipient(recipient);
 
-    const recipientVerify = await loverRequest.getRecipient();
-    console.log('\n\n recipientVerify', recipientVerify);
-
     try {
       await sendEmails(user, recipient);
     } catch (err) {
