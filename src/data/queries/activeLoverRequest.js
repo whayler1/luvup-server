@@ -23,13 +23,12 @@ const activeLoverRequest = {
 
     if (verify) {
       const user = await User.find({ where: { id: verify.id } });
-      console.log('\n\nuser', user);
       const loverRequest = await LoverRequest.findOne({
         where: { UserId: user.id },
+        order: [['createdAt', 'DESC']],
       });
-      console.log('\n\nloverRequst', loverRequest);
 
-      if (loverRequest && !loverRequest.isActive) {
+      if (loverRequest && !loverRequest.isAccepted) {
         const recipient = await loverRequest.getRecipient();
         return {
           loverRequest: Object.assign({}, loverRequest.dataValues, {

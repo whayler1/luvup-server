@@ -1,6 +1,6 @@
 {
   "name": "luvup",
-  "description": "Improving relationships through gamification",
+  "description": "Web API for Luvup App",
   "version": "0.0.0",
   "private": true,
   "engines": {
