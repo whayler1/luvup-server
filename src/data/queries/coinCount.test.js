@@ -11,16 +11,6 @@ import {
   createRelationship,
 } from '../../../test/helpers';
 
-// const createCoins = (count, relationship, user, lover) =>
-//   Promise.all(
-//     _.times(count, () =>
-//       relationship.createCoin({
-//         senderId: lover.id,
-//         recipientId: user.id,
-//       }),
-//     ),
-//   );
-
 const destroyCoins = coins => Promise.all(coins.map(coin => coin.destroy()));
 
 it('should return the number of coins a user has received in their current relationship', async () => {
