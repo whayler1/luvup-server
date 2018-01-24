@@ -28,7 +28,12 @@ const activeLoverRequest = {
         order: [['createdAt', 'DESC']],
       });
 
-      if (loverRequest && !loverRequest.isAccepted) {
+      if (
+        loverRequest &&
+        !loverRequest.isAccepted &&
+        !loverRequest.isRecipientCanceled &&
+        !loverRequest.isSenderCanceled
+      ) {
         const recipient = await loverRequest.getRecipient();
         return {
           loverRequest: Object.assign({}, loverRequest.dataValues, {

@@ -19,6 +19,25 @@ const query = `{
   }
 }`;
 
+it('should not return a lover request if none exists', async () => {
+  const user = await createUser();
+
+  const id_token = loginUser(user);
+
+  const rootValue = {
+    request: {
+      cookies: {
+        id_token,
+      },
+    },
+  };
+
+  const result = await graphql(schema, query, rootValue, sequelize);
+
+  expect(result.data.activeLoverRequest).toMatchObject({ loverRequest: null });
+  await deleteUser(user);
+});
+
 it('should return a lover request with a recipient if there is one', async () => {
   const user = await createUser();
   const lover = await createUser();
@@ -67,7 +86,7 @@ it('should return a lover request with a recipient if there is one', async () =>
   await loverRequest.destroy();
 });
 
-it('if several lover requests have been made, only the most recent should be displayed', async () => {
+it('should return only the most recent if several lover requests have been made', async () => {
   const user = await createUser();
   const lover1 = await createUser();
   const lover2 = await createUser();
@@ -123,4 +142,97 @@ it('if several lover requests have been made, only the most recent should be dis
   await loverRequest1.destroy();
   await loverRequest2.destroy();
   await loverRequest3.destroy();
+});
+
+it('should not return a lover request if several lover requests have been made and the most recent is accepted', async () => {
+  const user = await createUser();
+  const lover1 = await createUser();
+  const lover2 = await createUser();
+  const loverRequest1 = await user.createLoverRequest();
+  await loverRequest1.setRecipient(lover1);
+  const loverRequest2 = await user.createLoverRequest();
+  await loverRequest2.setRecipient(lover2);
+  await loverRequest2.update({ isAccepted: true });
+
+  const id_token = loginUser(user);
+
+  const rootValue = {
+    request: {
+      cookies: {
+        id_token,
+      },
+    },
+  };
+
+  const result = await graphql(schema, query, rootValue, sequelize);
+
+  expect(result.data.activeLoverRequest).toMatchObject({ loverRequest: null });
+
+  await deleteUser(user);
+  await deleteUser(lover1);
+  await deleteUser(lover2);
+  await loverRequest1.destroy();
+  await loverRequest2.destroy();
+});
+
+it('should not return a lover request if several lover requests have been made and the most recent is recipient canceled', async () => {
+  const user = await createUser();
+  const lover1 = await createUser();
+  const lover2 = await createUser();
+  const loverRequest1 = await user.createLoverRequest();
+  await loverRequest1.setRecipient(lover1);
+  const loverRequest2 = await user.createLoverRequest();
+  await loverRequest2.setRecipient(lover2);
+  await loverRequest2.update({ isRecipientCanceled: true });
+
+  const id_token = loginUser(user);
+
+  const rootValue = {
+    request: {
+      cookies: {
+        id_token,
+      },
+    },
+  };
+
+  const result = await graphql(schema, query, rootValue, sequelize);
+
+  expect(result.data.activeLoverRequest).toMatchObject({ loverRequest: null });
+
+  await deleteUser(user);
+  await deleteUser(lover1);
+  await deleteUser(lover2);
+  await loverRequest1.destroy();
+  await loverRequest2.destroy();
+});
+
+it('should not return a lover request if several lover requests have been made and the most recent is sender canceled', async () => {
+  const user = await createUser();
+  const lover1 = await createUser();
+  const lover2 = await createUser();
+  const loverRequest1 = await user.createLoverRequest();
+  await loverRequest1.setRecipient(lover1);
+  const loverRequest2 = await user.createLoverRequest();
+  await loverRequest2.setRecipient(lover2);
+  await loverRequest2.update({ isSenderCanceled: true });
+
+  const id_token = loginUser(user);
+
+  const rootValue = {
+    request: {
+      cookies: {
+        id_token,
+      },
+    },
+  };
+
+  const result = await graphql(schema, query, rootValue, sequelize);
+
+  expect(result.data.activeLoverRequest).toMatchObject({ loverRequest: null });
+
+  await deleteUser(user);
+  await deleteUser(lover1);
+  await deleteUser(lover2);
+  await loverRequest1.destroy();
+  await loverRequest2.destroy();
 });
