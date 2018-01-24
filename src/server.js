@@ -107,6 +107,7 @@ app.post(
     session: false,
   }),
   (req, res) => {
+    console.log('\n\n at login endpoint');
     if (!req.user) {
       return res.status(400).json({ error: 'no user found' });
     }

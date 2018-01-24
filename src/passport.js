@@ -15,7 +15,6 @@ passport.use(
   new LocalStrategy((username, password, done) => {
     console.log('\n\nLocalStrategy', username);
     const foo = async () => {
-      console.log('\n\nfoo');
       let user = await User.find({ where: { username } });
       if (!user) {
         user = await User.find({ where: { email: username } });
@@ -31,7 +30,11 @@ passport.use(
         return done(null, false);
       }
 
-      return done(null, { id: user.id, email: user.email, username });
+      return done(null, {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+      });
     };
     foo().catch(() => done(null, false));
   }),
