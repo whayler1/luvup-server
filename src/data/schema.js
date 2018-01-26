@@ -14,6 +14,7 @@ import activeLoverRequest from './queries/activeLoverRequest';
 import receivedLoverRequests from './queries/receivedLoverRequests';
 import coinCount from './queries/coinCount';
 import jalapenos from './queries/jalapenos';
+import sentJalapenos from './queries/sentJalapenos';
 
 // mutations
 import userRequest from './mutations/userRequest';
@@ -41,6 +42,7 @@ const schema = new Schema({
       receivedLoverRequests,
       coinCount,
       jalapenos,
+      sentJalapenos,
     },
   }),
   mutation: new ObjectType({
