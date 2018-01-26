@@ -37,6 +37,15 @@ const sendCoin = {
         recipientId: recipient[0].id,
       });
 
+      const userEvent = await user.createUserEvent({
+        relationshipId: relationship.id,
+        name: 'coin-sent',
+      });
+      const recipientEvent = await recipient[0].createUserEvent({
+        relationshipId: relationship.id,
+        name: 'coin-received',
+      });
+
       return { coin };
     }
     return {};

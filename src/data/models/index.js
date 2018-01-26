@@ -9,14 +9,14 @@ import LoverRequest from './LoverRequest';
 import Relationship from './Relationship';
 import Coin from './Coin';
 import Jalapeno from './Jalapeno';
-import Event from './Event';
+import UserEvent from './UserEvent';
 
-User.hasMany(Event, {
-  as: 'events',
+User.hasMany(UserEvent, {
+  as: 'userEvents',
   foreignKey: 'userId',
 });
 
-Event.belongsTo(Relationship, {
+UserEvent.belongsTo(Relationship, {
   as: 'relationship',
 });
 
@@ -121,4 +121,5 @@ export {
   Jalapeno,
   LoverRequest,
   Relationship,
+  UserEvent,
 };

@@ -1,7 +1,7 @@
 import DataType from 'sequelize';
 import Model from '../sequelize';
 
-const Event = Model.define('Jalapeno', {
+const UserEvent = Model.define('UserEvent', {
   id: {
     type: DataType.UUID,
     defaultValue: DataType.UUIDV1,
@@ -13,7 +13,7 @@ const Event = Model.define('Jalapeno', {
     defaultValue: false,
   },
 
-  type: {
+  name: {
     type: DataType.ENUM(
       'coin-received',
       'coin-sent',
@@ -25,4 +25,4 @@ const Event = Model.define('Jalapeno', {
   },
 });
 
-export default Event;
+export default UserEvent;

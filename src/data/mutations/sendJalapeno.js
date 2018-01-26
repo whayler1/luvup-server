@@ -37,6 +37,15 @@ const sendJalapeno = {
         recipientId: recipient[0].id,
       });
 
+      const userEvent = await user.createUserEvent({
+        relationshipId: relationship.id,
+        name: 'jalapeno-sent',
+      });
+      const recipientEvent = await recipient[0].createUserEvent({
+        relationshipId: relationship.id,
+        name: 'jalapeno-received',
+      });
+
       return { jalapeno };
     }
     return {};
