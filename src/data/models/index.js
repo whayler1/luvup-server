@@ -9,6 +9,16 @@ import LoverRequest from './LoverRequest';
 import Relationship from './Relationship';
 import Coin from './Coin';
 import Jalapeno from './Jalapeno';
+import Event from './Event';
+
+User.hasMany(Event, {
+  as: 'events',
+  foreignKey: 'userId',
+});
+
+Event.belongsTo(Relationship, {
+  as: 'relationship',
+});
 
 Jalapeno.belongsTo(User, {
   as: 'recipient',
