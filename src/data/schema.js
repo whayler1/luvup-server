@@ -8,10 +8,12 @@ import me from './queries/me';
 // import coins from './queries/coins';
 // import myUnusedCoins from './queries/myUnusedCoins';
 // import mySentCoins from './queries/mySentCoins';
+import sentCoins from './queries/sentCoins';
 import users from './queries/users';
 import activeLoverRequest from './queries/activeLoverRequest';
 import receivedLoverRequests from './queries/receivedLoverRequests';
 import coinCount from './queries/coinCount';
+import jalapenos from './queries/jalapenos';
 
 // mutations
 import userRequest from './mutations/userRequest';
@@ -23,6 +25,7 @@ import requestLover from './mutations/requestLover';
 import login from './mutations/login';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
 import sendCoin from './mutations/sendCoin';
+import sendJalapeno from './mutations/sendJalapeno';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -32,10 +35,12 @@ const schema = new Schema({
       // coins,
       // myUnusedCoins,
       // mySentCoins,
+      sentCoins,
       users,
       activeLoverRequest,
       receivedLoverRequests,
       coinCount,
+      jalapenos,
     },
   }),
   mutation: new ObjectType({
@@ -50,6 +55,7 @@ const schema = new Schema({
       // login,
       acceptLoverRequest,
       sendCoin,
+      sendJalapeno,
     },
   }),
 });

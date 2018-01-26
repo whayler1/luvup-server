@@ -147,7 +147,7 @@ app.post('/reauth', async (req, res) => {
       error: result,
     });
   }
-  // const id_token = addJwtCookie(res, result);
+
   res.user = result;
   return res.json({
     id_token: req.cookies.id_token,

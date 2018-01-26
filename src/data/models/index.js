@@ -8,6 +8,20 @@ import UserRequest from './UserRequest';
 import LoverRequest from './LoverRequest';
 import Relationship from './Relationship';
 import Coin from './Coin';
+import Jalapeno from './Jalapeno';
+
+Jalapeno.belongsTo(User, {
+  as: 'recipient',
+});
+
+Jalapeno.belongsTo(User, {
+  as: 'sender',
+});
+
+Relationship.hasMany(Jalapeno, {
+  as: 'jalapenos',
+  foreignKey: 'relationshipId',
+});
 
 Coin.belongsTo(User, {
   as: 'recipient',
@@ -94,6 +108,7 @@ export {
   UserPasswordReset,
   UserRequest,
   Coin,
+  Jalapeno,
   LoverRequest,
   Relationship,
 };

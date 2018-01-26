@@ -8,13 +8,13 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 
-const CoinType = new GraphQLObjectType({
-  name: 'Coin',
+const JalapenoType = new GraphQLObjectType({
+  name: 'Jalapeno',
   description:
-    'The main currency in Luvup. Lovers send these to one another to recognize good deads or just say I love you.',
+    "What you send a lover when you're not happy with their behavior or they did something you didn't like",
   fields: {
     id: { type: new GraphQLNonNull(GraphQLID) },
-    isUsed: { type: GraphQLBoolean },
+    isExpired: { type: GraphQLBoolean },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
     senderId: { type: new GraphQLNonNull(GraphQLID) },
@@ -23,4 +23,4 @@ const CoinType = new GraphQLObjectType({
   },
 });
 
-export default CoinType;
+export default JalapenoType;
