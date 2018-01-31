@@ -41,7 +41,7 @@ const schema = new Schema({
       users,
       activeLoverRequest,
       receivedLoverRequests,
-      // coinCount,
+      coinCount,
       jalapenos,
       sentJalapenos,
       userEvents,
