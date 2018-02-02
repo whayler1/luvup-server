@@ -10,6 +10,16 @@ import Relationship from './Relationship';
 import Coin from './Coin';
 import Jalapeno from './Jalapeno';
 import UserEvent from './UserEvent';
+import RelationshipScore from './RelationshipScore';
+
+Relationship.hasMany(RelationshipScore, {
+  as: 'relationshipScores',
+  foreignKey: 'relationshipId',
+});
+
+RelationshipScore.belongsTo(User, {
+  as: 'user',
+});
 
 User.hasMany(UserEvent, {
   as: 'userEvents',
