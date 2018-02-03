@@ -1,34 +1,64 @@
 import _ from 'lodash';
 import moment from 'moment';
+import { datetimeAndTimestamp } from './dateFormats';
 
-import { RelationshipScore, Coin } from '../models';
+import { Relationship, RelationshipScore, Coin, Jalapeno } from '../models';
 
-const dayThresholds = [30, 15, 7, 3, 1];
+const dailyTopHealth = 15;
+const dayThresholds = [1, 3, 7];
+const weights = [0.6, 0.3, 0.1];
 
-const getCoinCounts = async (user, relationship) => {
+const getPromises = (recipientId, relationshipId, model) => {
   const now = moment();
 
-  const promises = dayThresholds.map(async dayCount => {
-    const createdAtGt = now.subtract(dayCount, 'd').toDate();
+  return dayThresholds.map((dayCount, i) => {
+    const createdAtGt = datetimeAndTimestamp(
+      moment(now).subtract(dayCount, 'day'),
+    );
 
-    const count = await Coin.count({
+    const query = {
       where: {
-        userId: user.id,
-        relationshipId: relationship.id,
+        recipientId,
+        relationshipId,
         createdAt: {
-          $gt: createdAtGt,
+          $gte: createdAtGt,
         },
       },
-    });
+    };
+    if (i > 0) {
+      const createdAtLt = datetimeAndTimestamp(
+        moment(now).subtract(dayThresholds[i - 1], 'day'),
+      );
+      // console.log('\ncreatedAtLt', createdAtLt);
+      query.where.createdAt.$lt = createdAtLt;
+    }
+    const count = model.count(query);
+
+    return count;
   });
 };
 
-export const generateScore = _.debounce(async user => {
-  const relationship = await user.getRelationship();
-  // const coinCounts = await Promise.all(dayThresholds.map(async days => {
-  //   await
-  // }));
-}, 10000);
+const getCounts = async (recipientId, relationshipId) => {
+  const coinPromises = getPromises(recipientId, relationshipId, Coin);
+  const jalapenoPromises = getPromises(recipientId, relationshipId, Jalapeno);
+
+  return Promise.all([
+    Promise.all(coinPromises),
+    Promise.all(jalapenoPromises),
+  ]);
+};
+
+export const generateScore = async user => {
+  console.log('\n\n--generateScore');
+
+  const [coinCounts, jalapenoCounts] = await getCounts(
+    user.id,
+    user.RelationshipId,
+  );
+
+  console.log('\n\n coinCounts', coinCounts);
+  console.log('\n\n jalapenoCounts', jalapenoCounts);
+};
 
 export default {
   generateScore,

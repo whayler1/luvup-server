@@ -5,6 +5,7 @@ import _ from 'lodash';
 import CoinType from '../types/CoinType';
 import { User } from '../models';
 import config from '../../config';
+import { generateScore } from '../helpers/relationshipScore';
 
 const sendCoin = {
   type: new GraphQLObjectType({
@@ -45,6 +46,8 @@ const sendCoin = {
         relationshipId: relationship.id,
         name: 'coin-received',
       });
+
+      generateScore(recipient[0]);
 
       return { coin };
     }
