@@ -47,6 +47,10 @@ const sendCoin = {
         name: 'coin-received',
       });
 
+      /**
+       * JW: Not putting `await` on generateScore so it can just happen async in
+       * the background.
+       */
       generateScore(recipient[0]);
 
       return { coin };
