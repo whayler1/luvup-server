@@ -5,8 +5,14 @@ import { datetimeAndTimestamp } from './dateFormats';
 import { Relationship, RelationshipScore, Coin, Jalapeno } from '../models';
 
 const dailyTopHealth = 15;
-const dayThresholds = [1, 3, 7];
-const weights = [0.6, 0.3, 0.1];
+const dayThresholds = [3, 7, 11];
+const weights = [0.4, 0.35, 0.25];
+const topHealths = dayThresholds.map((n, i, ary) => {
+  if (i > 0) {
+    return (n - ary[i - 1]) * dailyTopHealth;
+  }
+  return n * dailyTopHealth;
+});
 
 const getPromises = (recipientId, relationshipId, model) => {
   const now = moment();
@@ -29,7 +35,6 @@ const getPromises = (recipientId, relationshipId, model) => {
       const createdAtLt = datetimeAndTimestamp(
         moment(now).subtract(dayThresholds[i - 1], 'day'),
       );
-      // console.log('\ncreatedAtLt', createdAtLt);
       query.where.createdAt.$lt = createdAtLt;
     }
     const count = model.count(query);
@@ -38,26 +43,38 @@ const getPromises = (recipientId, relationshipId, model) => {
   });
 };
 
-const getCounts = async (recipientId, relationshipId) => {
-  const coinPromises = getPromises(recipientId, relationshipId, Coin);
-  const jalapenoPromises = getPromises(recipientId, relationshipId, Jalapeno);
-
-  return Promise.all([
-    Promise.all(coinPromises),
-    Promise.all(jalapenoPromises),
+const getCounts = async (recipientId, relationshipId) =>
+  Promise.all([
+    Promise.all(getPromises(recipientId, relationshipId, Coin)),
+    Promise.all(getPromises(recipientId, relationshipId, Jalapeno)),
   ]);
-};
+
+const getScores = ary => ary.map((count, i) => count / topHealths[i]);
+const getWeightedAverage = ary =>
+  ary.reduce((val, score, i) => val + score * weights[i], 0);
 
 export const generateScore = async user => {
-  console.log('\n\n--generateScore');
+  const userId = user.id;
+  const relationshipId = user.RelationshipId;
 
-  const [coinCounts, jalapenoCounts] = await getCounts(
-    user.id,
-    user.RelationshipId,
+  const [coinCounts, jalapenoCounts] = await getCounts(userId, relationshipId);
+
+  const coinScores = getScores(coinCounts);
+  const jalapenoScores = getScores(jalapenoCounts);
+  const weightedCoinScore = getWeightedAverage(coinScores);
+  const weightedJalapenoScore = 1 - getWeightedAverage(jalapenoScores);
+  const scoreFuzzy = Math.round(
+    (weightedCoinScore * 0.75 + weightedJalapenoScore * 0.25) * 100,
   );
+  const score = Math.min(Math.max(scoreFuzzy, 0), 100);
 
-  console.log('\n\n coinCounts', coinCounts);
-  console.log('\n\n jalapenoCounts', jalapenoCounts);
+  const relationshipScore = await RelationshipScore.create({
+    score,
+    relationshipId,
+    userId,
+  });
+
+  return relationshipScore;
 };
 
 export default {

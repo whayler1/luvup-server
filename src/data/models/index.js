@@ -131,5 +131,6 @@ export {
   Jalapeno,
   LoverRequest,
   Relationship,
+  RelationshipScore,
   UserEvent,
 };
