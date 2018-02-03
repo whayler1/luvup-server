@@ -29,6 +29,7 @@ import login from './mutations/login';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
 import sendCoin from './mutations/sendCoin';
 import sendJalapeno from './mutations/sendJalapeno';
+import createRelationshipScore from './mutations/createRelationshipScore';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -62,6 +63,7 @@ const schema = new Schema({
       acceptLoverRequest,
       sendCoin,
       sendJalapeno,
+      createRelationshipScore,
     },
   }),
 });
