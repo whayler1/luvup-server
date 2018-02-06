@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
-import { datetimeAndTimestamp } from './dateFormats';
 
+import { datetimeAndTimestamp } from './dateFormats';
 import { Relationship, RelationshipScore, Coin, Jalapeno } from '../models';
 
 const dailyTopHealth = 15;
