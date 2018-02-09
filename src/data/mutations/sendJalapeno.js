@@ -5,6 +5,7 @@ import _ from 'lodash';
 import JalapenoType from '../types/JalapenoType';
 import { User } from '../models';
 import config from '../../config';
+import { generateScore } from '../helpers/relationshipScore';
 
 const sendJalapeno = {
   type: new GraphQLObjectType({
@@ -45,6 +46,12 @@ const sendJalapeno = {
         relationshipId: relationship.id,
         name: 'jalapeno-received',
       });
+
+      /**
+       * JW: Not putting `await` on generateScore so it can just happen async in
+       * the background.
+       */
+      generateScore(recipient[0]);
 
       return { jalapeno };
     }

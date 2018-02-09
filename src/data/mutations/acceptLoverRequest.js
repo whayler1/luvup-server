@@ -7,6 +7,7 @@ import LoverRequestType from '../types/LoverRequestType';
 import { User, LoverRequest, Relationship } from '../models';
 import { datetimeAndTimestamp } from '../helpers/dateFormats';
 import emailHelper from '../helpers/email';
+import { generateScore } from '../helpers/relationshipScore';
 
 const sendEmails = (sender, recipient) => {
   const senderEmail = emailHelper.sendEmail({
@@ -83,6 +84,12 @@ const acceptLoverRequest = {
       await loverRequest.update({
         isAccepted: true,
       });
+
+      /**
+       * JW: Generate initial relationship score as soon as relationship is created.
+       */
+      generateScore(user);
+      generateScore(lover);
 
       try {
         await sendEmails(lover, user);

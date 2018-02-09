@@ -16,6 +16,7 @@ import coinCount from './queries/coinCount';
 import jalapenos from './queries/jalapenos';
 import sentJalapenos from './queries/sentJalapenos';
 import userEvents from './queries/userEvents';
+import relationshipScores from './queries/relationshipScores';
 
 // mutations
 import userRequest from './mutations/userRequest';
@@ -28,6 +29,7 @@ import login from './mutations/login';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
 import sendCoin from './mutations/sendCoin';
 import sendJalapeno from './mutations/sendJalapeno';
+import createRelationshipScore from './mutations/createRelationshipScore';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -45,6 +47,7 @@ const schema = new Schema({
       jalapenos,
       sentJalapenos,
       userEvents,
+      relationshipScores,
     },
   }),
   mutation: new ObjectType({
@@ -60,6 +63,7 @@ const schema = new Schema({
       acceptLoverRequest,
       sendCoin,
       sendJalapeno,
+      createRelationshipScore,
     },
   }),
 });
