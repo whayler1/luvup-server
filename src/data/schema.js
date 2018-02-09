@@ -5,9 +5,6 @@ import {
 
 // queries
 import me from './queries/me';
-// import coins from './queries/coins';
-// import myUnusedCoins from './queries/myUnusedCoins';
-// import mySentCoins from './queries/mySentCoins';
 import sentCoins from './queries/sentCoins';
 import users from './queries/users';
 import activeLoverRequest from './queries/activeLoverRequest';
@@ -17,13 +14,13 @@ import jalapenos from './queries/jalapenos';
 import sentJalapenos from './queries/sentJalapenos';
 import userEvents from './queries/userEvents';
 import relationshipScores from './queries/relationshipScores';
+import unviewedEventCounts from './queries/unviewedEventCounts';
 
 // mutations
 import userRequest from './mutations/userRequest';
 import confirmUser from './mutations/confirmUser';
 // import sendNewPassword from './mutations/sendNewPassword';
 // import resetPassword from './mutations/resetPassword';
-// import createCoin from './mutations/createCoin';
 import requestLover from './mutations/requestLover';
 import login from './mutations/login';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
@@ -36,9 +33,6 @@ const schema = new Schema({
     name: 'Query',
     fields: {
       me,
-      // coins,
-      // myUnusedCoins,
-      // mySentCoins,
       sentCoins,
       users,
       activeLoverRequest,
@@ -48,6 +42,7 @@ const schema = new Schema({
       sentJalapenos,
       userEvents,
       relationshipScores,
+      unviewedEventCounts,
     },
   }),
   mutation: new ObjectType({
@@ -58,8 +53,6 @@ const schema = new Schema({
       // sendNewPassword,
       // resetPassword,
       requestLover,
-      // createCoin,
-      // login,
       acceptLoverRequest,
       sendCoin,
       sendJalapeno,
