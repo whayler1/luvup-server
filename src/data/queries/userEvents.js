@@ -43,9 +43,12 @@ const userEvents = {
         order: [['createdAt', 'DESC']],
       });
 
-      const newResponse = Object.assign({}, res, { limit, offset });
-
-      return newResponse;
+      return {
+        count: res.count,
+        rows: res.rows,
+        limit,
+        offset,
+      };
     }
 
     return {};

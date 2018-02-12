@@ -16,7 +16,7 @@ const MeType = new GraphQLObjectType({
     lastName: { type: GraphQLString },
     relationship: {
       type: new GraphQLObjectType({
-        name: 'Relationship',
+        name: 'MeRelationship',
         fields: {
           id: { type: new GraphQLNonNull(GraphQLID) },
           createdAt: { type: GraphQLString },
