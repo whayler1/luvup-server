@@ -28,6 +28,7 @@ import sendCoin from './mutations/sendCoin';
 import sendJalapeno from './mutations/sendJalapeno';
 import createRelationshipScore from './mutations/createRelationshipScore';
 import endRelationship from './mutations/endRelationship';
+import changePassword from './mutations/changePassword';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -59,6 +60,7 @@ const schema = new Schema({
       sendJalapeno,
       createRelationshipScore,
       endRelationship,
+      changePassword,
     },
   }),
 });

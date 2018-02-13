@@ -21,6 +21,7 @@ const UserEvent = Model.define('UserEvent', {
       'jalapeno-sent',
       'relationship-started',
       'relationship-ended',
+      'password-changed',
     ),
   },
 });
