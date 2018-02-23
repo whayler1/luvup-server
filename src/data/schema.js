@@ -29,6 +29,7 @@ import sendJalapeno from './mutations/sendJalapeno';
 import createRelationshipScore from './mutations/createRelationshipScore';
 import endRelationship from './mutations/endRelationship';
 import changePassword from './mutations/changePassword';
+import confirmUserRequestCode from './mutations/confirmUserRequestCode';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -52,6 +53,7 @@ const schema = new Schema({
     fields: {
       userRequest,
       confirmUser,
+      confirmUserRequestCode,
       // sendNewPassword,
       // resetPassword,
       requestLover,
