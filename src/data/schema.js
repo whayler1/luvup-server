@@ -24,6 +24,7 @@ import confirmUser from './mutations/confirmUser';
 import requestLover from './mutations/requestLover';
 import login from './mutations/login';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
+import cancelLoverRequest from './mutations/cancelLoverRequest';
 import sendCoin from './mutations/sendCoin';
 import sendJalapeno from './mutations/sendJalapeno';
 import createRelationshipScore from './mutations/createRelationshipScore';
@@ -58,6 +59,7 @@ const schema = new Schema({
       // resetPassword,
       requestLover,
       acceptLoverRequest,
+      cancelLoverRequest,
       sendCoin,
       sendJalapeno,
       createRelationshipScore,

@@ -12,7 +12,8 @@ const sendInviteEmail = (to, code) =>
   emailHelper.sendEmail({
     to,
     subject: 'Welcome to Luvup!',
-    html: `<p>Your create user pin is <strong>${code}</strong></p>`,
+    text: `Your create user code is ${code}.`,
+    html: `<p>Your create user code is <strong>${code}</strong></p>`,
   });
 
 const userRequest = {
