@@ -31,6 +31,7 @@ import createRelationshipScore from './mutations/createRelationshipScore';
 import endRelationship from './mutations/endRelationship';
 import changePassword from './mutations/changePassword';
 import confirmUserRequestCode from './mutations/confirmUserRequestCode';
+import resendLoverRequestEmail from './mutations/resendLoverRequestEmail';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -60,6 +61,7 @@ const schema = new Schema({
       requestLover,
       acceptLoverRequest,
       cancelLoverRequest,
+      resendLoverRequestEmail,
       sendCoin,
       sendJalapeno,
       createRelationshipScore,
