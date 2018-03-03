@@ -37,6 +37,7 @@ const cancelLoverRequest = {
     loverRequestId: { type: GraphQLString },
   },
   resolve: async ({ request }, { loverRequestId }) => {
+    console.log('\n\n-----\ncancelLoverRequest');
     const id_token = _.at(request, 'cookies.id_token')[0];
     if (!id_token || !loverRequestId || !('user' in request)) {
       return {};
@@ -50,12 +51,16 @@ const cancelLoverRequest = {
         isRecipientCanceled: false,
       },
     });
+    console.log({ loverRequest });
 
     if (loverRequest) {
+      console.log('lover request exists');
       const userId = request.user.id;
       const user = await User.findOne({ where: { id: userId } });
+      console.log({ user });
 
       if (userId === loverRequest.UserId) {
+        console.log('user is requestor');
         const lover = await User.findOne({
           where: { id: loverRequest.recipientId },
         });
@@ -64,8 +69,10 @@ const cancelLoverRequest = {
           isSenderCanceled: true,
         });
         sendEmail(user, user, lover);
+        console.log('updated loverRequest', { loverRequest });
         return { loverRequest };
       } else if (userId === loverRequest.recipientId) {
+        console.log('user is recipient');
         const lover = await User.findOne({
           where: { id: loverRequest.UserId },
         });
@@ -74,6 +81,7 @@ const cancelLoverRequest = {
         await loverRequest.update({
           isRecipientCanceled: true,
         });
+        console.log('updated loverRequest', { loverRequest });
         return { loverRequest };
       }
     }
