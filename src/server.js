@@ -122,11 +122,11 @@ app.post(
 );
 
 app.post('/reauth', async (req, res) => {
-  if (!req.cookies.id_token) {
+  if (!req.body.id_token) {
     return res.sendStatus(400);
   }
   const verification = await new Promise((resolve, reject) =>
-    jwt.verify(req.cookies.id_token, config.auth.jwt.secret, (err, result) => {
+    jwt.verify(req.body.id_token, config.auth.jwt.secret, (err, result) => {
       if (err) {
         reject({
           ok: false,
