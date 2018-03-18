@@ -29,7 +29,7 @@ const endRelationship = {
         endDate: new Date(),
       });
 
-      const lover = await relationship.getLover({
+      const [lover] = await relationship.getLover({
         where: {
           $not: {
             id: user.id,
@@ -37,8 +37,16 @@ const endRelationship = {
         },
       });
 
-      await user.setRelationship(null);
-      await lover.setRelationship(null);
+      await User.update(
+        {
+          RelationshipId: null,
+        },
+        {
+          where: {
+            $or: [{ id: user.id }, { id: lover.id }],
+          },
+        },
+      );
 
       return { relationship };
     }

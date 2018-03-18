@@ -17,7 +17,7 @@ const sendJalapeno = {
     },
   }),
   resolve: async ({ request }) => {
-    const id_token = _.at(request, 'cookies.id_token')[0];
+    const id_token = _.get(request, 'cookies.id_token');
     if (!id_token) {
       return {};
     }

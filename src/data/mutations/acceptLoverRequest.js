@@ -36,7 +36,7 @@ const acceptLoverRequest = {
     loverRequestId: { type: GraphQLString },
   },
   resolve: async ({ request }, { loverRequestId }) => {
-    const id_token = _.at(request, 'cookies.id_token')[0];
+    const id_token = _.get(request, 'cookies.id_token');
     if (!id_token || !loverRequestId || !('user' in request)) {
       return {};
     }
@@ -61,13 +61,13 @@ const acceptLoverRequest = {
       if (!lover) {
         return { error: 'lover invalid' };
       }
-
       /**
        * If either user is already in a relationship we have to set end date.
        */
       const userRelationship = await user.getRelationship();
       const loverRelationship = await lover.getRelationship();
       const endDate = datetimeAndTimestamp(moment());
+
       if (userRelationship) {
         userRelationship.update({ endDate });
       }
