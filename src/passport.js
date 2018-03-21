@@ -13,7 +13,6 @@ import config from './config';
 
 passport.use(
   new LocalStrategy((username, password, done) => {
-    console.log('\n\nLocalStrategy', username);
     const foo = async () => {
       let user = await User.find({ where: { username } });
       if (!user) {
@@ -23,7 +22,6 @@ passport.use(
           return done(null, false);
         }
       }
-      console.log('\n\nhas a user');
 
       const isPwordMatch = await bcrypt.compare(password, user.password);
       if (!isPwordMatch) {

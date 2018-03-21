@@ -21,7 +21,7 @@ const jalapenos = {
     offset: { type: GraphQLInt },
   },
   resolve: async ({ request }, { limit, offset }) => {
-    const id_token = _.at(request, 'cookies.id_token')[0];
+    const id_token = _.get(request, 'cookies.id_token');
     if (!id_token) {
       return {};
     }
@@ -30,14 +30,13 @@ const jalapenos = {
 
     if (verify) {
       const user = await User.find({ where: { id: verify.id } });
-      const relationship = await user.getRelationship();
 
       const res = await Jalapeno.findAndCountAll({
         limit,
         offset,
         where: {
-          senderId: user.id,
-          relationshipId: relationship.id,
+          recipientId: user.id,
+          relationshipId: user.RelationshipId,
         },
         order: [['createdAt', 'DESC']],
       });
