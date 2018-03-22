@@ -29,6 +29,7 @@ import models from './data/models';
 import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import config from './config';
+import analytics from './services/analytics';
 
 const addJwtCookie = (res, user) => {
   const expiresIn = 60 * 60 * 24 * 180; // 180 days
@@ -101,18 +102,27 @@ app.get(
   },
 );
 
+const sendIdentify = (userId, email) => {
+  analytics.identify({
+    userId,
+    traits: {
+      email,
+    },
+  });
+};
+
 app.post(
   '/login',
   passport.authenticate('local', {
     session: false,
   }),
   (req, res) => {
-    console.log('\n\n at login endpoint');
     if (!req.user) {
       return res.status(400).json({ error: 'no user found' });
     }
 
     const id_token = addJwtCookie(res, req.user);
+    sendIdentify(req.user.id, req.user.email);
 
     return res.status(200).json({
       id_token,
@@ -149,6 +159,8 @@ app.post('/reauth', async (req, res) => {
   }
 
   res.user = result;
+  sendIdentify(req.user.id, req.user.email);
+
   return res.json({
     id_token: req.cookies.id_token,
     user: result,

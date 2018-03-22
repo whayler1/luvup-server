@@ -1,4 +1,5 @@
 import graphql, { GraphQLString, GraphQLID } from 'graphql';
+import _ from 'lodash';
 
 import LoverRequestType from '../types/LoverRequestType';
 import { User, LoverRequest } from '../models';
@@ -31,8 +32,9 @@ const requestLover = {
     }
 
     const user = await User.find({ where: { id: request.user.id } });
-    const loverRequest = await user.createLoverRequest();
     const recipient = await User.find({ where: { id: recipientId } });
+
+    const loverRequest = await user.createLoverRequest();
     await loverRequest.setRecipient(recipient);
 
     try {
