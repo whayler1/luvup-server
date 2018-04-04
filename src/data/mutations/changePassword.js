@@ -14,6 +14,7 @@ import UserType from '../types/UserType';
 import { User, UserEvent } from '../models';
 import emailHelper from '../helpers/email';
 import config from '../../config';
+import analytics from '../../services/analytics';
 
 const sendEmail = async (email, firstName, lastName) => {
   try {
@@ -77,6 +78,14 @@ const changePassword = {
       });
 
       sendEmail(user.email, user.firstName, user.lastName);
+
+      analytics.track({
+        userId: user.id,
+        event: 'changePassword',
+        properties: {
+          category: 'user',
+        },
+      });
 
       return { success: true };
     }

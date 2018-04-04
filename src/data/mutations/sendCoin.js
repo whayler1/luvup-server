@@ -6,6 +6,7 @@ import CoinType from '../types/CoinType';
 import { User } from '../models';
 import config from '../../config';
 import { generateScore } from '../helpers/relationshipScore';
+import analytics from '../../services/analytics';
 
 const sendCoin = {
   type: new GraphQLObjectType({
@@ -17,7 +18,7 @@ const sendCoin = {
     },
   }),
   resolve: async ({ request }) => {
-    const id_token = _.at(request, 'cookies.id_token')[0];
+    const id_token = _.get(request, 'cookies.id_token');
     if (!id_token) {
       return {};
     }
@@ -45,6 +46,15 @@ const sendCoin = {
       const recipientEvent = await recipient[0].createUserEvent({
         relationshipId: relationship.id,
         name: 'coin-received',
+      });
+
+      analytics.track({
+        userId: verify.id,
+        event: 'sendCoin',
+        properties: {
+          category: 'coin',
+          value: 1,
+        },
       });
 
       /**

@@ -9,6 +9,7 @@ import LoverRequestType from '../types/LoverRequestType';
 import { User, LoverRequest } from '../models';
 import emailHelper from '../helpers/email';
 import config from '../../config';
+import analytics from '../../services/analytics';
 
 const sendEmail = (sender, recipient) =>
   emailHelper.sendEmail({
@@ -44,6 +45,15 @@ const resendLoverRequestEmail = {
 
       try {
         await sendEmail(user, recipient);
+
+        analytics.track({
+          userId: user.id,
+          event: 'resendLoverRequestEmail',
+          properties: {
+            category: 'loverRequest',
+            loverRequestId,
+          },
+        });
 
         return { success: true };
       } catch (err) {

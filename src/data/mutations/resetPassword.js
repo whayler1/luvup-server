@@ -10,6 +10,7 @@ import UserRequestType from '../types/UserRequestType';
 import UserType from '../types/UserType';
 import { UserRequest, User } from '../models';
 import emailHelper from '../helpers/email';
+import analytics from '../../services/analytics';
 
 const resetPassword = {
   type: new GraphQLObjectType({
@@ -87,6 +88,14 @@ const resetPassword = {
         error: 'error sending email',
       };
     }
+
+    analytics.track({
+      userId: user.id,
+      event: 'resetPassword',
+      properties: {
+        category: 'user',
+      },
+    });
 
     return { success: true };
   },

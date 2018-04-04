@@ -8,6 +8,7 @@ import { User, LoverRequest, Relationship } from '../models';
 import { datetimeAndTimestamp } from '../helpers/dateFormats';
 import emailHelper from '../helpers/email';
 import { generateScore } from '../helpers/relationshipScore';
+import analytics from '../../services/analytics';
 
 const sendEmails = (sender, recipient) => {
   const senderEmail = emailHelper.sendEmail({
@@ -90,6 +91,16 @@ const acceptLoverRequest = {
        */
       generateScore(user);
       generateScore(lover);
+
+      analytics.track({
+        userId: user.id,
+        event: 'acceptLoverRequest',
+        properties: {
+          category: 'loverRequest',
+          loverRequestId,
+          senderId: lover.id,
+        },
+      });
 
       try {
         await sendEmails(lover, user);

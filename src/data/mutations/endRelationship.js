@@ -5,6 +5,7 @@ import _ from 'lodash';
 import RelationshipType from '../types/RelationshipType';
 import { User } from '../models';
 import config from '../../config';
+import analytics from '../../services/analytics';
 
 const endRelationship = {
   type: new GraphQLObjectType({
@@ -47,6 +48,15 @@ const endRelationship = {
           },
         },
       );
+
+      analytics.track({
+        userId: user.id,
+        event: 'endRelationship',
+        properties: {
+          category: 'relationhip',
+          relationshipId: relationship.id,
+        },
+      });
 
       return { relationship };
     }

@@ -7,6 +7,7 @@ import LoverRequestType from '../types/LoverRequestType';
 import { User, LoverRequest, Relationship } from '../models';
 import { datetimeAndTimestamp } from '../helpers/dateFormats';
 import emailHelper from '../helpers/email';
+import analytics from '../../services/analytics';
 
 const sendEmail = (user, sender, recipient) => {
   const isUserSender = user.id === sender.id;
@@ -38,7 +39,7 @@ const cancelLoverRequest = {
   },
   resolve: async ({ request }, { loverRequestId }) => {
     console.log('\n\n-----\ncancelLoverRequest');
-    const id_token = _.at(request, 'cookies.id_token')[0];
+    const id_token = _.get(request, 'cookies.id_token');
     if (!id_token || !loverRequestId || !('user' in request)) {
       return {};
     }
@@ -82,6 +83,14 @@ const cancelLoverRequest = {
           isRecipientCanceled: true,
         });
         console.log('updated loverRequest', { loverRequest });
+        analytics.track({
+          userId,
+          event: 'cancelLoverRequest',
+          properties: {
+            category: 'loverRequest',
+            loverRequestId,
+          },
+        });
         return { loverRequest };
       }
     }

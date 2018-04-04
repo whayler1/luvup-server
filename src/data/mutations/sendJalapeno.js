@@ -6,6 +6,7 @@ import JalapenoType from '../types/JalapenoType';
 import { User } from '../models';
 import config from '../../config';
 import { generateScore } from '../helpers/relationshipScore';
+import analytics from '../../services/analytics';
 
 const sendJalapeno = {
   type: new GraphQLObjectType({
@@ -45,6 +46,15 @@ const sendJalapeno = {
       const recipientEvent = await recipient[0].createUserEvent({
         relationshipId: relationship.id,
         name: 'jalapeno-received',
+      });
+
+      analytics.track({
+        userId: verify.id,
+        event: 'sendJalapeno',
+        properties: {
+          category: 'jalapeno',
+          value: 1,
+        },
       });
 
       /**

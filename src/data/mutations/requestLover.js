@@ -5,6 +5,7 @@ import LoverRequestType from '../types/LoverRequestType';
 import { User, LoverRequest } from '../models';
 import emailHelper from '../helpers/email';
 import config from '../../config';
+import analytics from '../../services/analytics';
 
 const sendEmails = (sender, recipient) => {
   const senderEmail = emailHelper.sendEmail({
@@ -36,6 +37,16 @@ const requestLover = {
 
     const loverRequest = await user.createLoverRequest();
     await loverRequest.setRecipient(recipient);
+
+    analytics.track({
+      userId: user.id,
+      event: 'requestLover',
+      properties: {
+        category: 'loverRequest',
+        recipientId,
+        loverRequestId: loverRequest.id,
+      },
+    });
 
     try {
       await sendEmails(user, recipient);
