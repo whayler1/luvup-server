@@ -102,13 +102,20 @@ app.get(
   },
 );
 
-const sendIdentify = (userId, email) => {
-  analytics.identify({
-    userId,
-    traits: {
-      email,
+const sendIdentify = (userId, email, event) => {
+  analytics.identify(
+    {
+      userId,
+      traits: {
+        email,
+      },
     },
-  });
+    () =>
+      analytics.track({
+        userId,
+        event,
+      }),
+  );
 };
 
 app.post(
@@ -122,7 +129,7 @@ app.post(
     }
 
     const id_token = addJwtCookie(res, req.user);
-    sendIdentify(req.user.id, req.user.email);
+    sendIdentify(req.user.id, req.user.email, 'Login');
 
     return res.status(200).json({
       id_token,
@@ -159,7 +166,7 @@ app.post('/reauth', async (req, res) => {
   }
 
   res.user = result;
-  sendIdentify(req.user.id, req.user.email);
+  sendIdentify(req.user.id, req.user.email, 'Reauth');
 
   return res.json({
     id_token: req.cookies.id_token,
