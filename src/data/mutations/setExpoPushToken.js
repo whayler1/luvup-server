@@ -3,7 +3,6 @@ import graphql, {
   GraphQLBoolean,
   GraphQLObjectType,
 } from 'graphql';
-import bcrypt from 'bcrypt';
 import _ from 'lodash';
 import jwt from 'jsonwebtoken';
 
@@ -37,11 +36,8 @@ const setExpoPushToken = {
         },
       });
 
-      const salt = await bcrypt.genSalt();
-      const hash = await bcrypt.hash(expoPushToken, salt);
-
       await user.update({
-        expoPushToken: hash,
+        expoPushToken,
       });
       return { success: true };
     }
