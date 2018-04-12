@@ -1,4 +1,5 @@
 import graphql, {
+  GraphQLID,
   GraphQLString,
   GraphQLBoolean,
   GraphQLObjectType,
@@ -6,17 +7,26 @@ import graphql, {
 import _ from 'lodash';
 import jwt from 'jsonwebtoken';
 
-// import LoverRequestType from '../types/LoverRequestType';
-import { User } from '../models';
-// import emailHelper from '../helpers/email';
+import { User, ExpoPushToken } from '../models';
 import config from '../../config';
-// import analytics from '../../services/analytics';
 
 const setExpoPushToken = {
   type: new GraphQLObjectType({
     name: 'SetExpoPushToken',
     fields: {
-      success: { type: GraphQLBoolean },
+      expoPushToken: {
+        type: new GraphQLObjectType({
+          name: 'ExpoPushToken',
+          fields: {
+            id: { type: GraphQLID },
+            token: { type: GraphQLString },
+            isValid: { type: GraphQLBoolean },
+            userId: { type: GraphQLID },
+            createdAt: { type: GraphQLString },
+            updatedAt: { type: GraphQLString },
+          },
+        }),
+      },
     },
   }),
   args: {
@@ -25,7 +35,7 @@ const setExpoPushToken = {
   resolve: async ({ request }, { expoPushToken }) => {
     const id_token = _.get(request, 'cookies.id_token');
     if (!id_token) {
-      return { success: false };
+      return {};
     }
     const verify = await jwt.verify(id_token, config.auth.jwt.secret);
 
@@ -36,12 +46,27 @@ const setExpoPushToken = {
         },
       });
 
-      await user.update({
-        expoPushToken,
+      const existingExpoPushToken = await ExpoPushToken.findOne({
+        where: {
+          token: expoPushToken,
+          isValid: true,
+        },
       });
-      return { success: true };
+
+      if (existingExpoPushToken) {
+        if (existingExpoPushToken.id === user.id) {
+          return { expoPushToken: existingExpoPushToken };
+        }
+        await existingExpoPushToken.update({ isValid: false });
+      }
+
+      const expoPushTokenObj = await user.createExpoPushToken({
+        token: expoPushToken,
+      });
+
+      return { expoPushToken: expoPushTokenObj };
     }
-    return { success: false };
+    return {};
   },
 };
 
