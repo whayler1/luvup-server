@@ -11,9 +11,9 @@ import { User, ExpoPushToken } from '../models';
 import ExpoPushTokenType from '../types/ExpoPushTokenType';
 import config from '../../config';
 
-const setExpoPushToken = {
+const invalidateExpoPushToken = {
   type: new GraphQLObjectType({
-    name: 'SetExpoPushToken',
+    name: 'InvalidateExpoPushToken',
     fields: {
       expoPushToken: { type: ExpoPushTokenType },
     },
@@ -39,24 +39,20 @@ const setExpoPushToken = {
         where: {
           token: expoPushToken,
           isValid: true,
+          userId: user.id,
         },
       });
 
-      if (existingExpoPushToken) {
-        if (existingExpoPushToken.userId === user.id) {
-          return { expoPushToken: existingExpoPushToken };
-        }
-        await existingExpoPushToken.update({ isValid: false });
+      if (!existingExpoPushToken) {
+        return {};
       }
 
-      const expoPushTokenObj = await user.createExpoPushToken({
-        token: expoPushToken,
-      });
+      await existingExpoPushToken.update({ isValid: false });
 
-      return { expoPushToken: expoPushTokenObj };
+      return { expoPushToken: existingExpoPushToken };
     }
     return {};
   },
 };
 
-export default setExpoPushToken;
+export default invalidateExpoPushToken;
