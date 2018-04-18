@@ -22,6 +22,7 @@ const setExpoPushToken = {
     expoPushToken: { type: GraphQLString },
   },
   resolve: async ({ request }, { expoPushToken }) => {
+    console.log('\n\n----------\nsetExpoPushToken');
     const id_token = _.get(request, 'cookies.id_token');
     if (!id_token) {
       return {};
@@ -41,17 +42,21 @@ const setExpoPushToken = {
           isValid: true,
         },
       });
+      console.log('existingExpoPushToken', existingExpoPushToken);
 
       if (existingExpoPushToken) {
         if (existingExpoPushToken.userId === user.id) {
+          console.log('user id matches');
           return { expoPushToken: existingExpoPushToken };
         }
+        console.log('user id does not match');
         await existingExpoPushToken.update({ isValid: false });
       }
 
       const expoPushTokenObj = await user.createExpoPushToken({
         token: expoPushToken,
       });
+      console.log('expoPushTokenObj', expoPushTokenObj);
 
       return { expoPushToken: expoPushTokenObj };
     }

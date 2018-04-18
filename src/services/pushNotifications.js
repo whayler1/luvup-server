@@ -1,41 +1,89 @@
 import Expo from 'expo-server-sdk';
+import { ExpoPushToken } from '../data/models';
 
 // Create a new Expo SDK client
 const expo = new Expo();
 
+const getFilteredTokens = tokens =>
+  tokens.filter(token => {
+    const isValid = Expo.isExpoPushToken(token.token);
+
+    if (!isValid) {
+      token.update({ isValid: false });
+    }
+    return isValid;
+  });
+
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
+const sendChunks = async chunks => {
+  for (const chunk of chunks) {
+    try {
+      const receipts = await expo.sendPushNotificationsAsync(chunk);
+      console.log(receipts);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+};
+/* eslint-enable no-restricted-syntax */
+/* eslint-enable no-await-in-loop */
+
 export const sendPushNotification = async (
-  expoPushToken,
+  userId,
   body,
   data = {},
   sound = 'default',
 ) => {
-  console.log('\n\n sendPushNotification');
-  if (!Expo.isExpoPushToken(expoPushToken)) {
-    console.error(`Push token ${expoPushToken} is not a valid Expo push token`);
-    return;
-  }
-  console.log('\n\n sendPushNotification\n-----', expoPushToken);
-
-  const notification = {
-    to: expoPushToken,
+  const tokens = await ExpoPushToken.findAll({
+    where: {
+      userId,
+      isValid: true,
+    },
+  });
+  const filteredTokens = getFilteredTokens(tokens);
+  const notifications = filteredTokens.map(token => ({
+    to: token.token,
     body,
     data,
     sound,
-  };
+  }));
 
-  // The Expo push notification service accepts batches of notifications so
-  // that you don't need to send 1000 requests to send 1000 notifications. We
-  // recommend you batch your notifications to reduce the number of requests
-  // and to compress them (notifications with similar content will get
-  // compressed).
-  // const chunks = expo.chunkPushNotifications([notification]);
+  console.log('\n\n filterTokens', { filteredTokens }, '\n\n notifications', {
+    notifications,
+  });
 
-  try {
-    const receipt = await expo.sendPushNotificationsAsync(notification);
-    console.log(receipt);
-  } catch (error) {
-    console.error(error);
-  }
+  const chunks = expo.chunkPushNotifications(notifications);
+
+  sendChunks(chunks);
+
+  // console.log('\n\n sendPushNotification');
+  // if (!Expo.isExpoPushToken(expoPushToken)) {
+  //   console.error(`Push token ${expoPushToken} is not a valid Expo push token`);
+  //   return;
+  // }
+  // console.log('\n\n sendPushNotification\n-----', expoPushToken);
+  //
+  // const notification = {
+  //   to: expoPushToken,
+  //   body,
+  //   data,
+  //   sound,
+  // };
+  //
+  // // The Expo push notification service accepts batches of notifications so
+  // // that you don't need to send 1000 requests to send 1000 notifications. We
+  // // recommend you batch your notifications to reduce the number of requests
+  // // and to compress them (notifications with similar content will get
+  // // compressed).
+  // // const chunks = expo.chunkPushNotifications([notification]);
+  //
+  // try {
+  //   const receipt = await expo.sendPushNotificationsAsync(notification);
+  //   console.log(receipt);
+  // } catch (error) {
+  //   console.error(error);
+  // }
 };
 
 export default {

@@ -59,7 +59,7 @@ const sendCoin = {
       });
 
       if (recipient.expoPushToken) {
-        sendPushNotification(recipient.expoPushToken, 'You received a Luvup!');
+        sendPushNotification(recipient.id, 'You received a Luvup!');
       }
 
       /**
