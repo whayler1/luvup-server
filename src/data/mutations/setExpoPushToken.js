@@ -22,7 +22,6 @@ const setExpoPushToken = {
     expoPushToken: { type: GraphQLString },
   },
   resolve: async ({ request }, { expoPushToken }) => {
-    console.log('\n\n----------\nsetExpoPushToken');
     const id_token = _.get(request, 'cookies.id_token');
     if (!id_token) {
       return {};
