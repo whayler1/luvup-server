@@ -45,10 +45,6 @@ const User = Model.define(
       allowNull: false,
       min: 8,
     },
-
-    expoPushToken: {
-      type: DataType.STRING(100),
-    },
   },
   {
     indexes: [{ fields: ['email'] }],
