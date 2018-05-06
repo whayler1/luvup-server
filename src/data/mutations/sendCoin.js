@@ -7,6 +7,7 @@ import { User } from '../models';
 import config from '../../config';
 import { generateScore } from '../helpers/relationshipScore';
 import analytics from '../../services/analytics';
+import { sendPushNotification } from '../../services/pushNotifications';
 
 const sendCoin = {
   type: new GraphQLObjectType({
@@ -27,7 +28,7 @@ const sendCoin = {
     if (verify) {
       const user = await User.findOne({ where: { id: verify.id } });
       const relationship = await user.getRelationship();
-      const recipient = await relationship.getLover({
+      const [recipient] = await relationship.getLover({
         where: {
           $not: {
             id: user.id,
@@ -36,14 +37,14 @@ const sendCoin = {
       });
       const coin = await relationship.createCoin({
         senderId: user.id,
-        recipientId: recipient[0].id,
+        recipientId: recipient.id,
       });
 
       const userEvent = await user.createUserEvent({
         relationshipId: relationship.id,
         name: 'coin-sent',
       });
-      const recipientEvent = await recipient[0].createUserEvent({
+      const recipientEvent = await recipient.createUserEvent({
         relationshipId: relationship.id,
         name: 'coin-received',
       });
@@ -57,11 +58,15 @@ const sendCoin = {
         },
       });
 
+      if (recipient.expoPushToken) {
+        sendPushNotification(recipient.id, 'You received a Luvup!');
+      }
+
       /**
        * JW: Not putting `await` on generateScore so it can just happen async in
        * the background.
        */
-      generateScore(recipient[0]);
+      generateScore(recipient);
 
       return { coin };
     }

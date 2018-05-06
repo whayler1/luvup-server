@@ -26,6 +26,9 @@ module.exports = {
 
   supportEmail: process.env.SUPPORT_EMAIL || 'justin@luvup.io',
 
+  inviteFromEmail: process.env.INVITE_FROM_EMAIL,
+  inviteFromPassword: process.env.INVITE_FROM_PASSWORD,
+
   // Database
   databaseUrl: process.env.DATABASE_URL || 'sqlite:database.sqlite',
 

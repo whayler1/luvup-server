@@ -5,8 +5,8 @@ import config from '../../config';
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.INVITE_FROM_EMAIL,
-    pass: process.env.INVITE_FROM_PASSWORD,
+    user: config.inviteFromEmail,
+    pass: config.inviteFromPassword,
   },
 });
 
