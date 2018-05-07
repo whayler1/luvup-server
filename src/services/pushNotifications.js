@@ -1,4 +1,5 @@
 import Expo from 'expo-server-sdk';
+import _ from 'lodash';
 import { ExpoPushToken } from '../data/models';
 
 // Create a new Expo SDK client
@@ -20,9 +21,8 @@ const sendChunks = async chunks => {
   for (const chunk of chunks) {
     try {
       const receipts = await expo.sendPushNotificationsAsync(chunk);
-      console.log(receipts);
     } catch (error) {
-      console.error(error);
+      console.error('error sending push tokens', error);
     }
   }
 };
@@ -41,16 +41,18 @@ export const sendPushNotification = async (
       isValid: true,
     },
   });
-  const filteredTokens = getFilteredTokens(tokens);
-  const notifications = filteredTokens.map(token => ({
-    to: token.token,
-    body,
-    data,
-    sound,
-  }));
-  const chunks = expo.chunkPushNotifications(notifications);
+  if (_.isArray(tokens) && tokens.length) {
+    const filteredTokens = getFilteredTokens(tokens);
+    const notifications = filteredTokens.map(token => ({
+      to: token.token,
+      body,
+      data,
+      sound,
+    }));
+    const chunks = expo.chunkPushNotifications(notifications);
 
-  sendChunks(chunks);
+    sendChunks(chunks);
+  }
 };
 
 export default {
