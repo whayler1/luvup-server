@@ -58,9 +58,7 @@ const sendCoin = {
         },
       });
 
-      if (recipient.expoPushToken) {
-        sendPushNotification(recipient.id, 'You received a Luvup!');
-      }
+      sendPushNotification(recipient.id, 'You received a Luvup!');
 
       /**
        * JW: Not putting `await` on generateScore so it can just happen async in

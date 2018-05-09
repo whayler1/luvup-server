@@ -41,21 +41,17 @@ const setExpoPushToken = {
           isValid: true,
         },
       });
-      console.log('existingExpoPushToken', existingExpoPushToken);
 
       if (existingExpoPushToken) {
         if (existingExpoPushToken.userId === user.id) {
-          console.log('user id matches');
           return { expoPushToken: existingExpoPushToken };
         }
-        console.log('user id does not match');
         await existingExpoPushToken.update({ isValid: false });
       }
 
       const expoPushTokenObj = await user.createExpoPushToken({
         token: expoPushToken,
       });
-      console.log('expoPushTokenObj', expoPushTokenObj);
 
       return { expoPushToken: expoPushTokenObj };
     }

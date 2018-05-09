@@ -1,4 +1,5 @@
 import Expo from 'expo-server-sdk';
+import _ from 'lodash';
 import { ExpoPushToken } from '../data/models';
 
 // Create a new Expo SDK client
@@ -14,17 +15,37 @@ const getFilteredTokens = tokens =>
     return isValid;
   });
 
+const invalidateErroredTokens = async (userId, erroredTokens) => {
+  await ExpoPushToken.update(
+    {
+      isValid: false,
+    },
+    {
+      where: {
+        userId,
+        isValid: true,
+        token: {
+          $or: erroredTokens,
+        },
+      },
+    },
+  );
+};
+
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 const sendChunks = async chunks => {
+  const erroredTokens = [];
   for (const chunk of chunks) {
     try {
-      const receipts = await expo.sendPushNotificationsAsync(chunk);
-      console.log(receipts);
+      await expo.sendPushNotificationAsync(chunk);
     } catch (error) {
-      console.error(error);
+      console.error('error sending push tokens', error);
+      erroredTokens.push(chunk.to);
     }
   }
+
+  return { erroredTokens };
 };
 /* eslint-enable no-restricted-syntax */
 /* eslint-enable no-await-in-loop */
@@ -41,16 +62,21 @@ export const sendPushNotification = async (
       isValid: true,
     },
   });
-  const filteredTokens = getFilteredTokens(tokens);
-  const notifications = filteredTokens.map(token => ({
-    to: token.token,
-    body,
-    data,
-    sound,
-  }));
-  const chunks = expo.chunkPushNotifications(notifications);
+  if (_.isArray(tokens) && tokens.length) {
+    const filteredTokens = getFilteredTokens(tokens);
+    const notifications = filteredTokens.map(token => ({
+      to: token.token,
+      body,
+      data,
+      sound,
+    }));
 
-  sendChunks(chunks);
+    const chunks = expo.chunkPushNotifications(notifications);
+
+    const { erroredTokens } = await sendChunks(notifications);
+
+    invalidateErroredTokens(userId, erroredTokens);
+  }
 };
 
 export default {
