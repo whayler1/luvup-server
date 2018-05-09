@@ -15,28 +15,29 @@ const getFilteredTokens = tokens =>
     return isValid;
   });
 
-const invalidateErroredTokens = async (userId, erroredTokens) => {
-  await ExpoPushToken.update(
-    {
-      isValid: false,
-    },
-    {
-      where: {
-        userId,
-        isValid: true,
-        token: {
-          $or: erroredTokens,
-        },
-      },
-    },
-  );
-};
+// const invalidateErroredTokens = async (userId, erroredTokens) => {
+//   await ExpoPushToken.update(
+//     {
+//       isValid: false,
+//     },
+//     {
+//       where: {
+//         userId,
+//         isValid: true,
+//         token: {
+//           $or: erroredTokens,
+//         },
+//       },
+//     },
+//   );
+// };
 
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 const sendChunks = async chunks => {
   const erroredTokens = [];
   for (const chunk of chunks) {
+    console.log('\n\n', { chunk });
     try {
       await expo.sendPushNotificationAsync(chunk);
     } catch (error) {
@@ -75,7 +76,7 @@ export const sendPushNotification = async (
 
     const { erroredTokens } = await sendChunks(notifications);
 
-    invalidateErroredTokens(userId, erroredTokens);
+    // invalidateErroredTokens(userId, erroredTokens);
   }
 };
 
