@@ -15,16 +15,37 @@ const getFilteredTokens = tokens =>
     return isValid;
   });
 
+const invalidateErroredTokens = async (userId, erroredTokens) => {
+  await ExpoPushToken.update(
+    {
+      isValid: false,
+    },
+    {
+      where: {
+        userId,
+        isValid: true,
+        token: {
+          $or: erroredTokens,
+        },
+      },
+    },
+  );
+};
+
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 const sendChunks = async chunks => {
+  const erroredTokens = [];
   for (const chunk of chunks) {
     try {
-      const receipts = await expo.sendPushNotificationsAsync(chunk);
+      await expo.sendPushNotificationAsync(chunk);
     } catch (error) {
       console.error('error sending push tokens', error);
+      erroredTokens.push(chunk.to);
     }
   }
+
+  return { erroredTokens };
 };
 /* eslint-enable no-restricted-syntax */
 /* eslint-enable no-await-in-loop */
@@ -49,9 +70,12 @@ export const sendPushNotification = async (
       data,
       sound,
     }));
+
     const chunks = expo.chunkPushNotifications(notifications);
 
-    sendChunks(chunks);
+    const { erroredTokens } = await sendChunks(notifications);
+
+    invalidateErroredTokens(userId, erroredTokens);
   }
 };
 
