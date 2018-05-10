@@ -58,7 +58,9 @@ const sendJalapeno = {
         },
       });
 
-      sendPushNotification(recipient.id, 'You received a jalapeno');
+      sendPushNotification(recipient.id, 'You received a jalapeno 🌶', {
+        type: 'jalapeno-received',
+      });
 
       /**
        * JW: Not putting `await` on generateScore so it can just happen async in
