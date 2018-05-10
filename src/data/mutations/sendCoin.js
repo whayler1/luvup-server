@@ -58,7 +58,7 @@ const sendCoin = {
         },
       });
 
-      sendPushNotification(recipient.id, 'You received a Luvup!', {
+      sendPushNotification(recipient.id, 'You received a Luvup! ❤️', {
         type: 'luvup-received',
       });
 
