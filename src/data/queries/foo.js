@@ -13,7 +13,7 @@ import { User, UserLogin, UserClaim, UserProfile } from '../models';
 const foo = {
   type: FooType,
   resolve: async ({ request }) => {
-    // console.log('---> -request', request.user);
+    //
     const up = await UserProfile.findOne({
       where: { userId: request.user.id },
     });
@@ -21,11 +21,9 @@ const foo = {
       where: { id: request.user.id },
     });
     const upProfile = await u.getProfile();
-    // console.log('--up:', up.get('picture'));
-    // console.log('-------ahhhhhh');
+    //
+    //
 
-    console.log('\n\n--u -->:', u);
-    console.log('up2Profile', upProfile);
     return (
       request.user && {
         id: request.user.id,

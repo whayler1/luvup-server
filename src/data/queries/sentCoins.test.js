@@ -17,13 +17,12 @@ import {
  * returned in the response for the coin objects.
  */
 xit('should return sent coins if they exist', async () => {
-  console.log('\n\ntest--------');
   const user = await createUser();
-  console.log('user', user);
+
   const lover = await createUser();
-  console.log('\n\n---\nlover', lover);
+
   const relationship = await createRelationship(user, lover);
-  console.log('relationship', relationship);
+
   //
   const id_token = loginUser(user);
 
@@ -41,7 +40,6 @@ xit('should return sent coins if they exist', async () => {
     _.times(count, coin => relationship.createCoin(coinOptions)),
   );
 
-  console.log('coins', coins.map(coin => coin.dataValues));
   const query = `{
     sentCoins {
       rows {
@@ -60,8 +58,6 @@ xit('should return sent coins if they exist', async () => {
   };
 
   const result = await graphql(schema, query, rootValue, sequelize);
-
-  console.log('result.data', result);
 
   // await deleteUser(user);
   // await deleteUser(lover);

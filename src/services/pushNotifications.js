@@ -37,7 +37,6 @@ const getFilteredTokens = tokens =>
 const sendChunks = async chunks => {
   const erroredTokens = [];
   for (const chunk of chunks) {
-    console.log('\n\n', { chunk });
     try {
       await expo.sendPushNotificationAsync(chunk);
     } catch (error) {

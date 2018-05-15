@@ -105,7 +105,7 @@ const acceptLoverRequest = {
       try {
         await sendEmails(lover, user);
       } catch (err) {
-        console.log('error sending acceptLoverRequest emails!', err);
+        console.error('error sending acceptLoverRequest email');
       }
       return { loverRequest };
     }

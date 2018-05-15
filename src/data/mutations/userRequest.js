@@ -40,7 +40,6 @@ const userRequest = {
       await existingUserRequest.update({ code: hash });
 
       if (config.disableEmail === 'true') {
-        console.log('\n\n---\nexisting user code:', userCode);
         return {
           email,
         };
@@ -51,7 +50,6 @@ const userRequest = {
           email,
         };
       } catch (err) {
-        console.log('\n err sending email 1:', err);
         return {
           email,
           error: 'email error',
@@ -67,7 +65,6 @@ const userRequest = {
       code: hash,
     });
     if (config.disableEmail === 'true') {
-      console.log('\n\n---\nnew user code:', userCode);
       return {
         email,
       };
@@ -78,7 +75,6 @@ const userRequest = {
         email,
       };
     } catch (err) {
-      console.log('\n err sending email 2:', err);
       return {
         email,
         error: 'email error',
