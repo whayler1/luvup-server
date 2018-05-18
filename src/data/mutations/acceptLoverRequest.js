@@ -9,6 +9,7 @@ import { datetimeAndTimestamp } from '../helpers/dateFormats';
 import emailHelper from '../helpers/email';
 import { generateScore } from '../helpers/relationshipScore';
 import analytics from '../../services/analytics';
+import { sendPushNotification } from '../../services/pushNotifications';
 
 const sendEmails = (sender, recipient) => {
   const senderEmail = emailHelper.sendEmail({
@@ -101,6 +102,14 @@ const acceptLoverRequest = {
           senderId: lover.id,
         },
       });
+
+      sendPushNotification(
+        lover.id,
+        `${user.fullName} has accepted your lover request! 💞`,
+        {
+          type: 'lover-request-accepted',
+        },
+      );
 
       try {
         await sendEmails(lover, user);

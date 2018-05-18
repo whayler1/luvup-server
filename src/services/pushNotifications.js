@@ -64,10 +64,17 @@ export const sendPushNotification = async (
   });
   if (_.isArray(tokens) && tokens.length) {
     const filteredTokens = getFilteredTokens(tokens);
+    const dataAppend = {};
+    if (!_.get(data, 'message')) {
+      dataAppend.message = body;
+    }
     const notifications = filteredTokens.map(token => ({
       to: token.token,
       body,
-      data,
+      data: {
+        ...data,
+        ...dataAppend,
+      },
       sound,
     }));
 
