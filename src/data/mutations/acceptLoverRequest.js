@@ -103,11 +103,13 @@ const acceptLoverRequest = {
         },
       });
 
-      const message = `${user.fullName} has accepted your lover request! 💞`;
-      sendPushNotification(lover.id, message, {
-        type: 'lover-request-accepted',
-        message,
-      });
+      sendPushNotification(
+        lover.id,
+        `${user.fullName} has accepted your lover request! 💞`,
+        {
+          type: 'lover-request-accepted',
+        },
+      );
 
       try {
         await sendEmails(lover, user);
