@@ -14,7 +14,7 @@ const getFilteredTokens = tokens =>
 const getValidTokens = async () => {
   const pool = await new Pool({ connectionString });
   const { rows } = await pool.query(
-    'select * from public."ExpoPushToken" where "isValid" = true',
+    'select token, "fullName" from public."ExpoPushToken" t, public."User" u where t."userId" = u.id and t."isValid" = true',
   );
   pool.end();
 

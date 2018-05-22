@@ -6,7 +6,6 @@
   "license": "MIT",
   "dependencies": {
     "expo-server-sdk": "^2.3.3",
-    "lodash": "^4.17.10",
     "pg": "^7.4.3"
   }
 }
