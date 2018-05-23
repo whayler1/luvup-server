@@ -39,13 +39,24 @@ const sendChunks = async chunks => {
 /* eslint-enable no-restricted-syntax */
 /* eslint-enable no-await-in-loop */
 
+const messages = [
+  "Weird vibes got you down? Maybe it's time to send someone a Luvup and let them know you care.",
+  'They say only sending Luvups can mend a broken heart.',
+  "Maybe if you had sent your lover more Luvups you wouldn't be in this situation in the first place.",
+  'Let your lover know you care! Send a Luvup.',
+  "A Luvup a day keeps the sickening sadness of a lifetime of leneliness away… Just sayin'",
+];
+
+const getMessage = () => messages[Math.floor(Math.random() * messages.length)];
+
 exports.handler = async () => {
   const validTokens = await getValidTokens();
   const filteredTokens = getFilteredTokens(validTokens);
+  const body = getMessage();
 
   const notifications = filteredTokens.map(token => ({
     to: token.token,
-    body: 'Let your lover know you care! Send a love up.',
+    body,
     data: {
       type: 'daily-update',
     },
@@ -54,8 +65,6 @@ exports.handler = async () => {
   const chunks = expo.chunkPushNotifications(notifications);
 
   await sendChunks(notifications);
-
-  console.log('validTokens', validTokens);
 
   return 'daily update done';
 };
