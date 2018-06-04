@@ -119,15 +119,7 @@ const getActivityMessage = async (pool, token) => {
     message = getRandomMessage();
   }
 
-  // console.log('\n\ntoken\n', token);
-  console.log(
-    '\n\nluvupCount',
-    typeof luvupCount,
-    '\njalapenoCount',
-    jalapenoCount,
-  );
-
-  return { message };
+  return { token, message };
 };
 
 /* eslint-disable no-restricted-syntax */
@@ -164,43 +156,20 @@ exports.handler = async () => {
         })();
       }),
   );
+  const messagesAndTokens = await Promise.all(promises);
 
-  console.log('promises', promises);
-  // const promises = filteredTokens.map(token => new Promise((resolve) => async () => {
-  //     console.log('inside promise');
-  //     await getActivityMessage(pool, token);
-  //     resolve();
-  //   }
-  // ));
-  // console.log('promises', promises);
-  //
-  const res = await Promise.all(promises);
-
-  console.log('after promise all', res);
-  // const notifications = filteredTokens.map(token => ({
-  //   to: token.token,
-  //   body,
-  //   data: {
-  //     type: 'daily-update',
-  //   },
-  //   sound: 'default',
-  // }));
+  const notifications = messagesAndTokens.map(({ token, message }) => ({
+    to: token.token,
+    body: message,
+    data: {
+      type: 'daily-update',
+    },
+    sound: 'default',
+  }));
   // console.log({ notifications });
-  // const chunks = expo.chunkPushNotifications(notifications);
+  const chunks = expo.chunkPushNotifications(notifications);
 
-  // // await sendChunks(chunks);
-  // const promises = filteredTokens.map(token =>
-  //   new Promise(resolve => {
-  //     sendContextualMessagesFarm(
-  //       { token: token.token },
-  //       (err, output) => resolve()
-  //     );
-  //   }));
-
-  // console.log('\npromises', promises);
-
-  // await Promise.all(promises);
-  // workerFarm.end(sendContextualMessagesFarm);
+  await sendChunks(chunks);
 
   pool.end();
 
