@@ -81,7 +81,6 @@ const getRandomMessage = () =>
   randomMessages[Math.floor(Math.random() * randomMessages.length)];
 
 const getActivityMessage = async (pool, token) => {
-  console.log('getActivityMessage');
   const { userId, RelationshipId } = token;
   const lover = await getLover(pool, userId, RelationshipId);
 
@@ -144,13 +143,11 @@ exports.handler = async () => {
   const pool = await new Pool({ connectionString });
   const validTokens = await getValidTokens(pool);
   const filteredTokens = getFilteredTokens(validTokens);
-  console.log('filteredTokens', filteredTokens);
 
   const promises = filteredTokens.map(
     token =>
       new Promise(resolve => {
         (async () => {
-          console.log('async func');
           const res = await getActivityMessage(pool, token);
           resolve(res);
         })();
@@ -166,7 +163,7 @@ exports.handler = async () => {
     },
     sound: 'default',
   }));
-  // console.log({ notifications });
+
   const chunks = expo.chunkPushNotifications(notifications);
 
   await sendChunks(chunks);
