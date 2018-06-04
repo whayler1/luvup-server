@@ -154,7 +154,6 @@ exports.handler = async () => {
       }),
   );
   const messagesAndTokens = await Promise.all(promises);
-  console.log({ messagesAndTokens });
 
   const notifications = messagesAndTokens.map(({ token, message }) => ({
     to: token.token,
