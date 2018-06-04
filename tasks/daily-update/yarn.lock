@@ -77,6 +77,10 @@ loose-envify@^1.0.0:
   dependencies:
     js-tokens "^3.0.0"
 
+moment@^2.22.2:
+  version "2.22.2"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
+
 msgpack-lite@^0.1.26:
   version "0.1.26"
   resolved "https://registry.yarnpkg.com/msgpack-lite/-/msgpack-lite-0.1.26.tgz#dd3c50b26f059f25e7edee3644418358e2a9ad89"
