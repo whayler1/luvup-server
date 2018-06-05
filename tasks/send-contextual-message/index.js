@@ -21,6 +21,7 @@ const getNoActivityMessage = (userName, loverName) => {
     `Hey ${userName}, looks like not a lot happened in your Luvup life yesterday. Taking a moment to send a Luvup to ${loverName} might make today a little brighter.`,
     `Slow day yesterday. Maybe send ${loverName} a Luvup and have some fun today 💞`,
     `Not a lot of activity yesterday. Maybe nudge ${loverName} with a Luvup 😉 You got this.`,
+    `Maybe today is a good day to send a Luvup. Isn't ${loverName} worth it?`,
   ];
 
   return messages[Math.floor(Math.random() * messages.length)];
@@ -40,6 +41,8 @@ const getNegativeActivityMessage = (userName, loverName) => {
     `Ouch, looks like ${loverName} let you know how they felt yesterday. Couldn't hurt to send a Luvup.`,
     `Looks like you and ${loverName} hit a few bumps in the road yesterday. But today is new day. Send ${loverName} a Luvup and make today different`,
     `Maybe if you had sent ${loverName} more Luvups you wouldn't be in this position in the first place`,
+    `Don't let the jalapenoes get you down. Swipe up, send that Luvup and let ${loverName} know your still here!`,
+    "A Luvup a day keeps the sickening sadness of a lifetime of leneliness away… Just sayin'",
   ];
 
   return messages[Math.floor(Math.random() * messages.length)];
@@ -50,6 +53,7 @@ const getPositiveActivityMessage = (userName, loverName) => {
     `Yay ${userName}! Looks like you and ${loverName} had a good day yesterday. Keep the good vibes rolling by sending another Luvup 😘`,
     `Looks like ${loverName} had some positive feedback for you yesterday! Your Luvup life is on point.`,
     `Roses are red and violets are blue. ${loverName} sent ${userName} Luvups cuz they love you. NOW SEND MORE LUVUPS!`,
+    `Woohoo! Your Luvup game is on Fire right now 🔥❤️🔥. Send ${loverName} a Luvup and keep the good vibes flowing.`,
   ];
 
   return messages[Math.floor(Math.random() * messages.length)];
@@ -60,7 +64,6 @@ const randomMessages = [
   'They say only sending Luvups can mend a broken heart.',
   "Maybe if you had sent your lover more Luvups you wouldn't be in this situation in the first place.",
   'Let your lover know you care! Send a Luvup.',
-  "A Luvup a day keeps the sickening sadness of a lifetime of leneliness away… Just sayin'",
 ];
 
 const getRandomMessage = () =>
