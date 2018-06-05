@@ -1,20 +1,18 @@
-// const { Pool } = require('pg');
-// const Expo = require('expo-server-sdk');
-// const moment = require('moment');
-// const _ = require('lodash');
+/* eslint-disable import/no-unresolved */
 const aws = require('aws-sdk');
+/* eslint-enable import/no-unresolved */
+const { Pool } = require('pg');
+const Expo = require('expo-server-sdk');
 
 const connectionString = process.env.DATABASE_URL;
 
-// const expo = new Expo();
-// const now = moment();
-// const yesterday = moment().subtract(1, 'd');
+const expo = new Expo();
 
-// const getFilteredTokens = tokens =>
-//   tokens.filter(token => {
-//     const isValid = Expo.isExpoPushToken(token.token);
-//     return isValid;
-//   });
+const getFilteredTokens = tokens =>
+  tokens.filter(token => {
+    const isValid = Expo.isExpoPushToken(token.token);
+    return isValid;
+  });
 
 const getValidTokens = async pool => {
   const { rows } = await pool.query(
@@ -124,48 +122,55 @@ const getValidTokens = async pool => {
 
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
-const sendChunks = async chunks => {
-  const erroredTokens = [];
-  for (const chunk of chunks) {
-    try {
-      // await expo.sendPushNotificationAsync(chunk);
-    } catch (error) {
-      console.error('error sending push tokens', error);
-      erroredTokens.push(chunk.to);
-    }
-  }
-
-  return { erroredTokens };
-};
+// const sendChunks = async chunks => {
+//   const erroredTokens = [];
+//   for (const chunk of chunks) {
+//     try {
+//       // await expo.sendPushNotificationAsync(chunk);
+//     } catch (error) {
+//       console.error('error sending push tokens', error);
+//       erroredTokens.push(chunk.to);
+//     }
+//   }
+//
+//   return { erroredTokens };
+// };
 /* eslint-enable no-restricted-syntax */
 /* eslint-enable no-await-in-loop */
 
 exports.handler = async () => {
-  // const pool = await new Pool({ connectionString });
-  // const validTokens = await getValidTokens(pool);
-  // const filteredTokens = getFilteredTokens(validTokens);
+  const pool = await new Pool({ connectionString });
+  const validTokens = await getValidTokens(pool);
+  const filteredTokens = getFilteredTokens(validTokens);
 
   const lambda = new aws.Lambda({
     region: 'us-east-1',
   });
 
-  await new Promise(resolve => {
-    lambda.invoke(
-      {
-        FunctionName: 'send-contextual-message',
-        Payload: JSON.stringify({ foo: 'foo' }),
-      },
-      (error, data) => {
-        if (error) {
-          // context.done('error', error);
-        }
-        if (data.Payload) {
-          // context.succeed(data.Payload);
-        }
-        resolve();
-      },
-    );
+  filteredTokens.forEach(token => {
+    lambda.invoke({
+      FunctionName: 'send-contextual-message',
+      Payload: JSON.stringify(token),
+    });
   });
+
+  // await new Promise(resolve => {
+  //   lambda.invoke(
+  //     {
+  //       FunctionName: 'send-contextual-message',
+  //       Payload: JSON.stringify({ foo: 'foo' }),
+  //     },
+  //     (error, data) => {
+  //       if (error) {
+  //         // context.done('error', error);
+  //       }
+  //       if (data) {
+  //         // context.succeed(data.Payload);
+  //       }
+  //       resolve();
+  //     },
+  //   );
+  // });
 
   // const promises = filteredTokens.map(
   //   token =>
@@ -189,7 +194,7 @@ exports.handler = async () => {
   //
   // await sendChunks(notifications);
 
-  // pool.end();
+  pool.end();
 
   return 'daily update done';
 };
