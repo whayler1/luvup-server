@@ -127,10 +127,20 @@ const sendChunks = async chunks => {
 
 exports.handler = async userAndToken => {
   const pool = await new Pool({ connectionString });
-  const token = JSON.parse(userAndToken);
-  const res = await getActivityMessage(pool, token);
+  const { token, message } = await getActivityMessage(pool, userAndToken);
+
+  const notification = {
+    to: token.token,
+    body: message,
+    data: {
+      type: 'daily-update',
+    },
+    sound: 'default',
+  };
+
+  await expo.sendPushNotificationAsync(notification);
 
   pool.end();
 
-  return JSON.stringify(res);
+  return message;
 };
