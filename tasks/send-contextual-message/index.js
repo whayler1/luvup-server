@@ -16,58 +16,48 @@ const getLover = async (pool, userId, relationshipId) => {
   return rows[0];
 };
 
-const getNoActivityMessage = (userName, loverName) => {
-  const messages = [
+const randomReturnMessage = messages =>
+  messages[Math.floor(Math.random() * messages.length)];
+
+const getNoActivityMessage = (userName, loverName) =>
+  randomReturnMessage([
     `Hey ${userName}, looks like not a lot happened in your Luvup life yesterday. Taking a moment to send a Luvup to ${loverName} might make today a little brighter.`,
     `Slow day yesterday. Maybe send ${loverName} a Luvup and have some fun today 💞`,
     `Not a lot of activity yesterday. Maybe nudge ${loverName} with a Luvup 😉 You got this.`,
     `Maybe today is a good day to send a Luvup. Isn't ${loverName} worth it?`,
-  ];
+  ]);
 
-  return messages[Math.floor(Math.random() * messages.length)];
-};
-
-const getMixedActivityMessage = (userName, loverName) => {
-  const messages = [
+const getMixedActivityMessage = (userName, loverName) =>
+  randomReturnMessage([
     `Looks like ${loverName} had some interesting feedback for you yesterday. Maybe set the tone today with a nice Luvup`,
     `It was the best of times, it was the worst of times, it was yesterday. Send ${loverName} a Luvup and make today a little brighter`,
-  ];
+    `Intersting day in your Luvup life yesterday! It could be time to send ${loverName} a Luvup and let them know you care 💖`,
+  ]);
 
-  return messages[Math.floor(Math.random() * messages.length)];
-};
-
-const getNegativeActivityMessage = (userName, loverName) => {
-  const messages = [
+const getNegativeActivityMessage = (userName, loverName) =>
+  randomReturnMessage([
     `Ouch, looks like ${loverName} let you know how they felt yesterday. Couldn't hurt to send a Luvup.`,
     `Looks like you and ${loverName} hit a few bumps in the road yesterday. But today is new day. Send ${loverName} a Luvup and make today different`,
     `Maybe if you had sent ${loverName} more Luvups you wouldn't be in this position in the first place`,
     `Don't let the jalapenoes get you down. Swipe up, send that Luvup and let ${loverName} know your still here!`,
     "A Luvup a day keeps the sickening sadness of a lifetime of leneliness away… Just sayin'",
-  ];
+  ]);
 
-  return messages[Math.floor(Math.random() * messages.length)];
-};
-
-const getPositiveActivityMessage = (userName, loverName) => {
-  const messages = [
+const getPositiveActivityMessage = (userName, loverName) =>
+  randomReturnMessage([
     `Yay ${userName}! Looks like you and ${loverName} had a good day yesterday. Keep the good vibes rolling by sending another Luvup 😘`,
     `Looks like ${loverName} had some positive feedback for you yesterday! Your Luvup life is on point.`,
-    `Roses are red and violets are blue. ${loverName} sent ${userName} Luvups cuz they love you. NOW SEND MORE LUVUPS!`,
+    `Roses are red, violets are blue. ${loverName} sent ${userName} Luvups cuz ${loverName} loves you. NOW SEND MORE LUVUPS!`,
     `Woohoo! Your Luvup game is on Fire right now 🔥❤️🔥. Send ${loverName} a Luvup and keep the good vibes flowing.`,
-  ];
-
-  return messages[Math.floor(Math.random() * messages.length)];
-};
-
-const randomMessages = [
-  "Weird vibes got you down? Maybe it's time to send someone a Luvup and let them know you care.",
-  'They say only sending Luvups can mend a broken heart.',
-  "Maybe if you had sent your lover more Luvups you wouldn't be in this situation in the first place.",
-  'Let your lover know you care! Send a Luvup.',
-];
+  ]);
 
 const getRandomMessage = () =>
-  randomMessages[Math.floor(Math.random() * randomMessages.length)];
+  randomReturnMessage([
+    "Weird vibes got you down? Maybe it's time to send someone a Luvup and let them know you care.",
+    'They say only sending Luvups can mend a broken heart.',
+    "Maybe if you had sent your lover more Luvups you wouldn't be in this situation in the first place.",
+    'Let your lover know you care! Send a Luvup.',
+  ]);
 
 const getActivityMessage = async (pool, token) => {
   const { userId, RelationshipId } = token;
