@@ -37,6 +37,8 @@ module.exports = {
     segmentWriteKey: process.env.SEGMENT_WRITE_KEY || '',
   },
 
+  adminToken: process.env.ADMIN_TOKEN || '',
+
   // Authentication
   auth: {
     jwt: { secret: process.env.JWT_SECRET || 'React Starter Kit' },
