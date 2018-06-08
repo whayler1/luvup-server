@@ -10,10 +10,10 @@ const now = moment();
 const yesterday = moment().subtract(1, 'd');
 
 const getLover = async (pool, userId, relationshipId) => {
-  const { rows } = await pool.query(
+  const { rows: [lover] } = await pool.query(
     `select * from public."User" u where u."RelationshipId" = '${relationshipId}' and u.id != '${userId}';`,
   );
-  return rows[0];
+  return lover;
 };
 
 const randomReturnMessage = messages =>
@@ -62,16 +62,13 @@ const getRandomMessage = () =>
 const getActivityMessage = async (pool, token) => {
   const { userId, RelationshipId } = token;
   const lover = await getLover(pool, userId, RelationshipId);
+  const yesterdayStr = yesterday.format('YYYY-MM-DD');
 
   const jalapenoRes = await pool.query(
-    `select count(*) from public."Jalapeno" j where j."recipientId" = '${userId}' and j."createdAt" > '${yesterday.format(
-      'YYYY-MM-DD',
-    )}';`,
+    `select count(*) from public."Jalapeno" j where j."recipientId" = '${userId}' and j."createdAt" > '${yesterdayStr}';`,
   );
   const luvupRes = await pool.query(
-    `select count(*) from public."Coin" l where l."recipientId" = '${userId}' and l."createdAt" > '${yesterday.format(
-      'YYYY-MM-DD',
-    )}';`,
+    `select count(*) from public."Coin" l where l."recipientId" = '${userId}' and l."createdAt" > '${yesterdayStr}';`,
   );
 
   const jalapenoCountStr = _.get(jalapenoRes, 'rows[0].count');
@@ -99,24 +96,6 @@ const getActivityMessage = async (pool, token) => {
 
   return { token, message };
 };
-
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
-const sendChunks = async chunks => {
-  const erroredTokens = [];
-  for (const chunk of chunks) {
-    try {
-      // await expo.sendPushNotificationAsync(chunk);
-    } catch (error) {
-      console.error('error sending push tokens', error);
-      erroredTokens.push(chunk.to);
-    }
-  }
-
-  return { erroredTokens };
-};
-/* eslint-enable no-restricted-syntax */
-/* eslint-enable no-await-in-loop */
 
 exports.handler = async userAndToken => {
   const pool = await new Pool({ connectionString });
