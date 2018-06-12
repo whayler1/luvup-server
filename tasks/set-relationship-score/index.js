@@ -33,7 +33,7 @@ const updateRelationshipScore = async userId => {
     );
 
     if (relationshipScoreId) {
-      return { id: relationshipScoreId };
+      return { relationshipScoreId };
     }
     throw new Error('no relationship score');
   } catch (err) {
@@ -44,6 +44,7 @@ const updateRelationshipScore = async userId => {
 exports.handler = async () => {
   const pool = await new Pool({ connectionString });
   const users = await getUsers(pool);
+  const responses = [];
 
   await users.reduce(
     (p, user) =>
@@ -51,16 +52,17 @@ exports.handler = async () => {
         .then(async () => {
           try {
             const res = await updateRelationshipScore(user.id);
+            responses.push(res);
             return res;
           } catch (err) {
             throw new Error(err);
           }
         })
-        .catch(err => console.log({ err })),
+        .catch(err => responses.push(err)),
     Promise.resolve(),
   );
 
   pool.end();
 
-  return 'omg';
+  return responses;
 };

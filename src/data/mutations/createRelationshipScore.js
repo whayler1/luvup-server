@@ -23,6 +23,10 @@ const createRelationshipScore = {
     },
   }),
   args: {
+    /**
+     * JW: Both these args are optional. If not provided this mutation will
+     * just create a relationship score for the current user.
+     */
     userId: { type: GraphQLID },
     token: { type: GraphQLString },
   },
