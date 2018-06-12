@@ -4,7 +4,7 @@ const _ = require('lodash');
 const connectionString = process.env.DATABASE_URL;
 
 const now = moment();
-const yesterday = moment().subtract(1, 'd');
+const lastWeek = moment().subtract(1, 'w');
 
 const getLover = async (pool, userId, relationshipId) => {
   const { rows: [lover] } = await pool.query(
@@ -27,7 +27,13 @@ const getRandomMessage = () =>
 const getRelationshipScoreMessage = async (pool, token) => {
   const { userId, RelationshipId } = token;
   const lover = await getLover(pool, userId, RelationshipId);
-  const yesterdayStr = yesterday.format('YYYY-MM-DD');
+  const lastWeekStr = lastWeek.format('YYYY-MM-DD');
+
+  const { rows } = await pool.query(
+    `select score from public."RelationshipScore" rs where rs."relationshipId" = '${RelationshipId}' and rs."userId" = '${userId}' and rs."createdAt" > '${lastWeekStr}' order by rs."createdAt" desc;`,
+  );
+
+  console.log('rows', rows);
 
   // const jalapenoRes = await pool.query(
   //   `select count(*) from public."Jalapeno" j where j."recipientId" = '${userId}' and j."createdAt" > '${yesterdayStr}';`,
@@ -59,7 +65,7 @@ const getRelationshipScoreMessage = async (pool, token) => {
   //   message = getRandomMessage();
   // }
 
-  // return { token, message };
+  return { token: 'foo', message: 'bar' };
 };
 
 module.exports = getRelationshipScoreMessage;
