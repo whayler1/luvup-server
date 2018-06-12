@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.10",
+    "pg": "^7.4.3",
     "superagent": "^3.8.3"
   }
 }
