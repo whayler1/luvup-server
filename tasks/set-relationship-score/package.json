@@ -1,0 +1,16 @@
+{
+  "name": "set-relationship-score",
+  "version": "1.0.0",
+  "description": "call the set relationship endpoint for a specific user",
+  "main": "index.js",
+  "scripts": {
+    "test": "handler"
+  },
+  "author": "JDW",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.10",
+    "pg": "^7.4.3",
+    "superagent": "^3.8.3"
+  }
+}
