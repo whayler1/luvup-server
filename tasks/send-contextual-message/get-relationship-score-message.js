@@ -16,6 +16,25 @@ const getLover = async (pool, userId, relationshipId) => {
 const randomReturnMessage = messages =>
   messages[Math.floor(Math.random() * messages.length)];
 
+const getPositiveMessage = (userName, loverName, points) =>
+  randomReturnMessage([
+    `Your relationship is on 🔥fire🔥! Your health score is up ${points} point${points >
+    1
+      ? 's'
+      : ''} since last week! Do something nice for ${loverName} today and keep the good vibes flowing…`,
+    `Yeah ${userName}, things are looking good. Your up ${points} point${points >
+    1
+      ? 's'
+      : ''} from your relationship score this time last week. That's what happens when you treat ${loverName} right 😉`,
+  ]);
+
+const getNegativeMessage = (userName, loverName) =>
+  randomReturnMessage([
+    `Looks like your relationship score is slipping a bit. Maybe it's time to do something sweet for ${loverName} and get those Luvups?`,
+    `Today might be the day to do something nice for ${loverName}. Your relationship score is dropping a little. You got this 😉`,
+    `Is it cold ❄️ in here or is it just me? Your relationship score is slipping. It could be time to nudge ${loverName} and let them know you care.`,
+  ]);
+
 const getRandomMessage = () =>
   randomReturnMessage([
     "Weird vibes got you down? Maybe it's time to send someone a Luvup and let them know you care.",
@@ -33,39 +52,22 @@ const getRelationshipScoreMessage = async (pool, token) => {
     `select score from public."RelationshipScore" rs where rs."relationshipId" = '${RelationshipId}' and rs."userId" = '${userId}' and rs."createdAt" > '${lastWeekStr}' order by rs."createdAt" desc;`,
   );
 
-  console.log('rows', rows);
+  const firstScore = +rows[0].score;
+  const lastScore = +rows[rows.length - 1].score;
 
-  // const jalapenoRes = await pool.query(
-  //   `select count(*) from public."Jalapeno" j where j."recipientId" = '${userId}' and j."createdAt" > '${yesterdayStr}';`,
-  // );
-  // const luvupRes = await pool.query(
-  //   `select count(*) from public."Coin" l where l."recipientId" = '${userId}' and l."createdAt" > '${yesterdayStr}';`,
-  // );
-  //
-  // const jalapenoCountStr = _.get(jalapenoRes, 'rows[0].count');
-  // const luvupCountStr = _.get(luvupRes, 'rows[0].count');
-  // const jalapenoCount = _.isString(jalapenoCountStr)
-  //   ? +jalapenoCountStr
-  //   : jalapenoCountStr;
-  // const luvupCount = _.isString(luvupCountStr) ? +luvupCountStr : luvupCountStr;
-  //
-  // const userName = token.firstName.replace(/^\w/, c => c.toUpperCase());
-  // const loverName = lover.firstName.replace(/^\w/, c => c.toUpperCase());
-  // let message;
-  //
-  // if (jalapenoCount === 0 && luvupCount === 0) {
-  //   message = getNoActivityMessage(userName, loverName);
-  // } else if (jalapenoCount > 0 && luvupCount > 0) {
-  //   message = getMixedActivityMessage(userName, loverName);
-  // } else if (jalapenoCount > 0) {
-  //   message = getNegativeActivityMessage(userName, loverName);
-  // } else if (luvupCount > 0) {
-  //   message = getPositiveActivityMessage(userName, loverName);
-  // } else {
-  //   message = getRandomMessage();
-  // }
+  const userName = token.firstName.replace(/^\w/, c => c.toUpperCase());
+  const loverName = lover.firstName.replace(/^\w/, c => c.toUpperCase());
+  let message;
 
-  return { token: 'foo', message: 'bar' };
+  if (firstScore > lastScore) {
+    message = getPositiveMessage(userName, loverName, firstScore - lastScore);
+  } else if (firstScore < lastScore) {
+    message = getNegativeMessage(userName, loverName);
+  } else {
+    message = getRandomMessage();
+  }
+
+  return { token, message };
 };
 
 module.exports = getRelationshipScoreMessage;
