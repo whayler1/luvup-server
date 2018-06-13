@@ -5,6 +5,7 @@ import LoveNoteType from '../types/LoveNoteType';
 import { User, LoveNote, Coin, Jalapeno } from '../models';
 import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
+import { sendPushNotification } from '../../services/pushNotifications';
 
 const bulkCreate = async (
   model,
@@ -74,10 +75,24 @@ const createLoveNote = {
       if (_.isNumber(numJalapenoes)) {
         await bulkCreate(Jalapeno, numJalapenoes, bulkFunc);
       }
+
+      sendPushNotification(
+        lover.id,
+        note,
+        {
+          type: 'love-note',
+        },
+        'default',
+        {
+          title: `${user.firstName} sent you a love note! 💌`,
+        },
+      );
+
       return {
         loveNote: {
           ..._.pick(loveNote, [
             'id',
+            'note',
             'createdAt',
             'updatedAt',
             'relationshipId',

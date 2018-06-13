@@ -13,6 +13,7 @@ const LoveNoteType = new GraphQLObjectType({
   description: 'A message that can have jalapenos or Luvups attached',
   fields: {
     id: { type: new GraphQLNonNull(GraphQLID) },
+    note: { type: GraphQLString },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
     relationshipId: { type: GraphQLID },
