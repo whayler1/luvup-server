@@ -50,6 +50,10 @@ LoveNote.belongsTo(User, {
   as: 'sender',
 });
 
+LoveNote.belongsTo(Relationship, {
+  as: 'relationship',
+});
+
 LoveNote.hasMany(Coin, {
   as: 'coins',
   foreignKey: 'loveNoteId',
