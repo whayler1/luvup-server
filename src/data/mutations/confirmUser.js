@@ -26,7 +26,6 @@ const confirmUser = {
     { request },
     { email, username, firstName, lastName, password, code },
   ) => {
-    console.log('\n\nconfirmUser');
     if (!email) {
       return { error: 'missing email' };
     }
@@ -62,7 +61,6 @@ const confirmUser = {
     const userRequest = await UserRequest.findOne({ where: { email } });
 
     if (userRequest) {
-      console.log('\n\nuserRequest exists');
       const diff = moment().diff(moment(userRequest.updatedAt), 'days');
       if (diff > 0) {
         return { error: 'expired code' };
@@ -83,8 +81,6 @@ const confirmUser = {
 
       const salt = await bcrypt.genSalt();
       const hash = await bcrypt.hash(password, salt);
-
-      console.log('\n\ngot to after hash');
 
       const user = await userRequest.createUser({
         email,

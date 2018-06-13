@@ -12,6 +12,7 @@ import Coin from './Coin';
 import Jalapeno from './Jalapeno';
 import UserEvent from './UserEvent';
 import RelationshipScore from './RelationshipScore';
+import ExpoPushToken from './ExpoPushToken';
 
 Relationship.hasMany(RelationshipScore, {
   as: 'relationshipScores',
@@ -29,6 +30,11 @@ RelationshipScore.belongsTo(User, {
 
 User.hasMany(UserEvent, {
   as: 'userEvents',
+  foreignKey: 'userId',
+});
+
+User.hasMany(ExpoPushToken, {
+  as: 'expoPushTokens',
   foreignKey: 'userId',
 });
 
@@ -158,4 +164,5 @@ export {
   Relationship,
   RelationshipScore,
   UserEvent,
+  ExpoPushToken,
 };

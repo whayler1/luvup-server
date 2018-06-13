@@ -32,6 +32,8 @@ import endRelationship from './mutations/endRelationship';
 import changePassword from './mutations/changePassword';
 import confirmUserRequestCode from './mutations/confirmUserRequestCode';
 import resendLoverRequestEmail from './mutations/resendLoverRequestEmail';
+import setExpoPushToken from './mutations/setExpoPushToken';
+import invalidateExpoPushToken from './mutations/invalidateExpoPushToken';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -67,6 +69,8 @@ const schema = new Schema({
       createRelationshipScore,
       endRelationship,
       changePassword,
+      setExpoPushToken,
+      invalidateExpoPushToken,
     },
   }),
 });

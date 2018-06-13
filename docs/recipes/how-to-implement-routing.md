@@ -97,7 +97,7 @@ import router from './router';
 import routes from './routes';
 
 router.resolve(routes, { pathname: '/tasks' }).then(result => {
-  console.log(result);
+  
   // => { title: 'To-do', component: <TodoList .../> }
 });
 ```

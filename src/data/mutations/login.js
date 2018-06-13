@@ -22,7 +22,6 @@ const login = {
   resolve: async ({ request }, { username, password }) => {
     const authenticate = await new Promise(resolve =>
       passport.authenticate('local', (err, user) => {
-        console.log('\n\n thing===>', err, '\n\n ---- ', user);
         resolve({ err, user });
       })({ body: { username, password } }, null),
     );

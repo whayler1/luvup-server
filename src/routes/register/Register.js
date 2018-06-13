@@ -5,7 +5,7 @@ import s from './Register.css';
 
 const onSubmit = e => {
   e.preventDefault();
-  console.log('form submitted');
+
   return false;
 };
 
