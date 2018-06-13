@@ -2,9 +2,25 @@ import graphql, { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 import _ from 'lodash';
 
 import LoveNoteType from '../types/LoveNoteType';
-import { User, Relationship, LoveNote } from '../models';
+import { User, LoveNote, Coin, Jalapeno } from '../models';
 import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
+
+const bulkCreate = async (
+  model,
+  count,
+  { relationshipId, senderId, recipientId, loveNoteId },
+) => {
+  const values = _.times(count, () => ({
+    relationshipId,
+    senderId,
+    recipientId,
+    loveNoteId,
+  }));
+  const models = await model.bulkCreate(values);
+  console.log('\n\nmodels:', models);
+  return models;
+};
 
 const createLoveNote = {
   type: new GraphQLObjectType({
@@ -17,18 +33,62 @@ const createLoveNote = {
   }),
   args: {
     note: { type: GraphQLString },
-    numJalapenos: { type: GraphQLInt },
+    numJalapenoes: { type: GraphQLInt },
     numLuvups: { type: GraphQLInt },
   },
-  resolve: async ({ request }, { note, numJalapenos, numLuvups }) => {
+  resolve: async ({ request }, { note, numJalapenoes, numLuvups }) => {
     if (!note) {
       return {};
     }
 
     const verify = await validateJwtToken(request);
 
-    // if (verify) {
-    // }
+    if (verify) {
+      const user = await User.findOne({ where: { id: verify.id } });
+      const relationshipId = User.RelationshipId;
+      const lover = await User.findOne({
+        where: {
+          RelationshipId: user.RelationshipId,
+          $not: {
+            id: user.id,
+          },
+        },
+      });
+      const loveNote = await LoveNote.create({
+        relationshipId,
+        note,
+        senderId: user.id,
+        recipientId: lover.id,
+      });
+
+      const bulkFunc = () => ({
+        relationshipId,
+        senderId: user.id,
+        recipientId: lover.id,
+        loveNoteId: loveNote.id,
+      });
+
+      if (_.isNumber(numLuvups)) {
+        await bulkCreate(Coin, numLuvups, bulkFunc);
+      }
+      if (_.isNumber(numJalapenoes)) {
+        await bulkCreate(Jalapeno, numJalapenoes, bulkFunc);
+      }
+      return {
+        loveNote: {
+          ..._.pick(loveNote, [
+            'id',
+            'createdAt',
+            'updatedAt',
+            'relationshipId',
+            'senderId',
+            'recipientId',
+          ]),
+          numJalapenoes,
+          numLuvups,
+        },
+      };
+    }
     return {};
   },
 };

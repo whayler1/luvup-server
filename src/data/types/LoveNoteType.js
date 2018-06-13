@@ -19,7 +19,7 @@ const LoveNoteType = new GraphQLObjectType({
     senderId: { type: GraphQLID },
     recipientId: { type: GraphQLID },
     numLuvups: { type: GraphQLInt },
-    numJalapenos: { type: GraphQLInt },
+    numJalapenoes: { type: GraphQLInt },
   },
 });
 
