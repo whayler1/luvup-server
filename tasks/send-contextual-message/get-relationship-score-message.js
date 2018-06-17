@@ -22,7 +22,7 @@ const getPositiveMessage = (userName, loverName, points) =>
     1
       ? 's'
       : ''} since last week! Do something nice for ${loverName} today and keep the good vibes flowing…`,
-    `Yeah ${userName}, things are looking good. Your up ${points} point${points >
+    `Yeah ${userName}, things are looking good. You're up ${points} point${points >
     1
       ? 's'
       : ''} from your relationship score this time last week. That's what happens when you treat ${loverName} right 😉`,
