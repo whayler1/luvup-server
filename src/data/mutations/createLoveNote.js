@@ -46,7 +46,7 @@ const createLoveNote = {
 
     if (verify) {
       const user = await User.findOne({ where: { id: verify.id } });
-      const relationshipId = User.RelationshipId;
+      const relationshipId = user.RelationshipId;
       const lover = await User.findOne({
         where: {
           RelationshipId: user.RelationshipId,

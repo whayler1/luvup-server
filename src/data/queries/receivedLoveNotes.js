@@ -44,20 +44,9 @@ const receivedLoveNotes = {
       if (_.isBoolean(isRead)) {
         Object.assign(query.where, { isRead });
       }
-      console.log('\n\nquery', query);
+
       const res = await LoveNote.findAndCountAll(query);
-      console.log('\n\nres\n---', res);
-      //
-      // const res = await RelationshipScore.findAndCountAll({
-      //   limit,
-      //   offset,
-      //   where: {
-      //     userId: user.id,
-      //     relationshipId: user.RelationshipId,
-      //   },
-      //   order: [['createdAt', 'DESC']],
-      // });
-      //
+
       return {
         ..._.pick(res, ['rows', 'count']),
         limit,
