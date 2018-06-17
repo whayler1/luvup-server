@@ -76,15 +76,17 @@ const createLoveNote = {
         await bulkCreate(Jalapeno, numJalapenoes, bulkFunc);
       }
 
+      const pushNotificationTitle = `${user.firstName} sent you a love note! 💌`;
       sendPushNotification(
         lover.id,
         note,
         {
           type: 'love-note',
+          message: pushNotificationTitle,
         },
         'default',
         {
-          title: `${user.firstName} sent you a love note! 💌`,
+          title: pushNotificationTitle,
         },
       );
 
