@@ -16,6 +16,7 @@ import userEvents from './queries/userEvents';
 import relationshipScores from './queries/relationshipScores';
 import unviewedEventCounts from './queries/unviewedEventCounts';
 import receivedLoveNotes from './queries/receivedLoveNotes';
+import sentLoveNotes from './queries/sentLoveNotes';
 
 // mutations
 import userRequest from './mutations/userRequest';
@@ -54,6 +55,7 @@ const schema = new Schema({
       relationshipScores,
       unviewedEventCounts,
       receivedLoveNotes,
+      sentLoveNotes,
     },
   }),
   mutation: new ObjectType({
