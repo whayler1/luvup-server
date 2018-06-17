@@ -19,7 +19,7 @@ const bulkCreate = async (
     loveNoteId,
   }));
   const models = await model.bulkCreate(values);
-  console.log('\n\nmodels:', models);
+
   return models;
 };
 
@@ -100,6 +100,7 @@ const createLoveNote = {
             'relationshipId',
             'senderId',
             'recipientId',
+            'isRead',
           ]),
           numJalapenoes,
           numLuvups,
