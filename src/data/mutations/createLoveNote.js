@@ -34,10 +34,10 @@ const createLoveNote = {
   }),
   args: {
     note: { type: GraphQLString },
-    numJalapenoes: { type: GraphQLInt },
+    numJalapenos: { type: GraphQLInt },
     numLuvups: { type: GraphQLInt },
   },
-  resolve: async ({ request }, { note, numJalapenoes, numLuvups }) => {
+  resolve: async ({ request }, { note, numJalapenos, numLuvups }) => {
     if (!note) {
       return {};
     }
@@ -72,8 +72,8 @@ const createLoveNote = {
       if (_.isNumber(numLuvups)) {
         await bulkCreate(Coin, numLuvups, bulkFunc);
       }
-      if (_.isNumber(numJalapenoes)) {
-        await bulkCreate(Jalapeno, numJalapenoes, bulkFunc);
+      if (_.isNumber(numJalapenos)) {
+        await bulkCreate(Jalapeno, numJalapenos, bulkFunc);
       }
 
       const pushNotificationTitle = `${user.firstName} sent you a love note! 💌`;
@@ -102,7 +102,7 @@ const createLoveNote = {
             'recipientId',
             'isRead',
           ]),
-          numJalapenoes,
+          numJalapenos,
           numLuvups,
         },
       };
