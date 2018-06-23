@@ -2,7 +2,7 @@ import graphql, { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 import _ from 'lodash';
 
 import LoveNoteType from '../types/LoveNoteType';
-import { User, LoveNote, Coin, Jalapeno } from '../models';
+import { User, LoveNote, Coin, Jalapeno, UserEvent } from '../models';
 import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
 import { sendPushNotification } from '../../services/pushNotifications';
@@ -21,6 +21,21 @@ const bulkCreate = async (
   const models = await model.bulkCreate(values);
 
   return models;
+};
+
+const createUserEvents = (userId, loverId, relationshipId) => {
+  UserEvent.bulkCreate([
+    {
+      userId,
+      relationshipId,
+      name: 'lovenote-sent',
+    },
+    {
+      userId: loverId,
+      relationshipId,
+      name: 'lovenote-received',
+    },
+  ]);
 };
 
 const createLoveNote = {
@@ -61,6 +76,8 @@ const createLoveNote = {
         senderId: user.id,
         recipientId: lover.id,
       });
+
+      createUserEvents(user.id, lover.id, relationshipId);
 
       const bulkFunc = () => ({
         relationshipId,
