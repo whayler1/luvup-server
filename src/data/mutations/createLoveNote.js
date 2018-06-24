@@ -38,6 +38,27 @@ const createUserEvents = (userId, loverId, relationshipId) => {
   ]);
 };
 
+const getPluralTokenText = (n, verb) => `${n} ${verb}${n !== 1 ? 's' : ''}`;
+
+const getNotificationTitleString = (
+  loverFirstName,
+  numLuvups,
+  numJalapenos,
+) => {
+  const tokenStrs = [];
+  let tokenText = '';
+  if (numLuvups) {
+    tokenStrs.push(getPluralTokenText(numLuvups, 'Luvup'));
+  }
+  if (numJalapenos) {
+    tokenStrs.push(getPluralTokenText(numJalapenos, 'jalapeno'));
+  }
+  if (tokenStrs.length) {
+    tokenText = ` with ${tokenStrs.join(' & ')} attached`;
+  }
+  return `${_.upperFirst(loverFirstName)} sent you a lonve note${tokenText}!`;
+};
+
 const createLoveNote = {
   type: new GraphQLObjectType({
     name: 'CreateLoveNote',
@@ -93,7 +114,11 @@ const createLoveNote = {
         await bulkCreate(Jalapeno, numJalapenos, bulkFunc);
       }
 
-      const pushNotificationTitle = `${user.firstName} sent you a love note! 💌`;
+      const pushNotificationTitle = getNotificationTitleString(
+        user.firstName,
+        numLuvups,
+        numJalapenos,
+      );
       sendPushNotification(
         lover.id,
         note,
