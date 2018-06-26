@@ -6,7 +6,10 @@ import {
   GraphQLInt,
   GraphQLFloat,
   GraphQLBoolean,
+  GraphQLList,
 } from 'graphql';
+import CoinType from './CoinType';
+import JalapenoType from './JalapenoType';
 
 const LoveNoteType = new GraphQLObjectType({
   name: 'LoveNote',
@@ -22,6 +25,12 @@ const LoveNoteType = new GraphQLObjectType({
     numLuvups: { type: GraphQLInt },
     numJalapenos: { type: GraphQLInt },
     isRead: { type: GraphQLBoolean },
+    luvups: {
+      type: new GraphQLList(CoinType),
+    },
+    jalapenos: {
+      type: new GraphQLList(JalapenoType),
+    },
   },
 });
 

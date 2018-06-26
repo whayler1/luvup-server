@@ -56,7 +56,7 @@ const getNotificationTitleString = (
   if (tokenStrs.length) {
     tokenText = ` with ${tokenStrs.join(' & ')} attached`;
   }
-  return `${_.upperFirst(loverFirstName)} sent you a lonve note${tokenText}!`;
+  return `${_.upperFirst(loverFirstName)} sent you a love note${tokenText}!`;
 };
 
 const createLoveNote = {
@@ -107,12 +107,18 @@ const createLoveNote = {
         loveNoteId: loveNote.id,
       });
 
+      let luvups;
+      let jalapenos;
+
       if (_.isNumber(numLuvups)) {
-        await bulkCreate(Coin, numLuvups, bulkFunc);
+        luvups = await bulkCreate(Coin, numLuvups, bulkFunc);
       }
       if (_.isNumber(numJalapenos)) {
-        await bulkCreate(Jalapeno, numJalapenos, bulkFunc);
+        jalapenos = await bulkCreate(Jalapeno, numJalapenos, bulkFunc);
       }
+
+      console.log('\n\n luvups', luvups);
+      console.log('\n\n jalapenos', jalapenos);
 
       const pushNotificationTitle = getNotificationTitleString(
         user.firstName,
@@ -146,6 +152,8 @@ const createLoveNote = {
           ]),
           numJalapenos,
           numLuvups,
+          luvups,
+          jalapenos,
         },
       };
     }
