@@ -100,25 +100,22 @@ const createLoveNote = {
 
       createUserEvents(user.id, lover.id, relationshipId);
 
-      const bulkFunc = () => ({
+      const bulkObj = {
         relationshipId,
         senderId: user.id,
         recipientId: lover.id,
         loveNoteId: loveNote.id,
-      });
+      };
 
       let luvups;
       let jalapenos;
 
       if (_.isNumber(numLuvups)) {
-        luvups = await bulkCreate(Coin, numLuvups, bulkFunc);
+        luvups = await bulkCreate(Coin, numLuvups, bulkObj);
       }
       if (_.isNumber(numJalapenos)) {
-        jalapenos = await bulkCreate(Jalapeno, numJalapenos, bulkFunc);
+        jalapenos = await bulkCreate(Jalapeno, numJalapenos, bulkObj);
       }
-
-      console.log('\n\n luvups', luvups);
-      console.log('\n\n jalapenos', jalapenos);
 
       const pushNotificationTitle = getNotificationTitleString(
         user.firstName,
