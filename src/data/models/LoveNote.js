@@ -16,6 +16,16 @@ const LoveNote = Model.define('LoveNote', {
     type: DataType.BOOLEAN,
     defaultValue: false,
   },
+
+  numLuvups: {
+    type: DataType.SMALLINT,
+    defaultValue: 0,
+  },
+
+  numJalapenos: {
+    type: DataType.SMALLINT,
+    defaultValue: 0,
+  },
 });
 
 export default LoveNote;

@@ -96,6 +96,8 @@ const createLoveNote = {
         note,
         senderId: user.id,
         recipientId: lover.id,
+        numLuvups: numLuvups || 0,
+        numJalapenos: numJalapenos || 0,
       });
 
       createUserEvents(user.id, lover.id, relationshipId);
