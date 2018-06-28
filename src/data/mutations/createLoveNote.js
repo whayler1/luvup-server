@@ -40,11 +40,7 @@ const createUserEvents = (userId, loverId, relationshipId) => {
 
 const getPluralTokenText = (n, verb) => `${n} ${verb}${n !== 1 ? 's' : ''}`;
 
-const getNotificationTitleString = (
-  loverFirstName,
-  numLuvups,
-  numJalapenos,
-) => {
+const getNotificationBodyString = (loverFirstName, numLuvups, numJalapenos) => {
   const tokenStrs = [];
   let tokenText = '';
   if (numLuvups) {
@@ -119,21 +115,21 @@ const createLoveNote = {
         jalapenos = await bulkCreate(Jalapeno, numJalapenos, bulkObj);
       }
 
-      const pushNotificationTitle = getNotificationTitleString(
+      const pushNotificationBody = getNotificationBodyString(
         user.firstName,
         numLuvups,
         numJalapenos,
       );
       sendPushNotification(
         lover.id,
-        note,
+        pushNotificationBody,
         {
           type: 'love-note',
-          message: pushNotificationTitle,
+          message: pushNotificationBody,
         },
         'default',
         {
-          title: pushNotificationTitle,
+          title: 'You received a love note! 💌',
         },
       );
 
@@ -148,9 +144,9 @@ const createLoveNote = {
             'senderId',
             'recipientId',
             'isRead',
+            'numJalapenos',
+            'numLuvups',
           ]),
-          numJalapenos,
-          numLuvups,
           luvups,
           jalapenos,
         },

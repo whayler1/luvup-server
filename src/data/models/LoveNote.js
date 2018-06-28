@@ -18,12 +18,12 @@ const LoveNote = Model.define('LoveNote', {
   },
 
   numLuvups: {
-    type: DataType.SMALLINT,
+    type: DataType.INTEGER,
     defaultValue: 0,
   },
 
   numJalapenos: {
-    type: DataType.SMALLINT,
+    type: DataType.INTEGER,
     defaultValue: 0,
   },
 });
