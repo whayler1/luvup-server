@@ -32,16 +32,20 @@ const receivedLoveNotes = {
 
     if (verify) {
       const user = await User.findOne({ where: { id: verify.id } });
+      const recipientId = verify.id;
+      const relationshipId = user.RelationshipId;
+      const isReadSet = _.isBoolean(isRead);
+
       const query = {
         limit,
         offset,
         where: {
-          recipientId: verify.id,
-          relationshipId: user.RelationshipId,
+          recipientId,
+          relationshipId,
         },
         order: [['createdAt', 'DESC']],
       };
-      if (_.isBoolean(isRead)) {
+      if (isReadSet) {
         Object.assign(query.where, { isRead });
       }
 

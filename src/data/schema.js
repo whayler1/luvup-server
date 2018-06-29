@@ -38,6 +38,7 @@ import setExpoPushToken from './mutations/setExpoPushToken';
 import invalidateExpoPushToken from './mutations/invalidateExpoPushToken';
 import createLoveNote from './mutations/createLoveNote';
 import updateLoveNote from './mutations/updateLoveNote';
+import setLoveNotesReadWithCreatedAt from './mutations/setLoveNotesReadWithCreatedAt';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -79,6 +80,7 @@ const schema = new Schema({
       invalidateExpoPushToken,
       createLoveNote,
       updateLoveNote,
+      setLoveNotesReadWithCreatedAt,
     },
   }),
 });
