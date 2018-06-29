@@ -27,6 +27,12 @@ const setLoveNotesReadWithCreatedAt = {
 
     if (verify) {
       const user = await User.findOne({ where: { id: verify.id } });
+      /**
+       * JW: Gross fix/hack. Set created at forward 1 second. $lte at the exact
+       * time wasn't getting the item the date was taken from.
+       */
+      const createdAtDate = new Date(createdAt);
+      createdAtDate.setSeconds(createdAtDate.getSeconds() + 1);
 
       const [count] = await LoveNote.update(
         { isRead: true },
@@ -36,7 +42,7 @@ const setLoveNotesReadWithCreatedAt = {
             relationshipId: user.RelationshipId,
             isRead: false,
             createdAt: {
-              $lte: new Date(createdAt),
+              $lte: createdAtDate,
             },
           },
         },
