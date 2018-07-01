@@ -22,6 +22,8 @@ const UserEvent = Model.define('UserEvent', {
       'relationship-started',
       'relationship-ended',
       'password-changed',
+      'lovenote-sent',
+      'lovenote-received',
     ),
   },
 });

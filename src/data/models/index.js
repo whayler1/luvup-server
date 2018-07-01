@@ -5,6 +5,7 @@ import UserClaim from './UserClaim';
 import UserProfile from './UserProfile';
 import UserPasswordReset from './UserPasswordReset';
 import UserRequest from './UserRequest';
+import LoveNote from './LoveNote';
 import LoverRequest from './LoverRequest';
 import Relationship from './Relationship';
 import Coin from './Coin';
@@ -15,6 +16,11 @@ import ExpoPushToken from './ExpoPushToken';
 
 Relationship.hasMany(RelationshipScore, {
   as: 'relationshipScores',
+  foreignKey: 'relationshipId',
+});
+
+Relationship.hasMany(LoveNote, {
+  as: 'loveNotes',
   foreignKey: 'relationshipId',
 });
 
@@ -34,6 +40,28 @@ User.hasMany(ExpoPushToken, {
 
 UserEvent.belongsTo(Relationship, {
   as: 'relationship',
+});
+
+LoveNote.belongsTo(User, {
+  as: 'recipient',
+});
+
+LoveNote.belongsTo(User, {
+  as: 'sender',
+});
+
+LoveNote.belongsTo(Relationship, {
+  as: 'relationship',
+});
+
+LoveNote.hasMany(Coin, {
+  as: 'coins',
+  foreignKey: 'loveNoteId',
+});
+
+LoveNote.hasMany(Jalapeno, {
+  as: 'jalapenos',
+  foreignKey: 'loveNoteId',
 });
 
 Jalapeno.belongsTo(User, {
@@ -135,6 +163,7 @@ export {
   UserRequest,
   Coin,
   Jalapeno,
+  LoveNote,
   LoverRequest,
   Relationship,
   RelationshipScore,

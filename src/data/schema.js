@@ -15,6 +15,8 @@ import sentJalapenos from './queries/sentJalapenos';
 import userEvents from './queries/userEvents';
 import relationshipScores from './queries/relationshipScores';
 import unviewedEventCounts from './queries/unviewedEventCounts';
+import receivedLoveNotes from './queries/receivedLoveNotes';
+import sentLoveNotes from './queries/sentLoveNotes';
 
 // mutations
 import userRequest from './mutations/userRequest';
@@ -34,6 +36,9 @@ import confirmUserRequestCode from './mutations/confirmUserRequestCode';
 import resendLoverRequestEmail from './mutations/resendLoverRequestEmail';
 import setExpoPushToken from './mutations/setExpoPushToken';
 import invalidateExpoPushToken from './mutations/invalidateExpoPushToken';
+import createLoveNote from './mutations/createLoveNote';
+import updateLoveNote from './mutations/updateLoveNote';
+import setLoveNotesReadWithCreatedAt from './mutations/setLoveNotesReadWithCreatedAt';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -50,6 +55,8 @@ const schema = new Schema({
       userEvents,
       relationshipScores,
       unviewedEventCounts,
+      receivedLoveNotes,
+      sentLoveNotes,
     },
   }),
   mutation: new ObjectType({
@@ -71,6 +78,9 @@ const schema = new Schema({
       changePassword,
       setExpoPushToken,
       invalidateExpoPushToken,
+      createLoveNote,
+      updateLoveNote,
+      setLoveNotesReadWithCreatedAt,
     },
   }),
 });

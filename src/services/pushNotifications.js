@@ -55,6 +55,7 @@ export const sendPushNotification = async (
   body,
   data = {},
   sound = 'default',
+  options = {},
 ) => {
   const tokens = await ExpoPushToken.findAll({
     where: {
@@ -76,6 +77,7 @@ export const sendPushNotification = async (
         ...dataAppend,
       },
       sound,
+      ...options,
     }));
 
     const chunks = expo.chunkPushNotifications(notifications);
