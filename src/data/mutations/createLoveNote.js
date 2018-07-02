@@ -6,6 +6,7 @@ import { User, LoveNote, Coin, Jalapeno, UserEvent } from '../models';
 import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
 import { sendPushNotification } from '../../services/pushNotifications';
+import analytics from '../../services/analytics';
 
 const bulkCreate = async (
   model,
@@ -132,6 +133,15 @@ const createLoveNote = {
           title: 'You received a love note! 💌',
         },
       );
+
+      analytics.track({
+        userId: user.id,
+        event: 'createLoveNote',
+        properties: {
+          category: 'loveNote',
+          loveNoteId: loveNote.id,
+        },
+      });
 
       return {
         loveNote: {
