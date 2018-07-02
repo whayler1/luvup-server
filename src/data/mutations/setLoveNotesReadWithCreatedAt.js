@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { User, LoveNote, Coin, Jalapeno, UserEvent } from '../models';
 import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
+import analytics from '../../services/analytics';
 
 const setLoveNotesReadWithCreatedAt = {
   type: new GraphQLObjectType({
@@ -49,6 +50,14 @@ const setLoveNotesReadWithCreatedAt = {
       );
 
       if (_.isNumber(count)) {
+        analytics.track({
+          userId: user.id,
+          event: 'setLoveNotesReadWithCreatedAt',
+          properties: {
+            category: 'loveNote',
+          },
+        });
+
         return { count };
       }
       throw new Error('bad response');
