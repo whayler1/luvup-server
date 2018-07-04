@@ -51,7 +51,7 @@ const receivedLoverRequests = {
       const rows = await addSenders(loverRequests);
 
       if (loverRequests) {
-        return Object.assign({}, loverRequests.dataValues, { rows });
+        return Object.assign({}, { count: loverRequests.count }, { rows });
       }
       return {};
     }
