@@ -33,6 +33,21 @@ const getRelationshipScoresByDate = rows =>
     return accumulator;
   }, []);
 
+const getLastScoreDate = async (userId, relationshipId) => {
+  const res = await RelationshipScore.findAll({
+    limit: 1,
+    where: {
+      userId,
+      relationshipId,
+    },
+    order: [['createdAt', 'ASC']],
+  });
+  if (!res && res.length > 0) {
+    return '';
+  }
+  return moment(new Date(res[0].createdAt)).format('YYYY-MM-DD');
+};
+
 const relationshipScores = {
   type: new GraphQLObjectType({
     name: 'RelationshipScoresByDateResource',
@@ -41,6 +56,7 @@ const relationshipScores = {
       rows: { type: new GraphQLList(RelationshipScoreByDayType) },
       endDate: { type: GraphQLString },
       startDate: { type: GraphQLString },
+      firstDate: { type: GraphQLString },
     },
   }),
   args: {
@@ -48,14 +64,16 @@ const relationshipScores = {
     startDate: { type: GraphQLString },
   },
   resolve: async ({ request }, { endDate, startDate }) => {
+    if (!_.isString(endDate)) {
+      return {};
+    }
+
     const verify = await validateJwtToken(request);
 
     if (verify) {
       const user = await User.find({ where: { id: verify.id } });
-      if (!_.isString(endDate)) {
-        return {};
-      }
-
+      const userId = user.id;
+      const relationshipId = user.RelationshipId;
       const endDateObj = new Date(endDate);
       const createdAtArgs = {
         $gte: endDateObj,
@@ -67,8 +85,8 @@ const relationshipScores = {
 
       const res = await RelationshipScore.findAll({
         where: {
-          userId: user.id,
-          relationshipId: user.RelationshipId,
+          userId,
+          relationshipId,
           createdAt: createdAtArgs,
         },
         order: [['createdAt', 'DESC']],
@@ -76,10 +94,13 @@ const relationshipScores = {
 
       const rows = getRelationshipScoresByDate(res);
 
+      const firstDate = await getLastScoreDate(userId, relationshipId);
+
       return {
         rows,
         endDate,
         startDate,
+        firstDate,
       };
     }
 
