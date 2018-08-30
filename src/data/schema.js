@@ -14,6 +14,7 @@ import jalapenos from './queries/jalapenos';
 import sentJalapenos from './queries/sentJalapenos';
 import userEvents from './queries/userEvents';
 import relationshipScores from './queries/relationshipScores';
+import relationshipScoresByDate from './queries/relationshipScoresByDate';
 import unviewedEventCounts from './queries/unviewedEventCounts';
 import receivedLoveNotes from './queries/receivedLoveNotes';
 import sentLoveNotes from './queries/sentLoveNotes';
@@ -54,6 +55,7 @@ const schema = new Schema({
       sentJalapenos,
       userEvents,
       relationshipScores,
+      relationshipScoresByDate,
       unviewedEventCounts,
       receivedLoveNotes,
       sentLoveNotes,
