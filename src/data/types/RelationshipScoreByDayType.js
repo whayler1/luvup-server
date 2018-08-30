@@ -7,18 +7,14 @@ import {
   GraphQLFloat,
   GraphQLBoolean,
 } from 'graphql';
+import RelationshipScoreType from './RelationshipScoreType';
 
 const RelationshipScoreByDayType = new GraphQLObjectType({
   name: 'RelationshipScoreByDay',
   description: 'The highest relationship score from a given day',
   fields: {
-    id: { type: new GraphQLNonNull(GraphQLID) },
-    createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString },
-    score: { type: GraphQLInt },
-    relationshipId: { type: GraphQLID },
-    userId: { type: GraphQLID },
     day: { type: GraphQLString },
+    relationshipScore: { type: RelationshipScoreType },
   },
 });
 
