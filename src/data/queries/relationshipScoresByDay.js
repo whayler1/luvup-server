@@ -13,7 +13,7 @@ import config from '../../config';
 import RelationshipScoreByDayType from '../types/RelationshipScoreByDayType';
 import validateJwtToken from '../helpers/validateJwtToken';
 
-const getRelationshipScoresByDate = rows =>
+const getRelationshipScoresByDay = rows =>
   rows.reduce((accumulator, row) => {
     const day = moment(new Date(row.createdAt)).format('YYYY-MM-DD');
     const newRow = { relationshipScore: { ...row.dataValues }, day };
@@ -48,9 +48,9 @@ const getLastScoreDate = async (userId, relationshipId) => {
   return moment(new Date(res[0].createdAt)).format('YYYY-MM-DD');
 };
 
-const relationshipScores = {
+const relationshipScoresByDay = {
   type: new GraphQLObjectType({
-    name: 'RelationshipScoresByDateResource',
+    name: 'RelationshipScoresByDayResource',
     description: 'Get one relationship score per day between the defined dates',
     fields: {
       rows: { type: new GraphQLList(RelationshipScoreByDayType) },
@@ -92,7 +92,7 @@ const relationshipScores = {
         order: [['createdAt', 'DESC']],
       });
 
-      const rows = getRelationshipScoresByDate(res);
+      const rows = getRelationshipScoresByDay(res);
 
       const firstDate = await getLastScoreDate(userId, relationshipId);
 
@@ -108,4 +108,4 @@ const relationshipScores = {
   },
 };
 
-export default relationshipScores;
+export default relationshipScoresByDay;
