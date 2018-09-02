@@ -4,9 +4,9 @@ import moment from 'moment';
 import { datetimeAndTimestamp } from './dateFormats';
 import { Relationship, RelationshipScore, Coin, Jalapeno } from '../models';
 
-const dailyTopHealth = 15;
-const dayThresholds = [3, 7, 11];
-const weights = [0.4, 0.35, 0.25];
+const dailyTopHealth = 5;
+const dayThresholds = [1, 4, 8];
+const weights = [0.7, 0.2, 0.1];
 const topHealths = dayThresholds.map((n, i, ary) => {
   if (i > 0) {
     return (n - ary[i - 1]) * dailyTopHealth;
