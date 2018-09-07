@@ -2,11 +2,17 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import { datetimeAndTimestamp } from './dateFormats';
-import { Relationship, RelationshipScore, Coin, Jalapeno } from '../models';
+import {
+  Relationship,
+  RelationshipScore,
+  Coin,
+  Jalapeno,
+  LoveNote,
+} from '../models';
 
-const dailyTopHealth = 15;
-const dayThresholds = [3, 7, 11];
-const weights = [0.4, 0.35, 0.25];
+const dailyTopHealth = 6;
+const dayThresholds = [1, 4, 8];
+const weights = [0.7, 0.2, 0.1];
 const topHealths = dayThresholds.map((n, i, ary) => {
   if (i > 0) {
     return (n - ary[i - 1]) * dailyTopHealth;
@@ -43,10 +49,14 @@ const getPromises = (recipientId, relationshipId, model) => {
   });
 };
 
-const getCounts = async (recipientId, relationshipId) =>
+const getCounts = async (recipientId, senderId, relationshipId) =>
   Promise.all([
     Promise.all(getPromises(recipientId, relationshipId, Coin)),
     Promise.all(getPromises(recipientId, relationshipId, Jalapeno)),
+    Promise.all(getPromises(recipientId, relationshipId, LoveNote)),
+    Promise.all(getPromises(senderId, relationshipId, Coin)),
+    Promise.all(getPromises(senderId, relationshipId, Jalapeno)),
+    Promise.all(getPromises(senderId, relationshipId, LoveNote)),
   ]);
 
 const getScores = ary => ary.map((count, i) => count / topHealths[i]);
@@ -56,17 +66,52 @@ const getWeightedAverage = ary =>
 export const generateScore = async user => {
   const userId = user.id;
   const relationshipId = user.RelationshipId;
+  const relationship = await Relationship.findOne({
+    where: { id: relationshipId },
+  });
+  const [lover] = await relationship.getLover({
+    where: {
+      $not: {
+        id: user.id,
+      },
+    },
+  });
+  const loverId = lover.id;
 
-  const [coinCounts, jalapenoCounts] = await getCounts(userId, relationshipId);
+  const [
+    receivedCoinCounts,
+    receivedJalapenoCounts,
+    receivedLoveNotes,
+    sentCoinCounts,
+    sentJalapenoCounts,
+    sentLoveNotes,
+  ] = await getCounts(userId, loverId, relationshipId);
 
-  const coinScores = getScores(coinCounts);
-  const jalapenoScores = getScores(jalapenoCounts);
-  const weightedCoinScore = getWeightedAverage(coinScores);
-  const weightedJalapenoScore = 1 - getWeightedAverage(jalapenoScores);
-  const scoreFuzzy = Math.round(
-    (weightedCoinScore * 0.75 + weightedJalapenoScore * 0.25) * 100,
+  const receivedPositiveTokens = receivedCoinCounts.map(
+    (count, i) =>
+      count + receivedLoveNotes[i] * 0.5 - receivedJalapenoCounts[i] * 0.2,
   );
-  const score = Math.min(Math.max(scoreFuzzy, 0), 100);
+  const sentPositiveTokens = sentCoinCounts.map(
+    (count, i) => count + sentLoveNotes[i] * 0.5 - sentJalapenoCounts[i] * 0.1,
+  );
+
+  const receivedCoinScores = getScores(receivedPositiveTokens);
+  const sentCoinScores = getScores(sentPositiveTokens);
+
+  const receivedWeightedCoinScore = getWeightedAverage(receivedCoinScores);
+  const sentWeightedCoinScore = getWeightedAverage(sentCoinScores);
+
+  const scoreWeight = [
+    { score: receivedWeightedCoinScore, weight: 0.8 },
+    { score: sentWeightedCoinScore, weight: 0.2 },
+  ];
+
+  const scoreFuzzy = scoreWeight.reduce(
+    (accumulator, score) => accumulator + score.score * score.weight,
+    0,
+  );
+
+  const score = Math.min(Math.max(scoreFuzzy * 100, 0), 100);
 
   const relationshipScore = await RelationshipScore.create({
     score,
