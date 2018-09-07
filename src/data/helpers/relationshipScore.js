@@ -2,9 +2,15 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import { datetimeAndTimestamp } from './dateFormats';
-import { Relationship, RelationshipScore, Coin, Jalapeno } from '../models';
+import {
+  Relationship,
+  RelationshipScore,
+  Coin,
+  Jalapeno,
+  LoveNote,
+} from '../models';
 
-const dailyTopHealth = 5;
+const dailyTopHealth = 6;
 const dayThresholds = [1, 4, 8];
 const weights = [0.7, 0.2, 0.1];
 const topHealths = dayThresholds.map((n, i, ary) => {
@@ -47,8 +53,10 @@ const getCounts = async (recipientId, senderId, relationshipId) =>
   Promise.all([
     Promise.all(getPromises(recipientId, relationshipId, Coin)),
     Promise.all(getPromises(recipientId, relationshipId, Jalapeno)),
+    Promise.all(getPromises(recipientId, relationshipId, LoveNote)),
     Promise.all(getPromises(senderId, relationshipId, Coin)),
     Promise.all(getPromises(senderId, relationshipId, Jalapeno)),
+    Promise.all(getPromises(senderId, relationshipId, LoveNote)),
   ]);
 
 const getScores = ary => ary.map((count, i) => count / topHealths[i]);
@@ -73,26 +81,29 @@ export const generateScore = async user => {
   const [
     receivedCoinCounts,
     receivedJalapenoCounts,
+    receivedLoveNotes,
     sentCoinCounts,
     sentJalapenoCounts,
+    sentLoveNotes,
   ] = await getCounts(userId, loverId, relationshipId);
 
-  const receivedCoinScores = getScores(receivedCoinCounts);
-  const receivedJalapenoScores = getScores(receivedJalapenoCounts);
-  const sentCoinScores = getScores(sentCoinCounts);
-  const sentJalapenoScores = getScores(sentJalapenoCounts);
+  const receivedPositiveTokens = receivedCoinCounts.map(
+    (count, i) =>
+      count + receivedLoveNotes[i] * 0.5 - receivedJalapenoCounts[i] * 0.2,
+  );
+  const sentPositiveTokens = sentCoinCounts.map(
+    (count, i) => count + sentLoveNotes[i] * 0.5 - sentJalapenoCounts[i] * 0.1,
+  );
+
+  const receivedCoinScores = getScores(receivedPositiveTokens);
+  const sentCoinScores = getScores(sentPositiveTokens);
 
   const receivedWeightedCoinScore = getWeightedAverage(receivedCoinScores);
-  const receivedWeightedJalapenoScore =
-    1 - getWeightedAverage(receivedJalapenoScores);
   const sentWeightedCoinScore = getWeightedAverage(sentCoinScores);
-  const sentWeightedJalapenoScore = 1 - getWeightedAverage(sentJalapenoScores);
 
   const scoreWeight = [
-    { score: receivedWeightedCoinScore, weight: 0.7 },
-    { score: receivedWeightedJalapenoScore, weight: 0.15 },
-    { score: sentWeightedCoinScore, weight: 0.1 },
-    { score: sentWeightedJalapenoScore, weight: 0.05 },
+    { score: receivedWeightedCoinScore, weight: 0.8 },
+    { score: sentWeightedCoinScore, weight: 0.2 },
   ];
 
   const scoreFuzzy = scoreWeight.reduce(
