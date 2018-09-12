@@ -10,8 +10,8 @@ import {
   LoveNote,
 } from '../models';
 
-const dailyTopHealth = 6;
-const dayThresholds = [1, 4, 8];
+const dailyTopHealth = 8;
+const dayThresholds = [2, 4, 8];
 const weights = [0.7, 0.2, 0.1];
 const topHealths = dayThresholds.map((n, i, ary) => {
   if (i > 0) {
