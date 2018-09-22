@@ -13,6 +13,8 @@ import Jalapeno from './Jalapeno';
 import UserEvent from './UserEvent';
 import RelationshipScore from './RelationshipScore';
 import ExpoPushToken from './ExpoPushToken';
+import QuizItem from './QuizItem';
+import QuizItemChoice from './QuizItemChoice';
 
 Relationship.hasMany(RelationshipScore, {
   as: 'relationshipScores',
@@ -22,6 +24,26 @@ Relationship.hasMany(RelationshipScore, {
 Relationship.hasMany(LoveNote, {
   as: 'loveNotes',
   foreignKey: 'relationshipId',
+});
+
+Relationship.hasMany(QuizItem, {
+  as: 'quizItems',
+  foreignKey: 'relationshipId',
+});
+
+User.hasMany(QuizItem, {
+  as: 'sentQuizItems',
+  foreignKey: 'senderId',
+});
+
+User.hasMany(QuizItem, {
+  as: 'receivedQuizItems',
+  foreignKey: 'recipientId',
+});
+
+QuizItem.hasMany(QuizItemChoice, {
+  as: 'choices',
+  foreignKey: 'quizItemId',
 });
 
 RelationshipScore.belongsTo(User, {
@@ -169,4 +191,6 @@ export {
   RelationshipScore,
   UserEvent,
   ExpoPushToken,
+  QuizItem,
+  QuizItemChoice,
 };
