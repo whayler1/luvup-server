@@ -8,9 +8,9 @@ const QuizItem = Model.define('QuizItem', {
     primaryKey: true,
   },
 
-  question: {
-    type: DataType.TEXT,
-  },
+  question: { type: DataType.TEXT },
+  senderChoiceId: { type: DataType.UUID },
+  recipientChoiceId: { type: DataType.UUID },
 });
 
 export default QuizItem;
