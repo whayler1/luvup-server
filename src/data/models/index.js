@@ -191,4 +191,6 @@ export {
   RelationshipScore,
   UserEvent,
   ExpoPushToken,
+  QuizItem,
+  QuizItemChoice,
 };

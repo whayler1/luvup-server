@@ -1,7 +1,7 @@
 import DataType from 'sequelize';
 import Model from '../sequelize';
 
-const QuizItem = Model.define('QuizItem', {
+const QuizItemChoice = Model.define('QuizItemChoice', {
   id: {
     type: DataType.UUID,
     defaultValue: DataType.UUIDV1,
@@ -13,4 +13,4 @@ const QuizItem = Model.define('QuizItem', {
   },
 });
 
-export default QuizItem;
+export default QuizItemChoice;
