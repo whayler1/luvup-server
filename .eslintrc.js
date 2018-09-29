@@ -14,14 +14,11 @@ module.exports = {
 
   extends: [
     'airbnb',
-    'plugin:flowtype/recommended',
-    'plugin:css-modules/recommended',
     'prettier',
-    'prettier/flowtype',
     'prettier/react',
   ],
 
-  plugins: ['flowtype', 'css-modules', 'prettier'],
+  plugins: ['prettier'],
 
   globals: {
     __DEV__: true,
@@ -62,7 +59,7 @@ module.exports = {
       },
     ],
 
-    'no-unused-vars': 0,
+    'no-unused-vars': 1,
 
     // Allow js files to use jsx syntax, too
     'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx'] }],

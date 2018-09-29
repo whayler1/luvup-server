@@ -1,4 +1,4 @@
-import graphql, {
+import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
@@ -8,11 +8,11 @@ import graphql, {
 import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
-import { User, LoveNote, Coin, Jalapeno, UserEvent } from '../models';
-import config from '../../config';
+import { User } from '../models';
+// import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
-import { sendPushNotification } from '../../services/pushNotifications';
-import analytics from '../../services/analytics';
+// import { sendPushNotification } from '../../services/pushNotifications';
+// import analytics from '../../services/analytics';
 
 // const createUserEvents = (userId, loverId, relationshipId) => {
 //   UserEvent.bulkCreate([
