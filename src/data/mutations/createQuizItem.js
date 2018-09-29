@@ -4,8 +4,9 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLID,
+  GraphQLNonNull,
 } from 'graphql';
-import _ from 'lodash';
+// import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
 // import { User } from '../models';
@@ -51,118 +52,108 @@ const createQuizItem = {
     name: 'CreateQuizItem',
     description: 'creates a new QuizItem.',
     fields: {
-      quizItem: QuizItemType,
+      quizItem: { type: QuizItemType },
     },
   }),
   args: {
-    question: { type: GraphQLString },
-    reward: { type: GraphQLInt },
-    choices: { type: new GraphQLList(GraphQLString) },
-    senderChoiceId: { type: GraphQLID },
+    question: { type: new GraphQLNonNull(GraphQLString) },
+    reward: { type: new GraphQLNonNull(GraphQLInt) },
+    choices: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+    senderChoiceId: { type: new GraphQLNonNull(GraphQLID) },
   },
-  resolve: async (
-    { request },
-    { question, reward, choices, senderChoiceId },
-  ) => {
-    if (
-      !question ||
-      !_.isNumber(reward) ||
-      !_.isArray(choices) ||
-      !senderChoiceId
-    ) {
+  resolve: async ({ request }) =>
+    // { question, reward, choices, senderChoiceId },
+    {
+      const verify = await validateJwtToken(request);
+
+      if (verify) {
+        // const user = await User.findOne({ where: { id: verify.id } });
+        // const relationshipId = user.RelationshipId;
+        // const lover = await User.findOne({
+        //   where: {
+        //     RelationshipId: user.RelationshipId,
+        //     $not: {
+        //       id: user.id,
+        //     },
+        //   },
+        // });
+        // const loveNote = await LoveNote.create({
+        //   relationshipId,
+        //   note,
+        //   senderId: user.id,
+        //   recipientId: lover.id,
+        //   numLuvups: numLuvups || 0,
+        //   numJalapenos: numJalapenos || 0,
+        // });
+        //
+        // createUserEvents(user.id, lover.id, relationshipId);
+        //
+        // const bulkObj = {
+        //   relationshipId,
+        //   senderId: user.id,
+        //   recipientId: lover.id,
+        //   loveNoteId: loveNote.id,
+        // };
+        //
+        // let luvups;
+        // let jalapenos;
+        //
+        // if (_.isNumber(numLuvups)) {
+        //   luvups = await bulkCreate(Coin, numLuvups, bulkObj);
+        // }
+        // if (_.isNumber(numJalapenos)) {
+        //   jalapenos = await bulkCreate(Jalapeno, numJalapenos, bulkObj);
+        // }
+        //
+        // const pushNotificationBody = getNotificationBodyString(
+        //   user.firstName,
+        //   numLuvups,
+        //   numJalapenos,
+        // );
+        // sendPushNotification(
+        //   lover.id,
+        //   pushNotificationBody,
+        //   {
+        //     type: 'love-note',
+        //     message: pushNotificationBody,
+        //   },
+        //   'default',
+        //   {
+        //     title: 'You received a love note! 💌',
+        //   },
+        // );
+        //
+        // analytics.track({
+        //   userId: user.id,
+        //   event: 'createQuizItem
+        // ',
+        //   properties: {
+        //     category: 'loveNote',
+        //     loveNoteId: loveNote.id,
+        //   },
+        // });
+        //
+        // return {
+        //   loveNote: {
+        //     ..._.pick(loveNote, [
+        //       'id',
+        //       'note',
+        //       'createdAt',
+        //       'updatedAt',
+        //       'relationshipId',
+        //       'senderId',
+        //       'recipientId',
+        //       'isRead',
+        //       'numJalapenos',
+        //       'numLuvups',
+        //     ]),
+        //     luvups,
+        //     jalapenos,
+        //   },
+        // };
+      }
       return {};
-    }
-
-    const verify = await validateJwtToken(request);
-
-    if (verify) {
-      // const user = await User.findOne({ where: { id: verify.id } });
-      // const relationshipId = user.RelationshipId;
-      // const lover = await User.findOne({
-      //   where: {
-      //     RelationshipId: user.RelationshipId,
-      //     $not: {
-      //       id: user.id,
-      //     },
-      //   },
-      // });
-      // const loveNote = await LoveNote.create({
-      //   relationshipId,
-      //   note,
-      //   senderId: user.id,
-      //   recipientId: lover.id,
-      //   numLuvups: numLuvups || 0,
-      //   numJalapenos: numJalapenos || 0,
-      // });
-      //
-      // createUserEvents(user.id, lover.id, relationshipId);
-      //
-      // const bulkObj = {
-      //   relationshipId,
-      //   senderId: user.id,
-      //   recipientId: lover.id,
-      //   loveNoteId: loveNote.id,
-      // };
-      //
-      // let luvups;
-      // let jalapenos;
-      //
-      // if (_.isNumber(numLuvups)) {
-      //   luvups = await bulkCreate(Coin, numLuvups, bulkObj);
-      // }
-      // if (_.isNumber(numJalapenos)) {
-      //   jalapenos = await bulkCreate(Jalapeno, numJalapenos, bulkObj);
-      // }
-      //
-      // const pushNotificationBody = getNotificationBodyString(
-      //   user.firstName,
-      //   numLuvups,
-      //   numJalapenos,
-      // );
-      // sendPushNotification(
-      //   lover.id,
-      //   pushNotificationBody,
-      //   {
-      //     type: 'love-note',
-      //     message: pushNotificationBody,
-      //   },
-      //   'default',
-      //   {
-      //     title: 'You received a love note! 💌',
-      //   },
-      // );
-      //
-      // analytics.track({
-      //   userId: user.id,
-      //   event: 'createQuizItem
-      // ',
-      //   properties: {
-      //     category: 'loveNote',
-      //     loveNoteId: loveNote.id,
-      //   },
-      // });
-      //
-      // return {
-      //   loveNote: {
-      //     ..._.pick(loveNote, [
-      //       'id',
-      //       'note',
-      //       'createdAt',
-      //       'updatedAt',
-      //       'relationshipId',
-      //       'senderId',
-      //       'recipientId',
-      //       'isRead',
-      //       'numJalapenos',
-      //       'numLuvups',
-      //     ]),
-      //     luvups,
-      //     jalapenos,
-      //   },
-      // };
-    }
-    return {};
-  },
+    },
 };
 
 export default createQuizItem;

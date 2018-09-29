@@ -25,7 +25,6 @@ import confirmUser from './mutations/confirmUser';
 // import sendNewPassword from './mutations/sendNewPassword';
 // import resetPassword from './mutations/resetPassword';
 import requestLover from './mutations/requestLover';
-import login from './mutations/login';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
 import cancelLoverRequest from './mutations/cancelLoverRequest';
 import sendCoin from './mutations/sendCoin';
@@ -40,6 +39,7 @@ import invalidateExpoPushToken from './mutations/invalidateExpoPushToken';
 import createLoveNote from './mutations/createLoveNote';
 import updateLoveNote from './mutations/updateLoveNote';
 import setLoveNotesReadWithCreatedAt from './mutations/setLoveNotesReadWithCreatedAt';
+import createQuizItem from './mutations/createQuizItem';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -83,6 +83,7 @@ const schema = new Schema({
       createLoveNote,
       updateLoveNote,
       setLoveNotesReadWithCreatedAt,
+      createQuizItem,
     },
   }),
 });
