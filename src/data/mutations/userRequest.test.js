@@ -1,10 +1,8 @@
 import { graphql } from 'graphql';
-import jwt from 'jsonwebtoken';
-import _ from 'lodash';
 import uuidv1 from 'uuid/v1';
 
 import schema from '../schema';
-import models, { User, UserRequest } from '../models';
+import { UserRequest } from '../models';
 import config from '../../config';
 
 beforeAll(() => {
@@ -23,7 +21,7 @@ it('should return an error if a user with the requested email already exists', a
     email,
     code: '123456',
   });
-  const user = await userRequest.createUser({
+  await userRequest.createUser({
     username: uuid,
     firstName: 'Jason',
     lastName: 'Wents',
