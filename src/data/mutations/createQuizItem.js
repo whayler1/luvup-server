@@ -8,7 +8,7 @@ import {
 import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
-import { User } from '../models';
+// import { User } from '../models';
 // import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
 // import { sendPushNotification } from '../../services/pushNotifications';
@@ -76,7 +76,7 @@ const createQuizItem = {
     const verify = await validateJwtToken(request);
 
     if (verify) {
-      const user = await User.findOne({ where: { id: verify.id } });
+      // const user = await User.findOne({ where: { id: verify.id } });
       // const relationshipId = user.RelationshipId;
       // const lover = await User.findOne({
       //   where: {

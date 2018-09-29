@@ -59,7 +59,7 @@ module.exports = {
       },
     ],
 
-    'no-unused-vars': 1,
+    // 'no-unused-vars': 0,
 
     // Allow js files to use jsx syntax, too
     'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx'] }],
