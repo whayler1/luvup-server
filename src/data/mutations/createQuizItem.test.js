@@ -72,6 +72,7 @@ describe('createQuizItem', () => {
             relationshipId
             senderId
             recipientId
+            choices { answer }
           }
         }
       }`;

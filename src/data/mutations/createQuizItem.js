@@ -9,7 +9,7 @@ import {
 // import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
-import { User } from '../models';
+import { User, QuizItemChoice } from '../models';
 // import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
 // import { sendPushNotification } from '../../services/pushNotifications';
@@ -63,19 +63,39 @@ const createQuizItem = {
   },
   resolve: async (
     { request },
-    { question, reward, /* choices,*/ senderChoiceId },
+    { question, reward, choices, senderChoiceIndex },
   ) => {
     const verify = await validateJwtToken(request);
 
     if (verify) {
       const user = await User.findOne({ where: { id: verify.id } });
+      const relationshipId = user.RelationshipId;
       const quizItem = await user.createSentQuizItem({
         question,
         reward,
-        senderChoiceId,
+        relationshipId,
+        // senderChoiceId,
       });
 
-      return { quizItem };
+      const choiceObjs = await QuizItemChoice.bulkCreate(
+        choices.map(answer => ({
+          answer,
+          quizItemId: quizItem.id,
+        })),
+      );
+
+      await quizItem.update({
+        senderChoiceId: choiceObjs[senderChoiceIndex].id,
+      });
+      // console.log('choices', choiceObjs);
+      console.log('quizItem', quizItem.dataValues);
+
+      return {
+        quizItem: {
+          ...quizItem.dataValues,
+          choices: choiceObjs,
+        },
+      };
     }
     return {};
   },

@@ -3,10 +3,6 @@ import {
   GraphQLID,
   GraphQLString,
   GraphQLNonNull,
-  GraphQLInt,
-  GraphQLFloat,
-  GraphQLBoolean,
-  GraphQLList,
 } from 'graphql';
 
 const QuizItemChoiceType = new GraphQLObjectType({
