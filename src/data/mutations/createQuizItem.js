@@ -14,7 +14,19 @@ import { UserNotLoggedInError } from '../errors';
 // import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
 import { sendPushNotification } from '../../services/pushNotifications';
-// import analytics from '../../services/analytics';
+import analytics from '../../services/analytics';
+
+const trackEvent = (userId, loverId, relationshipId) => {
+  analytics.track({
+    userId,
+    event: 'createQuizItem',
+    properties: {
+      category: 'quizItem',
+      recipientId: loverId,
+      relationshipId,
+    },
+  });
+};
 
 const createUserEvents = (userId, loverId, relationshipId) => {
   UserEvent.bulkCreate([
@@ -90,6 +102,7 @@ const createQuizItem = {
 
       sendLoverPushNotification(user, lover);
       createUserEvents(user.id, lover.id, relationshipId);
+      trackEvent(user.id, lover.id, relationshipId);
 
       return {
         quizItem: {
