@@ -6,52 +6,35 @@ import {
   // GraphQLID,
   GraphQLNonNull,
 } from 'graphql';
-// import _ from 'lodash';
+import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
-import { User, QuizItemChoice } from '../models';
+import { User, UserEvent, QuizItemChoice } from '../models';
 import { UserNotLoggedInError } from '../errors';
 // import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
 import { sendPushNotification } from '../../services/pushNotifications';
 // import analytics from '../../services/analytics';
 
-// const createUserEvents = (userId, loverId, relationshipId) => {
-//   UserEvent.bulkCreate([
-//     {
-//       userId,
-//       relationshipId,
-//       name: 'lovenote-sent',
-//     },
-//     {
-//       userId: loverId,
-//       relationshipId,
-//       name: 'lovenote-received',
-//     },
-//   ]);
-// };
-
-// const getPluralTokenText = (n, verb) => `${n} ${verb}${n !== 1 ? 's' : ''}`;
-
-// const getNotificationBodyString = (loverFirstName, numLuvups, numJalapenos) => {
-//   const tokenStrs = [];
-//   let tokenText = '';
-//   if (numLuvups) {
-//     tokenStrs.push(getPluralTokenText(numLuvups, 'Luvup'));
-//   }
-//   if (numJalapenos) {
-//     tokenStrs.push(getPluralTokenText(numJalapenos, 'jalapeno'));
-//   }
-//   if (tokenStrs.length) {
-//     tokenText = ` with ${tokenStrs.join(' & ')} attached`;
-//   }
-//   return `${_.upperFirst(loverFirstName)} sent you a love note${tokenText}!`;
-// };
+const createUserEvents = (userId, loverId, relationshipId) => {
+  UserEvent.bulkCreate([
+    {
+      userId,
+      relationshipId,
+      name: 'quiz-item-sent',
+    },
+    {
+      userId: loverId,
+      relationshipId,
+      name: 'quiz-item-received',
+    },
+  ]);
+};
 
 const sendLoverPushNotification = (user, lover) => {
-  const message = `${user.firstName} created a new Love Quiz!`;
+  const message = `${_.upperFirst(user.firstName)} created a new Love Quiz!`;
   sendPushNotification(lover.id, message, {
-    type: 'love-quiz-received',
+    type: 'quiz-item-received',
     message,
   });
 };
@@ -106,6 +89,7 @@ const createQuizItem = {
       });
 
       sendLoverPushNotification(user, lover);
+      createUserEvents(user.id, lover.id, relationshipId);
 
       return {
         quizItem: {

@@ -24,6 +24,8 @@ const UserEvent = Model.define('UserEvent', {
       'password-changed',
       'lovenote-sent',
       'lovenote-received',
+      'quiz-item-sent',
+      'quiz-item-received',
     ),
   },
 });
