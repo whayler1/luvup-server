@@ -5,34 +5,41 @@ import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 // import { QuizItem } from '../models';
 import { PermissionError } from '../errors';
+import { createQuizItemObj } from './createQuizItem';
 
 describe('answerQuizItem', () => {
   describe('when user is logged in', () => {
     describe('and is answering an item they are the recipient of', () => {
-      xit('should return the updated quizItem', async () => {
-        // const { user, lover, rootValue } = await createLoggedInUser({
-        //   isInRelationship: true,
-        // });
-        // const quizItem = await QuizItem.create({
-        //   senderId: lover.id,
-        //   recipientId: user.id,
-        //   relationshipId: user.RelationshipId,
-        // });
-        //
-        // const query = `mutation {
-        //   answerQuizItem(
-        //     quizItemId: ""
-        //     recipientChoiceId: ""
-        //   ) {
-        //     quizItem {
-        //       id recipientChoiceId
-        //     }
-        //   }
-        // }`;
+      it('should return the updated quizItem', async () => {
+        const { user, lover, rootValue } = await createLoggedInUser({
+          isInRelationship: true,
+        });
+        const quizItem = await createQuizItemObj(
+          lover,
+          user,
+          'foo',
+          2,
+          ['a', 'b', 'c'],
+          1,
+        );
+
+        const query = `mutation {
+          answerQuizItem(
+            quizItemId: "${quizItem.id}"
+            recipientChoiceId: "${quizItem.choices[2].id}"
+          ) {
+            quizItem {
+              id recipientChoiceId
+            }
+          }
+        }`;
+
+        const res = await graphql(schema, query, rootValue, sequelize);
+        console.log('res', res);
       });
     });
 
-    describe('and is answering an item they are not the recipient of', () => {
+    xdescribe('and is answering an item they are not the recipient of', () => {
       it('should return a permission error', async () => {
         const { rootValue } = await createLoggedInUser({
           isInRelationship: true,

@@ -28,7 +28,7 @@ const getUserAndLover = async userId => {
   return { user, lover, relationshipId };
 };
 
-const createQuizItemObj = async (
+export const createQuizItemObj = async (
   user,
   lover,
   question,
