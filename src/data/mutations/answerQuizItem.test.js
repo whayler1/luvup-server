@@ -14,7 +14,7 @@ describe('answerQuizItem', () => {
         const { user, lover, rootValue } = await createLoggedInUser({
           isInRelationship: true,
         });
-        const quizItem = await createQuizItemObj(
+        const originalQuizItem = await createQuizItemObj(
           lover,
           user,
           'foo',
@@ -22,24 +22,31 @@ describe('answerQuizItem', () => {
           ['a', 'b', 'c'],
           1,
         );
+        const recipientChoiceId = originalQuizItem.choices[2].id;
 
         const query = `mutation {
           answerQuizItem(
-            quizItemId: "${quizItem.id}"
-            recipientChoiceId: "${quizItem.choices[2].id}"
+            quizItemId: "${originalQuizItem.id}"
+            recipientChoiceId: "${recipientChoiceId}"
           ) {
             quizItem {
-              id recipientChoiceId
+              recipientChoiceId
             }
           }
         }`;
 
-        const res = await graphql(schema, query, rootValue, sequelize);
-        console.log('res', res);
+        const { data: { answerQuizItem: { quizItem } } } = await graphql(
+          schema,
+          query,
+          rootValue,
+          sequelize,
+        );
+
+        expect(quizItem.recipientChoiceId).toEqual(recipientChoiceId);
       });
     });
 
-    xdescribe('and is answering an item they are not the recipient of', () => {
+    describe('and is answering an item they are not the recipient of', () => {
       it('should return a permission error', async () => {
         const { rootValue } = await createLoggedInUser({
           isInRelationship: true,
