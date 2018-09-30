@@ -3,7 +3,6 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLList,
-  // GraphQLID,
   GraphQLNonNull,
 } from 'graphql';
 import _ from 'lodash';
@@ -11,10 +10,55 @@ import _ from 'lodash';
 import QuizItemType from '../types/QuizItemType';
 import { User, UserEvent, QuizItemChoice } from '../models';
 import { UserNotLoggedInError } from '../errors';
-// import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
 import { sendPushNotification } from '../../services/pushNotifications';
 import analytics from '../../services/analytics';
+
+const getUserAndLover = async userId => {
+  const user = await User.findOne({ where: { id: userId } });
+  const relationshipId = user.RelationshipId;
+  const lover = await User.findOne({
+    where: {
+      RelationshipId: relationshipId,
+      $not: {
+        id: user.id,
+      },
+    },
+  });
+  return { user, lover, relationshipId };
+};
+
+const createQuizItemObj = async (
+  user,
+  lover,
+  question,
+  reward,
+  choices,
+  senderChoiceIndex,
+) => {
+  const quizItem = await user.createSentQuizItem({
+    question,
+    reward,
+    relationshipId: user.RelationshipId,
+    recipientId: lover.id,
+  });
+
+  const choiceObjs = await QuizItemChoice.bulkCreate(
+    choices.map(answer => ({
+      answer,
+      quizItemId: quizItem.id,
+    })),
+  );
+
+  await quizItem.update({
+    senderChoiceId: choiceObjs[senderChoiceIndex].id,
+  });
+
+  return {
+    ...quizItem.dataValues,
+    choices: choiceObjs,
+  };
+};
 
 const trackEvent = (userId, loverId, relationshipId) => {
   analytics.track({
@@ -72,44 +116,21 @@ const createQuizItem = {
     const verify = await validateJwtToken(request);
 
     if (verify) {
-      const user = await User.findOne({ where: { id: verify.id } });
-      const relationshipId = user.RelationshipId;
-      const lover = await User.findOne({
-        where: {
-          RelationshipId: relationshipId,
-          $not: {
-            id: user.id,
-          },
-        },
-      });
-      const quizItem = await user.createSentQuizItem({
+      const { user, lover, relationshipId } = await getUserAndLover(verify.id);
+      const quizItem = await createQuizItemObj(
+        user,
+        lover,
         question,
         reward,
-        relationshipId,
-        recipientId: lover.id,
-      });
-
-      const choiceObjs = await QuizItemChoice.bulkCreate(
-        choices.map(answer => ({
-          answer,
-          quizItemId: quizItem.id,
-        })),
+        choices,
+        senderChoiceIndex,
       );
-
-      await quizItem.update({
-        senderChoiceId: choiceObjs[senderChoiceIndex].id,
-      });
 
       sendLoverPushNotification(user, lover);
       createUserEvents(user.id, lover.id, relationshipId);
       trackEvent(user.id, lover.id, relationshipId);
 
-      return {
-        quizItem: {
-          ...quizItem.dataValues,
-          choices: choiceObjs,
-        },
-      };
+      return { quizItem };
     }
     throw UserNotLoggedInError;
   },
