@@ -13,7 +13,7 @@ import { User, QuizItemChoice } from '../models';
 import { UserNotLoggedInError } from '../errors';
 // import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
-// import { sendPushNotification } from '../../services/pushNotifications';
+import { sendPushNotification } from '../../services/pushNotifications';
 // import analytics from '../../services/analytics';
 
 // const createUserEvents = (userId, loverId, relationshipId) => {
@@ -47,6 +47,14 @@ import validateJwtToken from '../helpers/validateJwtToken';
 //   }
 //   return `${_.upperFirst(loverFirstName)} sent you a love note${tokenText}!`;
 // };
+
+const sendLoverPushNotification = (user, lover) => {
+  const message = `${user.firstName} created a new Love Quiz!`;
+  sendPushNotification(lover.id, message, {
+    type: 'love-quiz-received',
+    message,
+  });
+};
 
 const createQuizItem = {
   type: new GraphQLObjectType({
@@ -84,7 +92,6 @@ const createQuizItem = {
         reward,
         relationshipId,
         recipientId: lover.id,
-        // senderChoiceId,
       });
 
       const choiceObjs = await QuizItemChoice.bulkCreate(
@@ -97,6 +104,8 @@ const createQuizItem = {
       await quizItem.update({
         senderChoiceId: choiceObjs[senderChoiceIndex].id,
       });
+
+      sendLoverPushNotification(user, lover);
 
       return {
         quizItem: {
