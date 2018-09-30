@@ -10,6 +10,7 @@ import {
 
 import QuizItemType from '../types/QuizItemType';
 import { User, QuizItemChoice } from '../models';
+import { UserNotLoggedInError } from '../errors';
 // import config from '../../config';
 import validateJwtToken from '../helpers/validateJwtToken';
 // import { sendPushNotification } from '../../services/pushNotifications';
@@ -70,10 +71,19 @@ const createQuizItem = {
     if (verify) {
       const user = await User.findOne({ where: { id: verify.id } });
       const relationshipId = user.RelationshipId;
+      const lover = await User.findOne({
+        where: {
+          RelationshipId: relationshipId,
+          $not: {
+            id: user.id,
+          },
+        },
+      });
       const quizItem = await user.createSentQuizItem({
         question,
         reward,
         relationshipId,
+        recipientId: lover.id,
         // senderChoiceId,
       });
 
@@ -87,8 +97,6 @@ const createQuizItem = {
       await quizItem.update({
         senderChoiceId: choiceObjs[senderChoiceIndex].id,
       });
-      // console.log('choices', choiceObjs);
-      console.log('quizItem', quizItem.dataValues);
 
       return {
         quizItem: {
@@ -97,7 +105,7 @@ const createQuizItem = {
         },
       };
     }
-    return {};
+    throw UserNotLoggedInError;
   },
 };
 

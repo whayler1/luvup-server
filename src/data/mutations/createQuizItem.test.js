@@ -3,6 +3,7 @@ import sequelize from '../sequelize';
 import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import models from '../models';
+import { UserNotLoggedInError } from '../errors';
 
 describe('createQuizItem', () => {
   describe('when required args not provided', () => {
@@ -18,30 +19,22 @@ describe('createQuizItem', () => {
       expect(result.errors).toHaveLength(4);
       expect(result.errors).toEqual(
         expect.arrayContaining([
-          {
+          expect.objectContaining({
             message:
               'Field "createQuizItem" argument "question" of type "String!" is required but not provided.',
-            locations: [{ line: 2, column: 9 }],
-            path: undefined,
-          },
-          {
+          }),
+          expect.objectContaining({
             message:
               'Field "createQuizItem" argument "reward" of type "Int!" is required but not provided.',
-            locations: [{ line: 2, column: 9 }],
-            path: undefined,
-          },
-          {
+          }),
+          expect.objectContaining({
             message:
               'Field "createQuizItem" argument "choices" of type "[String]!" is required but not provided.',
-            locations: [{ line: 2, column: 9 }],
-            path: undefined,
-          },
-          {
+          }),
+          expect.objectContaining({
             message:
               'Field "createQuizItem" argument "senderChoiceIndex" of type "Int!" is required but not provided.',
-            locations: [{ line: 2, column: 9 }],
-            path: undefined,
-          },
+          }),
         ]),
       );
     });
@@ -76,7 +69,7 @@ describe('createQuizItem', () => {
           }
         }
       }`;
-      const { user, rootValue } = await createLoggedInUser({
+      const { user, lover, rootValue } = await createLoggedInUser({
         isInRelationship: true,
       });
 
@@ -86,21 +79,42 @@ describe('createQuizItem', () => {
         rootValue,
         sequelize,
       );
-      console.log('result:', quizItem);
+
       expect(quizItem).toEqual(
         expect.objectContaining({
           question: 'do you love me',
-          // senderChoiceId: null,
-          // recipientChoiceId: null,
+          senderChoiceId: quizItem.choices[1].id,
+          recipientChoiceId: null,
           reward: 2,
           isArchived: false,
-          // relationshipId: null,
+          relationshipId: user.RelationshipId,
           senderId: user.id,
-          // recipientId: null,
+          recipientId: lover.id,
+          choices: expect.arrayContaining([
+            expect.objectContaining({ answer: 'a' }),
+            expect.objectContaining({ answer: 'b' }),
+            expect.objectContaining({ answer: 'c' }),
+          ]),
         }),
       );
     });
   });
 
-  describe('when user is not logged in', () => {});
+  describe('when user is not logged in', () => {
+    it('should throw an error', async () => {
+      const query = `mutation {
+        createQuizItem(
+          question: "do you love me"
+          reward: 2
+          choices: ["a","b","c"]
+          senderChoiceIndex: 1,
+        ) {
+          quizItem { id }
+        }
+      }`;
+
+      const { errors } = await graphql(schema, query, {}, sequelize);
+      expect(errors[0].message).toBe(UserNotLoggedInError.message);
+    });
+  });
 });
