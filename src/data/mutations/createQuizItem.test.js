@@ -1,9 +1,12 @@
 import { graphql } from 'graphql';
+import sequelize from '../sequelize';
 import schema from '../schema';
+import createLoggedInUser from '../test-helpers/create-logged-in-user';
+import models from '../models';
 
 describe('createQuizItem', () => {
   describe('when required args not provided', () => {
-    it('should return required args console.error(); array', async () => {
+    it('should return required args error array', async () => {
       const query = `mutation {
         createQuizItem {
           quizItem { id }
@@ -35,7 +38,7 @@ describe('createQuizItem', () => {
           },
           {
             message:
-              'Field "createQuizItem" argument "senderChoiceId" of type "ID!" is required but not provided.',
+              'Field "createQuizItem" argument "senderChoiceIndex" of type "Int!" is required but not provided.',
             locations: [{ line: 2, column: 9 }],
             path: undefined,
           },
@@ -43,7 +46,29 @@ describe('createQuizItem', () => {
       );
     });
   });
-  xit('should respond correctly when user not logged in', () => {
-    expect(true).toBe(true);
+
+  describe('when user is logged in', () => {
+    beforeAll(async () => {
+      await models.sync();
+    });
+
+    it('should create and return a quizItem', async () => {
+      const query = `mutation {
+        createQuizItem(
+          question: "do you love me"
+          reward: 2
+          choices: ["a","b","c"]
+          senderChoiceIndex: 1,
+        ) {
+          quizItem { id }
+        }
+      }`;
+      const { rootValue } = await createLoggedInUser();
+
+      const result = await graphql(schema, query, rootValue, sequelize);
+      console.log('result:', result.data.createQuizItem.quizItem);
+    });
   });
+
+  describe('when user is not logged in', () => {});
 });

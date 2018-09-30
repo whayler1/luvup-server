@@ -4,7 +4,7 @@ import _ from 'lodash';
 import uuid from 'uuid/v1';
 
 import schema from '../schema';
-import models, { User, UserRequest, Relationship } from '../models';
+import { UserRequest, Relationship } from '../models';
 import sequelize from '../sequelize';
 import config from '../../config';
 
