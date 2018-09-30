@@ -41,6 +41,7 @@ import updateLoveNote from './mutations/updateLoveNote';
 import setLoveNotesReadWithCreatedAt from './mutations/setLoveNotesReadWithCreatedAt';
 import createQuizItem from './mutations/createQuizItem';
 import answerQuizItem from './mutations/answerQuizItem';
+import archiveQuizItem from './mutations/archiveQuizItem';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -86,6 +87,7 @@ const schema = new Schema({
       setLoveNotesReadWithCreatedAt,
       createQuizItem,
       answerQuizItem,
+      archiveQuizItem,
     },
   }),
 });
