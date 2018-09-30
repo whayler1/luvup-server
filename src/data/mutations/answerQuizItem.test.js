@@ -1,5 +1,4 @@
 import { graphql } from 'graphql';
-import _ from 'lodash';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
@@ -35,7 +34,6 @@ describe('answerQuizItem', () => {
 
         const res = await graphql(schema, query, rootValue, sequelize);
         const { data: { answerQuizItem: { quizItem, coins } } } = res;
-        console.log('res', res);
 
         expect(quizItem.recipientChoiceId).toEqual(recipientChoiceId);
         expect(coins).toHaveLength(2);
@@ -45,10 +43,39 @@ describe('answerQuizItem', () => {
           recipientId: user.id,
         };
         expect(coins).toEqual(
-          expect.arrayContaining([
-            _.times(2, () => expect.objectContaining(coinExpectation)),
-          ]),
+          expect.arrayContaining([expect.objectContaining(coinExpectation)]),
         );
+      });
+
+      it("should return an empty coins array if answer doesn't match", async () => {
+        const { user, lover, rootValue } = await createLoggedInUser({
+          isInRelationship: true,
+        });
+        const originalQuizItem = await createQuizItemObj(
+          lover,
+          user,
+          'foo',
+          2,
+          ['a', 'b', 'c'],
+          1,
+        );
+        const recipientChoiceId = originalQuizItem.choices[2].id;
+
+        const query = `mutation {
+          answerQuizItem(
+            quizItemId: "${originalQuizItem.id}"
+            recipientChoiceId: "${recipientChoiceId}"
+          ) {
+            quizItem { recipientChoiceId }
+            coins { relationshipId senderId recipientId }
+          }
+        }`;
+
+        const res = await graphql(schema, query, rootValue, sequelize);
+        const { data: { answerQuizItem: { quizItem, coins } } } = res;
+
+        expect(quizItem.recipientChoiceId).toEqual(recipientChoiceId);
+        expect(coins).toHaveLength(0);
       });
     });
 
