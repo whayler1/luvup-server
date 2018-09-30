@@ -72,11 +72,13 @@ describe('createQuizItem', () => {
             relationshipId
             senderId
             recipientId
-            choices { answer }
+            choices { id answer }
           }
         }
       }`;
-      const { user, rootValue } = await createLoggedInUser();
+      const { user, rootValue } = await createLoggedInUser({
+        isInRelationship: true,
+      });
 
       const { data: { createQuizItem: { quizItem } } } = await graphql(
         schema,
