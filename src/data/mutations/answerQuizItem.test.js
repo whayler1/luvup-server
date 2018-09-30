@@ -1,4 +1,5 @@
 import { graphql } from 'graphql';
+import _ from 'lodash';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
@@ -8,7 +9,7 @@ import { createQuizItemObj } from './createQuizItem';
 describe('answerQuizItem', () => {
   describe('when user is logged in', () => {
     describe('and is answering an item they are the recipient of', () => {
-      it('should return the updated quizItem', async () => {
+      it('should return the updated quizItem and coins', async () => {
         const { user, lover, rootValue } = await createLoggedInUser({
           isInRelationship: true,
         });
@@ -20,31 +21,38 @@ describe('answerQuizItem', () => {
           ['a', 'b', 'c'],
           1,
         );
-        const recipientChoiceId = originalQuizItem.choices[2].id;
+        const recipientChoiceId = originalQuizItem.choices[1].id;
 
         const query = `mutation {
           answerQuizItem(
             quizItemId: "${originalQuizItem.id}"
             recipientChoiceId: "${recipientChoiceId}"
           ) {
-            quizItem {
-              recipientChoiceId
-            }
+            quizItem { recipientChoiceId }
+            coins { relationshipId senderId recipientId }
           }
         }`;
 
-        const { data: { answerQuizItem: { quizItem } } } = await graphql(
-          schema,
-          query,
-          rootValue,
-          sequelize,
-        );
+        const res = await graphql(schema, query, rootValue, sequelize);
+        const { data: { answerQuizItem: { quizItem, coins } } } = res;
+        console.log('res', res);
 
         expect(quizItem.recipientChoiceId).toEqual(recipientChoiceId);
+        expect(coins).toHaveLength(2);
+        const coinExpectation = {
+          relationshipId: user.RelationshipId,
+          senderId: lover.id,
+          recipientId: user.id,
+        };
+        expect(coins).toEqual(
+          expect.arrayContaining([
+            _.times(2, () => expect.objectContaining(coinExpectation)),
+          ]),
+        );
       });
     });
 
-    describe('and is answering an item they are not the recipient of', () => {
+    xdescribe('and is answering an item they are not the recipient of', () => {
       it('should return a permission error', async () => {
         const { rootValue } = await createLoggedInUser({
           isInRelationship: true,

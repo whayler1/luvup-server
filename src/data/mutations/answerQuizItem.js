@@ -1,8 +1,14 @@
-import { GraphQLObjectType, GraphQLID, GraphQLNonNull } from 'graphql';
+import {
+  GraphQLObjectType,
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLList,
+} from 'graphql';
 import _ from 'lodash';
 
+import CoinType from '../types/CoinType';
 import QuizItemType from '../types/QuizItemType';
-import { QuizItem, UserEvent } from '../models';
+import { QuizItem, UserEvent, Coin } from '../models';
 import { UserNotLoggedInError, PermissionError } from '../errors';
 import { validateJwtToken, getUser } from '../helpers';
 import { sendPushNotification } from '../../services/pushNotifications';
@@ -36,12 +42,26 @@ const sendLoverPushNotification = (user, lover) => {
   });
 };
 
+const createRewardIfChoicesMatch = async (user, lover, quizItem) => {
+  const { senderChoiceId, recipientChoiceId, reward } = quizItem;
+  if (senderChoiceId === recipientChoiceId && reward > 0) {
+    const luvups = _.times(reward, () => ({
+      relationshipId: user.RelationshipId,
+      senderId: lover.id,
+      recipientId: user.id,
+    }));
+    return Coin.bulkCreate(luvups);
+  }
+  return [];
+};
+
 const answerQuizItem = {
   type: new GraphQLObjectType({
     name: 'AnswerQuizItem',
     description: 'sets the recipientChoiceId of a quiz item',
     fields: {
       quizItem: { type: QuizItemType },
+      coins: { type: new GraphQLList(CoinType) },
     },
   }),
   args: {
@@ -57,10 +77,12 @@ const answerQuizItem = {
 
       if (quizItem.recipientId === user.id) {
         quizItem = await quizItem.update({ recipientChoiceId });
+        const coins = await createRewardIfChoicesMatch(user, lover, quizItem);
         sendLoverPushNotification(user, lover);
         createUserEvent(user.id, user.RelationshipId);
         trackEvent(user.id, lover.id, user.RelationshipId);
-        return { quizItem };
+
+        return { quizItem, coins };
       }
       throw PermissionError;
     }
