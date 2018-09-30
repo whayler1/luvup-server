@@ -6,13 +6,13 @@ import {
   GraphQLID,
   GraphQLNonNull,
 } from 'graphql';
-// import _ from 'lodash';
+import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
-import { QuizItem } from '../models';
+import { QuizItem, UserEvent } from '../models';
 import { UserNotLoggedInError, PermissionError } from '../errors';
 import { validateJwtToken, getUser } from '../helpers';
-// import { sendPushNotification } from '../../services/pushNotifications';
+import { sendPushNotification } from '../../services/pushNotifications';
 // import analytics from '../../services/analytics';
 
 // const trackEvent = (userId, loverId, relationshipId) => {
@@ -27,28 +27,21 @@ import { validateJwtToken, getUser } from '../helpers';
 //   });
 // };
 
-// const createUserEvents = (userId, loverId, relationshipId) => {
-//   UserEvent.bulkCreate([
-//     {
-//       userId,
-//       relationshipId,
-//       name: 'quiz-item-sent',
-//     },
-//     {
-//       userId: loverId,
-//       relationshipId,
-//       name: 'quiz-item-received',
-//     },
-//   ]);
-// };
+const createUserEvent = (userId, relationshipId) => {
+  UserEvent.create({
+    userId,
+    relationshipId,
+    name: 'quiz-item-answered',
+  });
+};
 
-// const sendLoverPushNotification = (user, lover) => {
-//   const message = `${_.upperFirst(user.firstName)} created a new Love Quiz!`;
-//   sendPushNotification(lover.id, message, {
-//     type: 'quiz-item-received',
-//     message,
-//   });
-// };
+const sendLoverPushNotification = (user, lover) => {
+  const message = `${_.upperFirst(user.firstName)} answered a Love Quiz!`;
+  sendPushNotification(lover.id, message, {
+    type: 'quiz-item-answered',
+    message,
+  });
+};
 
 const answerQuizItem = {
   type: new GraphQLObjectType({
@@ -66,11 +59,13 @@ const answerQuizItem = {
     const verify = await validateJwtToken(request);
 
     if (verify) {
-      const { user } = await getUser(verify.id);
+      const { user, lover } = await getUser(verify.id);
       let quizItem = await QuizItem.findOne({ where: { id: quizItemId } });
 
       if (quizItem.recipientId === user.id) {
         quizItem = await quizItem.update({ recipientChoiceId });
+        sendLoverPushNotification(user, lover);
+        createUserEvent(user.id, user.RelationshipId);
         return { quizItem };
       }
       throw PermissionError;
