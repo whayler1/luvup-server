@@ -1,11 +1,4 @@
-import {
-  GraphQLObjectType,
-  // GraphQLString,
-  // GraphQLInt,
-  // GraphQLList,
-  GraphQLID,
-  GraphQLNonNull,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLID, GraphQLNonNull } from 'graphql';
 import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
@@ -13,19 +6,19 @@ import { QuizItem, UserEvent } from '../models';
 import { UserNotLoggedInError, PermissionError } from '../errors';
 import { validateJwtToken, getUser } from '../helpers';
 import { sendPushNotification } from '../../services/pushNotifications';
-// import analytics from '../../services/analytics';
+import analytics from '../../services/analytics';
 
-// const trackEvent = (userId, loverId, relationshipId) => {
-//   analytics.track({
-//     userId,
-//     event: 'answerQuizItem',
-//     properties: {
-//       category: 'quizItem',
-//       recipientId: loverId,
-//       relationshipId,
-//     },
-//   });
-// };
+const trackEvent = (userId, loverId, relationshipId) => {
+  analytics.track({
+    userId,
+    event: 'answerQuizItem',
+    properties: {
+      category: 'quizItem',
+      recipientId: loverId,
+      relationshipId,
+    },
+  });
+};
 
 const createUserEvent = (userId, relationshipId) => {
   UserEvent.create({
@@ -66,6 +59,7 @@ const answerQuizItem = {
         quizItem = await quizItem.update({ recipientChoiceId });
         sendLoverPushNotification(user, lover);
         createUserEvent(user.id, user.RelationshipId);
+        trackEvent(user.id, lover.id, user.RelationshipId);
         return { quizItem };
       }
       throw PermissionError;
