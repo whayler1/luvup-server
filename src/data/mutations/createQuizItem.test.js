@@ -60,13 +60,42 @@ describe('createQuizItem', () => {
           choices: ["a","b","c"]
           senderChoiceIndex: 1,
         ) {
-          quizItem { id }
+          quizItem {
+            id
+            question
+            senderChoiceId
+            recipientChoiceId
+            reward
+            isArchived
+            createdAt
+            updatedAt
+            relationshipId
+            senderId
+            recipientId
+          }
         }
       }`;
-      const { rootValue } = await createLoggedInUser();
+      const { user, rootValue } = await createLoggedInUser();
 
-      const result = await graphql(schema, query, rootValue, sequelize);
-      console.log('result:', result.data.createQuizItem.quizItem);
+      const { data: { createQuizItem: { quizItem } } } = await graphql(
+        schema,
+        query,
+        rootValue,
+        sequelize,
+      );
+      console.log('result:', quizItem);
+      expect(quizItem).toEqual(
+        expect.objectContaining({
+          question: 'do you love me',
+          // senderChoiceId: null,
+          // recipientChoiceId: null,
+          reward: 2,
+          isArchived: false,
+          // relationshipId: null,
+          senderId: user.id,
+          // recipientId: null,
+        }),
+      );
     });
   });
 
