@@ -1,5 +1,4 @@
 import { GraphQLObjectType, GraphQLList, GraphQLInt } from 'graphql';
-import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
 import { QuizItem, QuizItemChoice } from '../models';
@@ -16,6 +15,19 @@ const getQuizItemChoices = quizItems =>
       },
     },
   });
+
+const appendChoicesToQuizItems = (quizItems, quizItemChoices) =>
+  quizItems.map(quizItem => ({
+    ...quizItem.dataValues,
+    choices: quizItemChoices.filter(
+      quizItemChoice => quizItemChoice.quizItemId === quizItem.id,
+    ),
+  }));
+
+const getQuizItemsWithChoices = async quizItems => {
+  const quizItemChoices = await getQuizItemChoices(quizItems);
+  return appendChoicesToQuizItems(quizItems, quizItemChoices);
+};
 
 const receivedQuizItems = {
   type: new GraphQLObjectType({
@@ -48,12 +60,13 @@ const receivedQuizItems = {
         order: [['createdAt', 'DESC']],
       });
 
-      const { rows } = res;
-      const quizItemChoices = await getQuizItemChoices(rows);
-      console.log('quizItemChoices', quizItemChoices);
+      const { rows, count } = res;
+
+      const quizItemsWithChoices = await getQuizItemsWithChoices(rows);
 
       return {
-        ..._.pick(res, ['rows', 'count']),
+        rows: quizItemsWithChoices,
+        count,
         limit,
         offset,
       };
