@@ -79,7 +79,7 @@ describe('answerQuizItem', () => {
       });
     });
 
-    xdescribe('and is answering an item they are not the recipient of', () => {
+    describe('and is answering an item they are not the recipient of', () => {
       it('should return a permission error', async () => {
         const { rootValue } = await createLoggedInUser({
           isInRelationship: true,

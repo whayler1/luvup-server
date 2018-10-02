@@ -24,3 +24,5 @@ https://stackoverflow.com/questions/9540681/list-postgres-enum-type
 **adding enum values**
 
 https://www.postgresql.org/docs/9.5/static/sql-altertype.html
+
+`alter type public."enum_UserEvent_name" add value 'quiz-item-answered';`
