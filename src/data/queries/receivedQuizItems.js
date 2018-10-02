@@ -86,18 +86,6 @@ const receivedQuizItems = {
         order: [['createdAt', 'DESC']],
       });
 
-      // let quizItem = await QuizItem.findOne({ where: { id: quizItemId } });
-      //
-      // if (quizItem.recipientId === user.id) {
-      //   quizItem = await quizItem.update({ recipientChoiceId });
-      //   const coins = await createRewardIfChoicesMatch(user, lover, quizItem);
-      //   sendLoverPushNotification(user, lover);
-      //   createUserEvent(user.id, user.RelationshipId);
-      //   trackEvent(user.id, lover.id, user.RelationshipId);
-      //
-      //   return { quizItem, coins };
-      // }
-      // throw PermissionError;
       return {
         ..._.pick(res, ['rows', 'count']),
         limit,

@@ -18,12 +18,11 @@ import relationshipScoresByDay from './queries/relationshipScoresByDay';
 import unviewedEventCounts from './queries/unviewedEventCounts';
 import receivedLoveNotes from './queries/receivedLoveNotes';
 import sentLoveNotes from './queries/sentLoveNotes';
+import receivedQuizItems from './queries/receivedQuizItems';
 
 // mutations
 import userRequest from './mutations/userRequest';
 import confirmUser from './mutations/confirmUser';
-// import sendNewPassword from './mutations/sendNewPassword';
-// import resetPassword from './mutations/resetPassword';
 import requestLover from './mutations/requestLover';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
 import cancelLoverRequest from './mutations/cancelLoverRequest';
@@ -61,6 +60,7 @@ const schema = new Schema({
       unviewedEventCounts,
       receivedLoveNotes,
       sentLoveNotes,
+      receivedQuizItems,
     },
   }),
   mutation: new ObjectType({

@@ -41,7 +41,7 @@ const addRelationship = async user => {
   return { relationship, lover };
 };
 
-const createLoggedInUser = async ({ isInRelationship = false }) => {
+const createLoggedInUser = async ({ isInRelationship = true }) => {
   const user = await createUser();
 
   const token = jwt.sign(
