@@ -35,12 +35,14 @@ export const createQuizItemObj = async (
   reward,
   choices,
   senderChoiceIndex,
+  options = {},
 ) => {
   const quizItem = await user.createSentQuizItem({
     question,
     reward,
     relationshipId: user.RelationshipId,
     recipientId: lover.id,
+    ...options,
   });
 
   const choiceObjs = await QuizItemChoice.bulkCreate(
