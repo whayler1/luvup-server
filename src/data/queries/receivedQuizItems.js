@@ -1,59 +1,21 @@
-import {
-  GraphQLObjectType,
-  // GraphQLID,
-  // GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLList, GraphQLInt } from 'graphql';
 import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
-import { QuizItem } from '../models';
+import { QuizItem, QuizItemChoice } from '../models';
 import { UserNotLoggedInError } from '../errors';
 import { validateJwtToken, getUser } from '../helpers';
-// import { sendPushNotification } from '../../services/pushNotifications';
-// import analytics from '../../services/analytics';
 
-// const trackEvent = (userId, loverId, relationshipId) => {
-//   analytics.track({
-//     userId,
-//     event: 'receivedQuizItems',
-//     properties: {
-//       category: 'quizItem',
-//       recipientId: loverId,
-//       relationshipId,
-//     },
-//   });
-// };
-//
-// const createUserEvent = (userId, relationshipId) => {
-//   UserEvent.create({
-//     userId,
-//     relationshipId,
-//     name: 'quiz-item-answered',
-//   });
-// };
-//
-// const sendLoverPushNotification = (user, lover) => {
-//   const message = `${_.upperFirst(user.firstName)} answered a Love Quiz!`;
-//   sendPushNotification(lover.id, message, {
-//     type: 'quiz-item-answered',
-//     message,
-//   });
-// };
+const mapQuizItemIds = quizItems => quizItems.map(quizItem => quizItem.id);
 
-// const createRewardIfChoicesMatch = async (user, lover, quizItem) => {
-//   const { senderChoiceId, recipientChoiceId, reward } = quizItem;
-//   if (senderChoiceId === recipientChoiceId && reward > 0) {
-//     const luvups = _.times(reward, () => ({
-//       relationshipId: user.RelationshipId,
-//       senderId: lover.id,
-//       recipientId: user.id,
-//     }));
-//     return Coin.bulkCreate(luvups);
-//   }
-//   return [];
-// };
+const getQuizItemChoices = quizItems =>
+  QuizItemChoice.findAll({
+    where: {
+      quizItemId: {
+        $or: mapQuizItemIds(quizItems),
+      },
+    },
+  });
 
 const receivedQuizItems = {
   type: new GraphQLObjectType({
@@ -85,6 +47,10 @@ const receivedQuizItems = {
         },
         order: [['createdAt', 'DESC']],
       });
+
+      const { rows } = res;
+      const quizItemChoices = await getQuizItemChoices(rows);
+      console.log('quizItemChoices', quizItemChoices);
 
       return {
         ..._.pick(res, ['rows', 'count']),
