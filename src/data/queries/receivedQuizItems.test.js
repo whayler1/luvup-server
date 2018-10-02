@@ -6,6 +6,7 @@ import schema from '../schema';
 import models from '../models';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { createQuizItemObj } from '../mutations/createQuizItem';
+import { UserNotLoggedInError } from '../errors';
 
 const generateQuizItems = (number, sender, recipient) =>
   Promise.all(
@@ -34,11 +35,11 @@ describe('receivedQuizItems', () => {
       const { user, lover, rootValue } = await createLoggedInUser({
         isInRelationship: true,
       });
-      await generateQuizItems(3, lover, user);
+      await generateQuizItems(5, lover, user);
       await generateQuizItems(1, user, lover);
 
       const query = `{
-        receivedQuizItems {
+        receivedQuizItems(limit: 3) {
           rows {
             question
             senderId
@@ -51,8 +52,9 @@ describe('receivedQuizItems', () => {
       }`;
 
       const res = await graphql(schema, query, rootValue, sequelize);
-      const { data: { receivedQuizItems: { rows } } } = res;
-      console.log('res', rows);
+      const { data: { receivedQuizItems: { rows, count } } } = res;
+
+      expect(count).toBe(5);
       expect(rows).toHaveLength(3);
       expect(rows[0]).toEqual(
         expect.objectContaining({
@@ -81,6 +83,19 @@ describe('receivedQuizItems', () => {
           createdAt: 'Thu May 28 1981 00:00:00 GMT-0400 (EDT)',
         }),
       );
+    });
+  });
+
+  describe('when user is not logged in', () => {
+    it('should throw a UserNotLoggedInError error', async () => {
+      const query = `{
+        receivedQuizItems {
+          rows { id }
+        }
+      }`;
+
+      const { errors } = await graphql(schema, query, {}, sequelize);
+      expect(errors[0].message).toBe(UserNotLoggedInError.message);
     });
   });
 });
