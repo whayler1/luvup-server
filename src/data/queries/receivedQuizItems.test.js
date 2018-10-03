@@ -1,29 +1,10 @@
 import { graphql } from 'graphql';
-import _ from 'lodash';
-import moment from 'moment';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import models from '../models';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
-import { createQuizItemObj } from '../mutations/createQuizItem';
 import { UserNotLoggedInError } from '../errors';
-
-const generateQuizItems = (number, sender, recipient) =>
-  Promise.all(
-    _.times(number, i =>
-      createQuizItemObj(
-        sender,
-        recipient,
-        `question${i}`,
-        2,
-        [`a${i}`, `b${i}`, `c${i}`],
-        1,
-        {
-          createdAt: moment('05/30/1981').subtract(i, 'days').toDate(),
-        },
-      ),
-    ),
-  );
+import { generateQuizItems } from '../test-helpers';
 
 describe('receivedQuizItems', () => {
   beforeAll(async () => {
@@ -56,7 +37,6 @@ describe('receivedQuizItems', () => {
 
       const res = await graphql(schema, query, rootValue, sequelize);
       const { data: { receivedQuizItems: { rows, count } } } = res;
-      console.log('rows', rows);
 
       expect(count).toBe(5);
       expect(rows).toHaveLength(3);
