@@ -1,9 +1,8 @@
-import graphql, { GraphQLObjectType, GraphQLInt, GraphQLList } from 'graphql';
+import { GraphQLObjectType, GraphQLInt, GraphQLList } from 'graphql';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 
 import { User, Jalapeno } from '../models';
-import MeType from '../types/MeType';
 import config from '../../config';
 import JalapenoType from '../types/JalapenoType';
 
