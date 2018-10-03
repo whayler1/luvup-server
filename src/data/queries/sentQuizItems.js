@@ -4,10 +4,10 @@ import QuizItemType from '../types/QuizItemType';
 import { UserNotLoggedInError } from '../errors';
 import { validateJwtToken, getUser, getQuizItemsWithChoices } from '../helpers';
 
-const receivedQuizItems = {
+const sentQuizItems = {
   type: new GraphQLObjectType({
-    name: 'ReceivedQuizItems',
-    description: 'quiz items the current user has received',
+    name: 'SentQuizItems',
+    description: 'quiz items the current user has sent',
     fields: {
       rows: { type: new GraphQLList(QuizItemType) },
       count: { type: GraphQLInt },
@@ -19,7 +19,7 @@ const receivedQuizItems = {
     offset: { type: GraphQLInt },
     limit: { type: GraphQLInt },
   },
-  resolve: async ({ request }, { offset, limit }) => {
+  resolve: async ({ request }, { offset = 0, limit = 20 }) => {
     const verify = await validateJwtToken(request);
 
     if (verify) {
@@ -29,7 +29,7 @@ const receivedQuizItems = {
         rows,
         count,
       } = await getQuizItemsWithChoices(user, limit, offset, {
-        recipientId: user.id,
+        senderId: user.id,
       });
 
       return {
@@ -43,4 +43,4 @@ const receivedQuizItems = {
   },
 };
 
-export default receivedQuizItems;
+export default sentQuizItems;

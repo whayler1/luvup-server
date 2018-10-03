@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { QuizItemChoice } from '../models';
+import { QuizItem, QuizItemChoice } from '../models';
 
 const mapQuizItemIds = quizItems => quizItems.map(quizItem => quizItem.id);
 
@@ -26,4 +26,27 @@ const appendChoicesToQuizItems = async quizItems => {
   return mapChoicesToQuizItems(quizItems, quizItemChoices);
 };
 
-export default appendChoicesToQuizItems;
+const getQuizItemsWithChoices = async (
+  user,
+  limit = 20,
+  offset = 0,
+  options = {},
+) => {
+  const res = await QuizItem.findAndCountAll({
+    limit,
+    offset,
+    where: {
+      // senderId: user.id,
+      relationshipId: user.RelationshipId,
+      ...options,
+    },
+    order: [['createdAt', 'DESC']],
+  });
+
+  const { rows, count } = res;
+
+  const quizItemsWithChoices = await appendChoicesToQuizItems(rows);
+  return { rows: quizItemsWithChoices, count };
+};
+
+export default getQuizItemsWithChoices;
