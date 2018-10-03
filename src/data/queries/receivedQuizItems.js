@@ -1,33 +1,13 @@
 import { GraphQLObjectType, GraphQLList, GraphQLInt } from 'graphql';
 
 import QuizItemType from '../types/QuizItemType';
-import { QuizItem, QuizItemChoice } from '../models';
+import { QuizItem } from '../models';
 import { UserNotLoggedInError } from '../errors';
-import { validateJwtToken, getUser } from '../helpers';
-
-const mapQuizItemIds = quizItems => quizItems.map(quizItem => quizItem.id);
-
-const getQuizItemChoices = quizItems =>
-  QuizItemChoice.findAll({
-    where: {
-      quizItemId: {
-        $or: mapQuizItemIds(quizItems),
-      },
-    },
-  });
-
-const appendChoicesToQuizItems = (quizItems, quizItemChoices) =>
-  quizItems.map(quizItem => ({
-    ...quizItem.dataValues,
-    choices: quizItemChoices.filter(
-      quizItemChoice => quizItemChoice.quizItemId === quizItem.id,
-    ),
-  }));
-
-const getQuizItemsWithChoices = async quizItems => {
-  const quizItemChoices = await getQuizItemChoices(quizItems);
-  return appendChoicesToQuizItems(quizItems, quizItemChoices);
-};
+import {
+  validateJwtToken,
+  getUser,
+  appendChoicesToQuizItems,
+} from '../helpers';
 
 const receivedQuizItems = {
   type: new GraphQLObjectType({
@@ -62,7 +42,7 @@ const receivedQuizItems = {
 
       const { rows, count } = res;
 
-      const quizItemsWithChoices = await getQuizItemsWithChoices(rows);
+      const quizItemsWithChoices = await appendChoicesToQuizItems(rows);
 
       return {
         rows: quizItemsWithChoices,
