@@ -28,7 +28,7 @@ const sentQuizItems = {
       const {
         rows,
         count,
-      } = await getQuizItemsWithChoices(user, limit, offset, {
+      } = await getQuizItemsWithChoices(user.RelationshipId, limit, offset, {
         senderId: user.id,
       });
 

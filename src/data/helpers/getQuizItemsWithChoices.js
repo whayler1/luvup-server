@@ -27,7 +27,7 @@ const appendChoicesToQuizItems = async quizItems => {
 };
 
 const getQuizItemsWithChoices = async (
-  user,
+  relationshipId,
   limit = 20,
   offset = 0,
   options = {},
@@ -36,8 +36,7 @@ const getQuizItemsWithChoices = async (
     limit,
     offset,
     where: {
-      // senderId: user.id,
-      relationshipId: user.RelationshipId,
+      relationshipId,
       ...options,
     },
     order: [['createdAt', 'DESC']],
