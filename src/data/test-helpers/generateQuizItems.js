@@ -1,16 +1,17 @@
 import _ from 'lodash';
 import moment from 'moment';
-import { createQuizItemObj } from '../mutations/createQuizItem';
+import { createQuizItem } from '../helpers';
 
 const generateQuizItems = (
   number,
   sender,
   recipient,
   startDate = '05/30/1981',
+  options = {},
 ) =>
   Promise.all(
     _.times(number, i =>
-      createQuizItemObj(
+      createQuizItem(
         sender,
         recipient,
         `question${i}`,
@@ -19,6 +20,7 @@ const generateQuizItems = (
         1,
         {
           createdAt: moment(startDate).subtract(i, 'days').toDate(),
+          ...options,
         },
       ),
     ),

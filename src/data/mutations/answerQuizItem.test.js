@@ -3,7 +3,7 @@ import sequelize from '../sequelize';
 import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { PermissionError } from '../errors';
-import { createQuizItemObj } from './createQuizItem';
+import { createQuizItem } from '../helpers';
 
 describe('answerQuizItem', () => {
   describe('when user is logged in', () => {
@@ -12,7 +12,7 @@ describe('answerQuizItem', () => {
         const { user, lover, rootValue } = await createLoggedInUser({
           isInRelationship: true,
         });
-        const originalQuizItem = await createQuizItemObj(
+        const originalQuizItem = await createQuizItem(
           lover,
           user,
           'foo',
@@ -51,7 +51,7 @@ describe('answerQuizItem', () => {
         const { user, lover, rootValue } = await createLoggedInUser({
           isInRelationship: true,
         });
-        const originalQuizItem = await createQuizItemObj(
+        const originalQuizItem = await createQuizItem(
           lover,
           user,
           'foo',

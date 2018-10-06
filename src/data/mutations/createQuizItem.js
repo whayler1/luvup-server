@@ -8,11 +8,12 @@ import {
 import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
-import { User, UserEvent, QuizItemChoice } from '../models';
+import { User, UserEvent } from '../models';
 import { UserNotLoggedInError } from '../errors';
 import validateJwtToken from '../helpers/validateJwtToken';
 import { sendPushNotification } from '../../services/pushNotifications';
 import analytics from '../../services/analytics';
+import { createQuizItem as createQuizItemObj } from '../helpers';
 
 const getUserAndLover = async userId => {
   const user = await User.findOne({ where: { id: userId } });
@@ -26,40 +27,6 @@ const getUserAndLover = async userId => {
     },
   });
   return { user, lover, relationshipId };
-};
-
-export const createQuizItemObj = async (
-  user,
-  lover,
-  question,
-  reward,
-  choices,
-  senderChoiceIndex,
-  options = {},
-) => {
-  const quizItem = await user.createSentQuizItem({
-    question,
-    reward,
-    relationshipId: user.RelationshipId,
-    recipientId: lover.id,
-    ...options,
-  });
-
-  const choiceObjs = await QuizItemChoice.bulkCreate(
-    choices.map(answer => ({
-      answer,
-      quizItemId: quizItem.id,
-    })),
-  );
-
-  await quizItem.update({
-    senderChoiceId: choiceObjs[senderChoiceIndex].id,
-  });
-
-  return {
-    ...quizItem.dataValues,
-    choices: choiceObjs,
-  };
 };
 
 const trackEvent = (userId, loverId, relationshipId) => {

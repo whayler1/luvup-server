@@ -19,6 +19,7 @@ import unviewedEventCounts from './queries/unviewedEventCounts';
 import receivedLoveNotes from './queries/receivedLoveNotes';
 import sentLoveNotes from './queries/sentLoveNotes';
 import receivedQuizItems from './queries/receivedQuizItems';
+import receivedUnansweredQuizItems from './queries/receivedUnansweredQuizItems';
 import sentQuizItems from './queries/sentQuizItems';
 
 // mutations
@@ -62,6 +63,7 @@ const schema = new Schema({
       receivedLoveNotes,
       sentLoveNotes,
       receivedQuizItems,
+      receivedUnansweredQuizItems,
       sentQuizItems,
     },
   }),

@@ -4,10 +4,10 @@ import QuizItemType from '../types/QuizItemType';
 import { UserNotLoggedInError } from '../errors';
 import { validateJwtToken, getUser, getQuizItemsWithChoices } from '../helpers';
 
-const receivedQuizItems = {
+const receivedUnansweredQuizItems = {
   type: new GraphQLObjectType({
-    name: 'ReceivedQuizItems',
-    description: 'quiz items the current user has received',
+    name: 'ReceivedUnansweredQuizItems',
+    description: 'quiz items the current user has received and not answered',
     fields: {
       rows: { type: new GraphQLList(QuizItemType) },
       count: { type: GraphQLInt },
@@ -30,6 +30,7 @@ const receivedQuizItems = {
         count,
       } = await getQuizItemsWithChoices(user.RelationshipId, limit, offset, {
         recipientId: user.id,
+        recipientChoiceId: null,
       });
 
       return {
@@ -43,4 +44,4 @@ const receivedQuizItems = {
   },
 };
 
-export default receivedQuizItems;
+export default receivedUnansweredQuizItems;
