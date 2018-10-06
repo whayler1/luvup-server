@@ -6,7 +6,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import _ from 'lodash';
-import { QuizItemType } from '../models';
+import QuizItemType from '../types/QuizItemType';
 import { validateJwtToken, getUser, getQuizItemsWithChoices } from '../helpers';
 import { UserNotLoggedInError } from '../errors';
 
