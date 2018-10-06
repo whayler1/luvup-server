@@ -1,15 +1,8 @@
-import graphql, {
-  GraphQLObjectType,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLString,
-} from 'graphql';
-import jwt from 'jsonwebtoken';
+import { GraphQLObjectType, GraphQLList, GraphQLString } from 'graphql';
 import _ from 'lodash';
 import moment from 'moment';
 
 import { User, RelationshipScore } from '../models';
-import config from '../../config';
 import RelationshipScoreByDayType from '../types/RelationshipScoreByDayType';
 import validateJwtToken from '../helpers/validateJwtToken';
 
