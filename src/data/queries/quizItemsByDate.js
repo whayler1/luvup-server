@@ -28,7 +28,7 @@ const quizItemsByDate = {
     const verify = await validateJwtToken(request);
 
     if (verify) {
-      // do a thing
+      // do a thing now brahz
     }
     throw UserNotLoggedInError;
   },
