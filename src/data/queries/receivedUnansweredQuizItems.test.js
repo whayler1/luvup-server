@@ -22,15 +22,15 @@ describe('receivedUnansweredQuizItems', () => {
       const { user, lover, rootValue } = await createLoggedInUser({
         isInRelationship: true,
       });
-      const [qi0, qi1, qi2, qi3, qi4] = await generateQuizItems(5, lover, user);
+      const [qi0, qi1, qi2, qi3] = await generateQuizItems(5, lover, user);
       await generateQuizItems(1, user, lover);
-      const answeredQuizItems = [qi0, qi2, qi4];
+      const answeredQuizItems = [qi0, qi2];
       await Promise.all(
         answeredQuizItems.map(quizItem => setQuizItemAnswered(quizItem)),
       );
 
       const query = `{
-        receivedUnansweredQuizItems {
+        receivedUnansweredQuizItems( limit: 2 ) {
           rows {
             id
             question
@@ -49,7 +49,7 @@ describe('receivedUnansweredQuizItems', () => {
       const res = await graphql(schema, query, rootValue, sequelize);
       const { data: { receivedUnansweredQuizItems: { rows, count } } } = res;
 
-      expect(count).toBe(2);
+      expect(count).toBe(3);
       expect(rows).toHaveLength(2);
       expect(rows[0]).toEqual(
         expect.objectContaining({
@@ -84,7 +84,7 @@ describe('receivedUnansweredQuizItems', () => {
     });
   });
 
-  xdescribe('when user is not logged in', () => {
+  describe('when user is not logged in', () => {
     it('should throw a UserNotLoggedInError error', async () => {
       const query = `{
         receivedUnansweredQuizItems {
