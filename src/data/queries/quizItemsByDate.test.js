@@ -1,6 +1,7 @@
 import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
+import { UserNotLoggedInError } from '../errors';
 import { generateQuizItems } from '../test-helpers';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 
@@ -12,8 +13,6 @@ describe('quizItemsByDate', () => {
       });
       const [, sent1, sent2] = await generateQuizItems(4, user, lover);
       const [, received1, received2] = await generateQuizItems(4, lover, user);
-
-      console.log('sentItems');
 
       const query = `{
         quizItemsByDate(
@@ -101,6 +100,19 @@ describe('quizItemsByDate', () => {
           ]),
         }),
       );
+    });
+  });
+
+  describe('when user is not logged in', () => {
+    it('should throw a UserNotLoggedInError error', async () => {
+      const query = `{
+        receivedUnansweredQuizItems {
+          rows { id }
+        }
+      }`;
+
+      const { errors } = await graphql(schema, query, {}, sequelize);
+      expect(errors[0].message).toBe(UserNotLoggedInError.message);
     });
   });
 });
