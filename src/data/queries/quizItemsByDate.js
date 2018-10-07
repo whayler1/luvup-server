@@ -30,14 +30,12 @@ const quizItemsByDate = {
     if (verify) {
       const { user } = await getUser(verify.id);
       const endDateObj = new Date(endDate);
-      console.log('endDateObj:', endDateObj);
       const createdAtArgs = {
-        $gte: endDateObj,
+        $lte: endDateObj,
       };
 
       if (_.isString(startDate)) {
-        createdAtArgs.$lte = new Date(startDate);
-        console.log('startDate', createdAtArgs.$lte);
+        createdAtArgs.$gte = new Date(startDate);
       }
 
       const {
