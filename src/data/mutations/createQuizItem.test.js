@@ -2,8 +2,41 @@ import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
-import models from '../models';
+import models, { UserEvent } from '../models';
 import { UserNotLoggedInError } from '../errors';
+
+const getSuccessfulCreateQuizItemResponse = async () => {
+  const query = `mutation {
+    createQuizItem(
+      question: "do you love me"
+      reward: 2
+      choices: ["a","b","c"]
+      senderChoiceIndex: 1,
+    ) {
+      quizItem {
+        id
+        question
+        senderChoiceId
+        recipientChoiceId
+        reward
+        isArchived
+        createdAt
+        updatedAt
+        relationshipId
+        senderId
+        recipientId
+        choices { id answer }
+      }
+    }
+  }`;
+  const { user, lover, rootValue } = await createLoggedInUser({
+    isInRelationship: true,
+  });
+
+  const res = await graphql(schema, query, rootValue, sequelize);
+
+  return { res, user, lover };
+};
 
 describe('createQuizItem', () => {
   describe('when required args not provided', () => {
@@ -46,39 +79,11 @@ describe('createQuizItem', () => {
     });
 
     it('should create and return a quizItem', async () => {
-      const query = `mutation {
-        createQuizItem(
-          question: "do you love me"
-          reward: 2
-          choices: ["a","b","c"]
-          senderChoiceIndex: 1,
-        ) {
-          quizItem {
-            id
-            question
-            senderChoiceId
-            recipientChoiceId
-            reward
-            isArchived
-            createdAt
-            updatedAt
-            relationshipId
-            senderId
-            recipientId
-            choices { id answer }
-          }
-        }
-      }`;
-      const { user, lover, rootValue } = await createLoggedInUser({
-        isInRelationship: true,
-      });
-
-      const { data: { createQuizItem: { quizItem } } } = await graphql(
-        schema,
-        query,
-        rootValue,
-        sequelize,
-      );
+      const {
+        res: { data: { createQuizItem: { quizItem } } },
+        user,
+        lover,
+      } = await getSuccessfulCreateQuizItemResponse();
 
       expect(quizItem).toEqual(
         expect.objectContaining({
@@ -96,6 +101,31 @@ describe('createQuizItem', () => {
             expect.objectContaining({ answer: 'c' }),
           ]),
         }),
+      );
+    });
+
+    it('should create user events', async () => {
+      const { user, lover } = await getSuccessfulCreateQuizItemResponse();
+
+      const userEvents = await UserEvent.findAll({
+        where: { relationshipId: user.RelationshipId },
+      });
+
+      expect(userEvents).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            userId: user.id,
+            relationshipId: user.RelationshipId,
+            isViewed: false,
+            name: 'quiz-item-sent',
+          }),
+          expect.objectContaining({
+            userId: lover.id,
+            relationshipId: user.RelationshipId,
+            isViewed: false,
+            name: 'quiz-item-received',
+          }),
+        ]),
       );
     });
   });
