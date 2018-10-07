@@ -34,7 +34,7 @@ const createUserEvents = (userId, loverId, relationshipId) => {
       name: 'quiz-item-received-answered',
     },
     {
-      loverId,
+      userId: loverId,
       relationshipId,
       name: 'quiz-item-sent-answered',
     },
