@@ -26,18 +26,25 @@ const trackEvent = (userId, loverId, relationshipId) => {
   });
 };
 
-const createUserEvent = (userId, relationshipId) => {
-  UserEvent.create({
-    userId,
-    relationshipId,
-    name: 'quiz-item-answered',
-  });
+const createUserEvents = (userId, loverId, relationshipId) => {
+  UserEvent.bulkCreate([
+    {
+      userId,
+      relationshipId,
+      name: 'quiz-item-received-answered',
+    },
+    {
+      loverId,
+      relationshipId,
+      name: 'quiz-item-sent-answered',
+    },
+  ]);
 };
 
 const sendLoverPushNotification = (user, lover) => {
   const message = `${_.upperFirst(user.firstName)} answered a Love Quiz!`;
   sendPushNotification(lover.id, message, {
-    type: 'quiz-item-answered',
+    type: 'quiz-item-sent-answered',
     message,
   });
 };
@@ -79,7 +86,7 @@ const answerQuizItem = {
         quizItem = await quizItem.update({ recipientChoiceId });
         const coins = await createRewardIfChoicesMatch(user, lover, quizItem);
         sendLoverPushNotification(user, lover);
-        createUserEvent(user.id, user.RelationshipId);
+        createUserEvents(user.id, lover.id, user.RelationshipId);
         trackEvent(user.id, lover.id, user.RelationshipId);
 
         return { quizItem, coins };

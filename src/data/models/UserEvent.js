@@ -26,6 +26,8 @@ const UserEvent = Model.define('UserEvent', {
       'lovenote-received',
       'quiz-item-sent',
       'quiz-item-received',
+      'quiz-item-sent-answered',
+      'quiz-item-received-answered',
     ),
   },
 });
