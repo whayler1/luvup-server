@@ -13,16 +13,24 @@ describe('quizItemsByDate', () => {
       await generateQuizItems(4, user, lover);
       await generateQuizItems(4, lover, user);
 
+      console.log('sentItems');
+
       const query = `{
         quizItemsByDate(
-          startDate: "1981-05-31"
-          endDate: "1981-06-2"
+          endDate: "1981-05-28"
+          startDate: "1981-05-30"
         ) {
           rows { createdAt }
         }
       }`;
-      const res = await graphql(schema, query, rootValue, sequelize);
-      console.log('res', res);
+      const { data: { quizItemsByDate: { rows } } } = await graphql(
+        schema,
+        query,
+        rootValue,
+        sequelize,
+      );
+      console.log('res', rows);
+      expect(rows).toHaveLength(4);
     });
   });
 });

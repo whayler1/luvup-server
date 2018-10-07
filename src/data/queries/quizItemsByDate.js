@@ -2,7 +2,6 @@ import {
   GraphQLObjectType,
   GraphQLList,
   GraphQLString,
-  GraphQLInt,
   GraphQLNonNull,
 } from 'graphql';
 import _ from 'lodash';
@@ -22,8 +21,8 @@ const quizItemsByDate = {
     },
   }),
   args: {
-    offset: { type: new GraphQLNonNull(GraphQLInt) },
-    limit: { type: new GraphQLNonNull(GraphQLInt) },
+    endDate: { type: new GraphQLNonNull(GraphQLString) },
+    startDate: { type: GraphQLString },
   },
   resolve: async ({ request }, { endDate, startDate }) => {
     const verify = await validateJwtToken(request);
@@ -31,12 +30,14 @@ const quizItemsByDate = {
     if (verify) {
       const { user } = await getUser(verify.id);
       const endDateObj = new Date(endDate);
+      console.log('endDateObj:', endDateObj);
       const createdAtArgs = {
         $gte: endDateObj,
       };
 
       if (_.isString(startDate)) {
         createdAtArgs.$lte = new Date(startDate);
+        console.log('startDate', createdAtArgs.$lte);
       }
 
       const {
