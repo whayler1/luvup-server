@@ -17,7 +17,6 @@ const quizItemsByDate = {
       rows: { type: new GraphQLList(QuizItemType) },
       endDate: { type: GraphQLString },
       startDate: { type: GraphQLString },
-      // firstDate: { type: GraphQLString },
     },
   }),
   args: {
