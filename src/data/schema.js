@@ -18,14 +18,15 @@ import relationshipScoresByDay from './queries/relationshipScoresByDay';
 import unviewedEventCounts from './queries/unviewedEventCounts';
 import receivedLoveNotes from './queries/receivedLoveNotes';
 import sentLoveNotes from './queries/sentLoveNotes';
+import receivedQuizItems from './queries/receivedQuizItems';
+import receivedUnansweredQuizItems from './queries/receivedUnansweredQuizItems';
+import sentQuizItems from './queries/sentQuizItems';
+import quizItemsByDate from './queries/quizItemsByDate';
 
 // mutations
 import userRequest from './mutations/userRequest';
 import confirmUser from './mutations/confirmUser';
-// import sendNewPassword from './mutations/sendNewPassword';
-// import resetPassword from './mutations/resetPassword';
 import requestLover from './mutations/requestLover';
-import login from './mutations/login';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
 import cancelLoverRequest from './mutations/cancelLoverRequest';
 import sendCoin from './mutations/sendCoin';
@@ -40,6 +41,9 @@ import invalidateExpoPushToken from './mutations/invalidateExpoPushToken';
 import createLoveNote from './mutations/createLoveNote';
 import updateLoveNote from './mutations/updateLoveNote';
 import setLoveNotesReadWithCreatedAt from './mutations/setLoveNotesReadWithCreatedAt';
+import createQuizItem from './mutations/createQuizItem';
+import answerQuizItem from './mutations/answerQuizItem';
+import archiveQuizItem from './mutations/archiveQuizItem';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -59,6 +63,10 @@ const schema = new Schema({
       unviewedEventCounts,
       receivedLoveNotes,
       sentLoveNotes,
+      receivedQuizItems,
+      receivedUnansweredQuizItems,
+      sentQuizItems,
+      quizItemsByDate,
     },
   }),
   mutation: new ObjectType({
@@ -83,6 +91,9 @@ const schema = new Schema({
       createLoveNote,
       updateLoveNote,
       setLoveNotesReadWithCreatedAt,
+      createQuizItem,
+      answerQuizItem,
+      archiveQuizItem,
     },
   }),
 });

@@ -1,4 +1,4 @@
-import graphql, {
+import {
   GraphQLObjectType,
   GraphQLInt,
   GraphQLList,
@@ -7,7 +7,6 @@ import graphql, {
 import _ from 'lodash';
 
 import { User, LoveNote } from '../models';
-import config from '../../config';
 import LoveNoteType from '../types/LoveNoteType';
 import validateJwtToken from '../helpers/validateJwtToken';
 
