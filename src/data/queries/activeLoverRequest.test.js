@@ -3,10 +3,7 @@ import _ from 'lodash';
 
 import schema from '../schema';
 import sequelize from '../sequelize';
-import config from '../../config';
 import { createUser, deleteUser, loginUser } from '../../../test/helpers';
-
-const dateRegex = /^[A-z]{3} [A-z]{3} \d{1,2} \d{4} \d{2}:\d{2}:\d{2} [A-Z]{3}-\d{4} \([A-Z]{3}\)$/;
 
 const query = `{
   activeLoverRequest {
@@ -77,9 +74,6 @@ it('should return a lover request with a recipient if there is one', async () =>
   };
 
   expect(result.data.activeLoverRequest).toMatchObject(matchObj);
-  expect(result.data.activeLoverRequest.loverRequest.createdAt).toMatch(
-    dateRegex,
-  );
 
   await deleteUser(user);
   await deleteUser(lover);
@@ -131,9 +125,6 @@ it('should return only the most recent if several lover requests have been made'
   };
 
   expect(result.data.activeLoverRequest).toMatchObject(matchObj);
-  expect(result.data.activeLoverRequest.loverRequest.createdAt).toMatch(
-    dateRegex,
-  );
 
   await deleteUser(user);
   await deleteUser(lover1);
