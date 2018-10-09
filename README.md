@@ -31,7 +31,7 @@ https://www.postgresql.org/docs/9.5/static/sql-altertype.html
 
 **Logging in locally**
 
-`sqlite2 database.sqlite`
+`sqlite3 database.sqlite`
 
 **list tables**
 
@@ -40,3 +40,7 @@ https://www.postgresql.org/docs/9.5/static/sql-altertype.html
 **list table schema**
 
 `.schema <table name>`
+
+**add column**
+
+`ALTER TABLE table_name ADD new_column_name column_definition;`
