@@ -29,6 +29,7 @@ module.exports = {
     expect: true,
     beforeAll: true,
     afterAll: true,
+    jasmine: true,
   },
 
   env: {

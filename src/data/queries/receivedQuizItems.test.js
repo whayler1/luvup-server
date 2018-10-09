@@ -7,8 +7,16 @@ import { UserNotLoggedInError } from '../errors';
 import { generateQuizItems } from '../test-helpers';
 
 describe('receivedQuizItems', () => {
+  let originalTimeout;
+
   beforeAll(async () => {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     await models.sync();
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
   describe('when user logged in', () => {
