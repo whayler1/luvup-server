@@ -1,9 +1,38 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLList } from 'graphql';
 
-import { User, UserEvent } from '../models';
+import { User, UserEvent, LoveNoteEvent, LoveNote } from '../models';
 import UserEventType from '../types/UserEventType';
 import { UserNotLoggedInError } from '../errors';
 import { validateJwtToken } from '../helpers';
+
+const getLoveNotes = async userEvents => {
+  const loveNoteUserEventIds = userEvents
+    .filter(
+      userEvent =>
+        userEvent.name === 'lovenote-sent' ||
+        userEvent.name === 'lovenote-received',
+    )
+    .map(userEvent => userEvent.id);
+  const loveNoteEvents = await LoveNoteEvent.findAll({
+    where: {
+      userEventId: {
+        $or: loveNoteUserEventIds,
+      },
+    },
+  });
+  const loveNoteIds = loveNoteEvents.map(
+    loveNoteEvent => loveNoteEvent.loveNoteId,
+  );
+  const loveNotes = await LoveNote.findAll({
+    where: {
+      id: {
+        $or: loveNoteIds,
+      },
+    },
+  });
+
+  return { loveNoteEvents, loveNotes };
+};
 
 const userEvents = {
   type: new GraphQLObjectType({
@@ -36,6 +65,9 @@ const userEvents = {
         },
         order: [['createdAt', 'DESC']],
       });
+
+      const things = await getLoveNotes(res.rows);
+      console.log('things', things);
 
       return {
         count: res.count,

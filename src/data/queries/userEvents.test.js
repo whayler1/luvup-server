@@ -73,6 +73,8 @@ describe('userEvents', () => {
         }),
       );
     });
+
+    it('should return associated loveNoteEvents and loveNotes', () => {});
   });
 
   describe('when user is not logged in', () => {
