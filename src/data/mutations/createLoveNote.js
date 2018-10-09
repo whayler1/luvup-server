@@ -1,4 +1,9 @@
-import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLNonNull,
+} from 'graphql';
 import _ from 'lodash';
 
 import LoveNoteType from '../types/LoveNoteType';
@@ -13,6 +18,7 @@ import {
 import validateJwtToken from '../helpers/validateJwtToken';
 import { sendPushNotification } from '../../services/pushNotifications';
 import analytics from '../../services/analytics';
+import { UserNotLoggedInError } from '../errors';
 
 const bulkCreate = async (
   model,
@@ -83,15 +89,11 @@ const createLoveNote = {
     },
   }),
   args: {
-    note: { type: GraphQLString },
+    note: { type: new GraphQLNonNull(GraphQLString) },
     numJalapenos: { type: GraphQLInt },
     numLuvups: { type: GraphQLInt },
   },
   resolve: async ({ request }, { note, numJalapenos, numLuvups }) => {
-    if (!note) {
-      return {};
-    }
-
     const verify = await validateJwtToken(request);
 
     if (verify) {
@@ -179,7 +181,7 @@ const createLoveNote = {
         },
       };
     }
-    return {};
+    throw UserNotLoggedInError;
   },
 };
 
