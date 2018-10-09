@@ -67,7 +67,6 @@ describe('createLoveNote', () => {
         lover,
         res: { data: { createLoveNote: { loveNote } } },
       } = await createLoveNoteRequest(2);
-      console.log('loveNote', loveNote);
 
       expect(loveNote).toEqual(
         expect.objectContaining({
@@ -82,6 +81,28 @@ describe('createLoveNote', () => {
         }),
       );
       expect(loveNote.luvups).toHaveLength(2);
+    });
+
+    it('should allow user to append jalapenos', async () => {
+      const {
+        user,
+        lover,
+        res: { data: { createLoveNote: { loveNote } } },
+      } = await createLoveNoteRequest(undefined, 2);
+
+      expect(loveNote).toEqual(
+        expect.objectContaining({
+          note: 'meow meow',
+          relationshipId: user.RelationshipId,
+          senderId: user.id,
+          recipientId: lover.id,
+          isRead: false,
+          numJalapenos: 2,
+          numLuvups: 0,
+          luvups: null,
+        }),
+      );
+      expect(loveNote.jalapenos).toHaveLength(2);
     });
   });
 });
