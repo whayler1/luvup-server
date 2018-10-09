@@ -1,10 +1,9 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLList } from 'graphql';
-import jwt from 'jsonwebtoken';
-import _ from 'lodash';
 
 import { User, UserEvent } from '../models';
-import config from '../../config';
 import UserEventType from '../types/UserEventType';
+import { UserNotLoggedInError } from '../errors';
+import { validateJwtToken } from '../helpers';
 
 const userEvents = {
   type: new GraphQLObjectType({
@@ -23,12 +22,7 @@ const userEvents = {
     offset: { type: GraphQLInt },
   },
   resolve: async ({ request }, { limit, offset }) => {
-    const id_token = _.at(request, 'cookies.id_token')[0];
-    if (!id_token) {
-      return {};
-    }
-
-    const verify = await jwt.verify(id_token, config.auth.jwt.secret);
+    const verify = await validateJwtToken(request);
 
     if (verify) {
       const user = await User.find({ where: { id: verify.id } });
@@ -51,7 +45,7 @@ const userEvents = {
       };
     }
 
-    return {};
+    throw UserNotLoggedInError;
   },
 };
 

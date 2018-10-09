@@ -3,6 +3,7 @@ import sequelize from '../sequelize';
 import schema from '../schema';
 import { createLoggedInUser } from '../test-helpers';
 import { UserEvent } from '../models';
+import { UserNotLoggedInError } from '../errors';
 
 const getSuccessfulQuery = async offset => {
   const { user, rootValue } = await createLoggedInUser();
@@ -71,6 +72,19 @@ describe('userEvents', () => {
           name: 'coin-received',
         }),
       );
+    });
+  });
+
+  describe('when user is not logged in', () => {
+    it('should throw an error', async () => {
+      const query = `{
+        userEvents {
+          rows { id }
+        }
+      }`;
+
+      const { errors } = await graphql(schema, query, {}, sequelize);
+      expect(errors[0].message).toBe(UserNotLoggedInError.message);
     });
   });
 });
