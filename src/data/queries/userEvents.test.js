@@ -13,8 +13,8 @@ describe('userEvents', () => {
         eventNames.map((name, i) => ({
           userId: user.id,
           relationshipId: user.RelationshipId,
-          createdAt: `2018-01-0${i + 1}`,
-          updatedAt: `2018-01-0${i + 1}`,
+          createdAt: new Date(`2018-01-0${i + 1}`),
+          updatedAt: new Date(`2018-01-0${i + 1}`),
           name,
         })),
       );
@@ -34,8 +34,19 @@ describe('userEvents', () => {
         rootValue,
         sequelize,
       );
+
       expect(rows).toHaveLength(2);
       expect(count).toEqual(3);
+      expect(rows[0]).toEqual(
+        expect.objectContaining({
+          name: 'quiz-item-sent',
+        }),
+      );
+      expect(rows[1]).toEqual(
+        expect.objectContaining({
+          name: 'lovenote-sent',
+        }),
+      );
     });
   });
 });
