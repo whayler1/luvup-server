@@ -6,6 +6,7 @@ import UserProfile from './UserProfile';
 import UserPasswordReset from './UserPasswordReset';
 import UserRequest from './UserRequest';
 import LoveNote from './LoveNote';
+import LoveNoteEvent from './LoveNoteEvent';
 import LoverRequest from './LoverRequest';
 import Relationship from './Relationship';
 import Coin from './Coin';
@@ -84,6 +85,14 @@ LoveNote.hasMany(Coin, {
 LoveNote.hasMany(Jalapeno, {
   as: 'jalapenos',
   foreignKey: 'loveNoteId',
+});
+
+LoveNoteEvent.belongsTo(LoveNote, {
+  as: 'loveNote',
+});
+
+LoveNoteEvent.belongsTo(UserEvent, {
+  as: 'userEvent',
 });
 
 Jalapeno.belongsTo(User, {
@@ -186,6 +195,7 @@ export {
   Coin,
   Jalapeno,
   LoveNote,
+  LoveNoteEvent,
   LoverRequest,
   Relationship,
   RelationshipScore,
