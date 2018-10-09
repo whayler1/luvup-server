@@ -2,6 +2,7 @@ import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import { createLoggedInUser } from '../test-helpers';
+import { UserEvent, LoveNoteEvent } from '../models';
 
 const createLoveNoteRequest = async (numLuvups, numJalapenos) => {
   const { user, lover, rootValue } = await createLoggedInUser();
@@ -103,6 +104,52 @@ describe('createLoveNote', () => {
         }),
       );
       expect(loveNote.jalapenos).toHaveLength(2);
+    });
+
+    it('should create User Events and Love Note Events', async () => {
+      const {
+        user,
+        lover,
+        res: { data: { createLoveNote: { loveNote } } },
+      } = await createLoveNoteRequest();
+
+      const userEvents = await UserEvent.findAll({
+        where: {
+          relationshipId: user.RelationshipId,
+        },
+      });
+
+      expect(userEvents).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            userId: user.id,
+            name: 'lovenote-sent',
+          }),
+          expect.objectContaining({
+            userId: lover.id,
+            name: 'lovenote-received',
+          }),
+        ]),
+      );
+
+      const loveNoteEvents = await LoveNoteEvent.findAll({
+        where: {
+          loveNoteId: loveNote.id,
+        },
+      });
+
+      expect(loveNoteEvents).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            loveNoteId: loveNote.id,
+            userEventId: userEvents[0].id,
+          }),
+          expect.objectContaining({
+            loveNoteId: loveNote.id,
+            userEventId: userEvents[1].id,
+          }),
+        ]),
+      );
     });
   });
 });
