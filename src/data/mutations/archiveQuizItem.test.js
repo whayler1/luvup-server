@@ -1,4 +1,5 @@
 import { graphql } from 'graphql';
+import models from '../models';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
@@ -6,6 +7,18 @@ import { PermissionError } from '../errors';
 import { createQuizItem } from '../helpers';
 
 describe('archiveQuizItem', () => {
+  let originalTimeout;
+
+  beforeAll(async () => {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    await models.sync();
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+  });
+
   describe('when user is logged in', () => {
     describe('and is archiving an item they are the recipient of', () => {
       it('should return the updated quizItem', async () => {
