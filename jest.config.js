@@ -69,7 +69,7 @@ module.exports = {
   // rootDir: // [string]
   // roots: // [array<string>]
   // setupFiles: ['./jest.globalSetup.js'], // [array]
-  setupTestFrameworkScriptFile: './jest.globalSetup.js', // [string]
+  // setupTestFrameworkScriptFile: './jest.globalSetup.js', // [string]
   // snapshotSerializers: // [array<string>]
   // testEnvironment: // [string]
   // testMatch: // [array<string>]
