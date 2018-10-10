@@ -29,7 +29,7 @@ describe('quizItemsByDate', () => {
       const query = `{
         quizItemsByDate(
           startDate: "1981-05-28"
-          endDate: "1981-05-30"
+          endDate: "1981-05-29"
         ) {
           rows {
             id
