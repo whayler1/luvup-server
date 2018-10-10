@@ -1,4 +1,5 @@
 import { graphql } from 'graphql';
+import models from '../models';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import { UserNotLoggedInError } from '../errors';
@@ -6,6 +7,18 @@ import { generateQuizItems } from '../test-helpers';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 
 describe('quizItemsByDate', () => {
+  let originalTimeout;
+
+  beforeAll(async () => {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    await models.sync();
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+  });
+
   describe('when user is logged in', () => {
     it('should return quizItems between date params', async () => {
       const { user, lover, rootValue } = await createLoggedInUser({
