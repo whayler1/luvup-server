@@ -4,6 +4,7 @@ import _ from 'lodash';
 import schema from '../schema';
 import sequelize from '../sequelize';
 import { createUser, deleteUser, loginUser } from '../../../test/helpers';
+import { modelsSync } from '../test-helpers';
 
 const query = `{
   activeLoverRequest {
@@ -22,6 +23,7 @@ describe('activeLoverRequest', () => {
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    await modelsSync;
   });
 
   afterAll(() => {

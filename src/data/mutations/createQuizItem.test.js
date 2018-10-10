@@ -4,6 +4,7 @@ import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { UserEvent } from '../models';
 import { UserNotLoggedInError } from '../errors';
+import { modelsSync } from '../test-helpers';
 
 const getSuccessfulCreateQuizItemResponse = async () => {
   const query = `mutation {
@@ -39,6 +40,10 @@ const getSuccessfulCreateQuizItemResponse = async () => {
 };
 
 describe('createQuizItem', () => {
+  beforeAll(async () => {
+    await modelsSync;
+  });
+
   describe('when required args not provided', () => {
     it('should return required args error array', async () => {
       const query = `mutation {

@@ -4,7 +4,7 @@ import schema from '../schema';
 import { QuizItem } from '../models';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { UserNotLoggedInError } from '../errors';
-import { generateQuizItems } from '../test-helpers';
+import { generateQuizItems, modelsSync } from '../test-helpers';
 
 const setQuizItemAnswered = quizItem =>
   QuizItem.update(
@@ -13,7 +13,9 @@ const setQuizItemAnswered = quizItem =>
   );
 
 describe('receivedUnansweredQuizItems', () => {
-  beforeAll(async () => {});
+  beforeAll(async () => {
+    await modelsSync;
+  });
 
   describe('when user logged in', () => {
     it('should return received quiz items that are unanswered and not sent or answered quiz items', async () => {

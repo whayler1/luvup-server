@@ -8,6 +8,7 @@ import {
   loginUser,
   createRelationship,
 } from '../../../test/helpers';
+import { modelsSync } from '../test-helpers';
 
 describe('sendCoin', () => {
   let originalTimeout;
@@ -15,6 +16,7 @@ describe('sendCoin', () => {
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    await modelsSync;
   });
 
   afterAll(() => {

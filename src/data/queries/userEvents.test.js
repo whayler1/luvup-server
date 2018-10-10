@@ -1,7 +1,7 @@
 import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
-import { createLoggedInUser } from '../test-helpers';
+import { createLoggedInUser, modelsSync } from '../test-helpers';
 import { UserEvent } from '../models';
 import { UserNotLoggedInError } from '../errors';
 
@@ -33,6 +33,10 @@ const getSuccessfulQuery = async offset => {
 };
 
 describe('userEvents', () => {
+  beforeAll(async () => {
+    await modelsSync;
+  });
+
   describe('when user is logged in', () => {
     it('should return user events starting with most recent', async () => {
       const {

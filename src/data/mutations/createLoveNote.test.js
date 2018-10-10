@@ -1,7 +1,7 @@
 import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
-import { createLoggedInUser } from '../test-helpers';
+import { createLoggedInUser, modelsSync } from '../test-helpers';
 import { UserEvent, LoveNoteEvent } from '../models';
 
 const createLoveNoteRequest = async (numLuvups, numJalapenos) => {
@@ -44,6 +44,7 @@ describe('createLoveNote', () => {
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    await modelsSync;
   });
 
   afterAll(() => {

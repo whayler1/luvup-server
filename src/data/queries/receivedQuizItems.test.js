@@ -3,7 +3,7 @@ import sequelize from '../sequelize';
 import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { UserNotLoggedInError } from '../errors';
-import { generateQuizItems } from '../test-helpers';
+import { generateQuizItems, modelsSync } from '../test-helpers';
 
 describe('receivedQuizItems', () => {
   let originalTimeout;
@@ -11,6 +11,7 @@ describe('receivedQuizItems', () => {
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    await modelsSync;
   });
 
   afterAll(() => {
