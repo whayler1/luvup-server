@@ -10,8 +10,16 @@ import config from '../../config';
 import { modelsSync } from '../test-helpers';
 
 describe('me', () => {
+  let originalTimeout;
+
   beforeAll(async () => {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
     await modelsSync;
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
   it('should be null when user is not logged in', async () => {

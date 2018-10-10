@@ -7,13 +7,18 @@ import config from '../../config';
 import { modelsSync } from '../test-helpers';
 
 describe('userRequest', () => {
+  let originalTimeout;
+
   beforeAll(async () => {
     config.disableEmail = 'true';
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
     await modelsSync;
   });
 
   afterAll(() => {
     config.disableEmail = false;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
   it('should return an error if a user with the requested email already exists', async () => {
