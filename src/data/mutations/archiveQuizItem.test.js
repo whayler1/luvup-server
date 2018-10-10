@@ -12,9 +12,7 @@ describe('archiveQuizItem', () => {
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
-    beforeAll(async () => {
-      await modelsSync;
-    });
+    await modelsSync;
   });
 
   afterAll(() => {
