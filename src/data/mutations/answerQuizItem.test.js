@@ -37,8 +37,16 @@ const getSuccessfulQuizItemAnswered = async () => {
 };
 
 describe('answerQuizItem', () => {
+  let originalTimeout;
+
   beforeAll(async () => {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
     await modelsSync;
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
   describe('when user is logged in', () => {
