@@ -2,13 +2,13 @@ import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import { createLoggedInUser, modelsSync } from '../test-helpers';
-import { UserEvent } from '../models';
+import { UserEvent, LoveNote, LoveNoteEvent } from '../models';
 import { UserNotLoggedInError } from '../errors';
 
 const getSuccessfulQuery = async offset => {
-  const { user, rootValue } = await createLoggedInUser();
+  const { user, lover, rootValue } = await createLoggedInUser();
   const eventNames = ['coin-received', 'lovenote-sent', 'quiz-item-sent'];
-  await UserEvent.bulkCreate(
+  const userEvents = await UserEvent.bulkCreate(
     eventNames.map((name, i) => ({
       userId: user.id,
       relationshipId: user.RelationshipId,
@@ -17,6 +17,22 @@ const getSuccessfulQuery = async offset => {
       name,
     })),
   );
+  const loveNote = await LoveNote.create({
+    senderId: user.id,
+    recipientId: lover.id,
+    relationshipId: user.RelationshipId,
+    note: 'foo baby',
+    numLuvups: 0,
+    numJalapenos: 0,
+  });
+  const loveNoteUserEvent = userEvents.find(
+    userEvent => userEvent.name === 'lovenote-sent',
+  );
+  await LoveNoteEvent.create({
+    loveNoteId: loveNote.id,
+    userEventId: loveNoteUserEvent.id,
+  });
+  // await LoveNoteEvent.bulkCreate(userEvents.map((userEvent) =>));
   const offsetStr = offset ? `offset: ${offset}` : '';
   const query = `{
     userEvents(
@@ -86,7 +102,16 @@ describe('userEvents', () => {
       );
     });
 
-    it('should return associated loveNoteEvents and loveNotes', () => {});
+    it.only(
+      'should return associated loveNoteEvents and loveNotes',
+      async () => {
+        const {
+          res: { data: { userEvents: { loveNotes } } },
+        } = await getSuccessfulQuery();
+
+        console.log('loveNotes', loveNotes);
+      },
+    );
   });
 
   describe('when user is not logged in', () => {

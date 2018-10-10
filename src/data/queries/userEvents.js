@@ -2,6 +2,8 @@ import { GraphQLObjectType, GraphQLInt, GraphQLList } from 'graphql';
 
 import { User, UserEvent, LoveNoteEvent, LoveNote } from '../models';
 import UserEventType from '../types/UserEventType';
+import LoveNoteEventType from '../types/LoveNoteEventType';
+import LoveNoteType from '../types/LoveNoteType';
 import { UserNotLoggedInError } from '../errors';
 import { validateJwtToken } from '../helpers';
 
@@ -44,6 +46,8 @@ const userEvents = {
       count: { type: GraphQLInt },
       limit: { type: GraphQLInt },
       offset: { type: GraphQLInt },
+      loveNoteEvents: { type: new GraphQLList(LoveNoteEventType) },
+      loveNotes: { type: new GraphQLList(LoveNoteType) },
     },
   }),
   args: {
@@ -66,14 +70,15 @@ const userEvents = {
         order: [['createdAt', 'DESC']],
       });
 
-      const things = await getLoveNotes(res.rows);
-      console.log('things', things);
-
+      const nextRes = await getLoveNotes(res.rows);
+      console.log('nextRes', nextRes);
       return {
         count: res.count,
         rows: res.rows,
         limit,
         offset,
+        // loveNotes,
+        // loveNoteEvents,
       };
     }
 
