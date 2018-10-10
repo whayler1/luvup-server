@@ -1,7 +1,6 @@
 import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
-import models from '../models';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { UserNotLoggedInError } from '../errors';
 import { generateQuizItems } from '../test-helpers';
@@ -12,7 +11,6 @@ describe('receivedQuizItems', () => {
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
-    await models.sync();
   });
 
   afterAll(() => {

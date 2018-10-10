@@ -1,7 +1,7 @@
 import { graphql } from 'graphql';
 import _ from 'lodash';
 
-import models, { Coin } from '../models';
+import { Coin } from '../models';
 import schema from '../schema';
 import sequelize from '../sequelize';
 import {
@@ -17,7 +17,6 @@ describe('coinCount', () => {
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
-    await models.sync();
   });
 
   afterAll(() => {

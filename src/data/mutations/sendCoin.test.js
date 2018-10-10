@@ -1,6 +1,5 @@
 import { graphql } from 'graphql';
 
-import models from '../models';
 import schema from '../schema';
 import sequelize from '../sequelize';
 import {
@@ -16,7 +15,6 @@ describe('sendCoin', () => {
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
-    await models.sync();
   });
 
   afterAll(() => {

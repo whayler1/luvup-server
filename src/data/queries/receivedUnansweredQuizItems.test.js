@@ -1,7 +1,7 @@
 import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
-import models, { QuizItem } from '../models';
+import { QuizItem } from '../models';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { UserNotLoggedInError } from '../errors';
 import { generateQuizItems } from '../test-helpers';
@@ -13,9 +13,7 @@ const setQuizItemAnswered = quizItem =>
   );
 
 describe('receivedUnansweredQuizItems', () => {
-  beforeAll(async () => {
-    await models.sync();
-  });
+  beforeAll(async () => {});
 
   describe('when user logged in', () => {
     it('should return received quiz items that are unanswered and not sent or answered quiz items', async () => {

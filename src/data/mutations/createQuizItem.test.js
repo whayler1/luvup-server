@@ -2,7 +2,7 @@ import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
-import models, { UserEvent } from '../models';
+import { UserEvent } from '../models';
 import { UserNotLoggedInError } from '../errors';
 
 const getSuccessfulCreateQuizItemResponse = async () => {
@@ -74,9 +74,7 @@ describe('createQuizItem', () => {
   });
 
   describe('when user is logged in', () => {
-    beforeAll(async () => {
-      await models.sync();
-    });
+    beforeAll(async () => {});
 
     it('should create and return a quizItem', async () => {
       const {

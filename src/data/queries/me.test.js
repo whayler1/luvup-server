@@ -9,7 +9,7 @@ import sequelize from '../sequelize';
 import config from '../../config';
 
 beforeAll(async () => {
-  // await models.sync();
+  //
 });
 
 it('should be null when user is not logged in', async () => {

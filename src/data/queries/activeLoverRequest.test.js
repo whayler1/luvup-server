@@ -1,6 +1,5 @@
 import { graphql } from 'graphql';
 import _ from 'lodash';
-import models from '../models';
 
 import schema from '../schema';
 import sequelize from '../sequelize';
@@ -23,7 +22,6 @@ describe('activeLoverRequest', () => {
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
-    await models.sync();
   });
 
   afterAll(() => {

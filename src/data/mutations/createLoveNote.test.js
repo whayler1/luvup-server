@@ -39,6 +39,17 @@ const createLoveNoteRequest = async (numLuvups, numJalapenos) => {
 };
 
 describe('createLoveNote', () => {
+  let originalTimeout;
+
+  beforeAll(async () => {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+  });
+
   describe('when user logged in', () => {
     it('should allow user to create a love note', async () => {
       const {
