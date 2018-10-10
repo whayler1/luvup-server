@@ -271,7 +271,7 @@ app.use((err, req, res, next) => {
 //
 // Launch the server
 // -----------------------------------------------------------------------------
-export const syncPromise = models.sync().catch(err => console.error(err.stack));
+const syncPromise = models.sync().catch(err => console.error(err.stack));
 
 if (!module.hot) {
   app.listen(config.port, () => {

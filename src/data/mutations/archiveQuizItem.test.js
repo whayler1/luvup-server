@@ -4,6 +4,7 @@ import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { PermissionError } from '../errors';
 import { createQuizItem } from '../helpers';
+import { modelsSync } from '../test-helpers';
 
 describe('archiveQuizItem', () => {
   let originalTimeout;
@@ -11,6 +12,9 @@ describe('archiveQuizItem', () => {
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    beforeAll(async () => {
+      await modelsSync;
+    });
   });
 
   afterAll(() => {

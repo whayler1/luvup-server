@@ -5,6 +5,7 @@ import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { PermissionError } from '../errors';
 import { createQuizItem } from '../helpers';
 import { UserEvent } from '../models';
+import { modelsSync } from '../test-helpers';
 
 const getSuccessfulQuizItemAnswered = async () => {
   const { user, lover, rootValue } = await createLoggedInUser({
@@ -36,6 +37,10 @@ const getSuccessfulQuizItemAnswered = async () => {
 };
 
 describe('answerQuizItem', () => {
+  beforeAll(async () => {
+    await modelsSync;
+  });
+
   describe('when user is logged in', () => {
     describe('and is answering an item they are the recipient of', () => {
       it('should return the updated quizItem and coins', async () => {
