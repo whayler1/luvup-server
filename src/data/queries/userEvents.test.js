@@ -38,10 +38,12 @@ const getSuccessfulQuery = async offset => {
     userEvents(
       limit: 2 ${offsetStr}
     ) {
-      rows { name }
+      rows { id name }
       count
       limit
       offset
+      loveNotes { id note }
+      loveNoteEvents { id userEventId loveNoteId }
     }
   }`;
   const res = await graphql(schema, query, rootValue, sequelize);
@@ -102,16 +104,21 @@ describe('userEvents', () => {
       );
     });
 
-    it.only(
-      'should return associated loveNoteEvents and loveNotes',
-      async () => {
-        const {
-          res: { data: { userEvents: { loveNotes } } },
-        } = await getSuccessfulQuery();
+    it('should return associated loveNoteEvents and loveNotes', async () => {
+      const {
+        res: { data: { userEvents: { rows, loveNotes, loveNoteEvents } } },
+      } = await getSuccessfulQuery();
 
-        console.log('loveNotes', loveNotes);
-      },
-    );
+      expect(loveNotes).toHaveLength(1);
+      expect(loveNoteEvents).toHaveLength(1);
+      expect(loveNotes[0].note).toEqual('foo baby');
+      expect(loveNoteEvents[0]).toEqual(
+        expect.objectContaining({
+          userEventId: rows[1].id,
+          loveNoteId: loveNotes[0].id,
+        }),
+      );
+    });
   });
 
   describe('when user is not logged in', () => {

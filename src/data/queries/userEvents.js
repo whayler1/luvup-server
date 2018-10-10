@@ -70,15 +70,15 @@ const userEvents = {
         order: [['createdAt', 'DESC']],
       });
 
-      const nextRes = await getLoveNotes(res.rows);
-      console.log('nextRes', nextRes);
+      const { loveNotes, loveNoteEvents } = await getLoveNotes(res.rows);
+
       return {
         count: res.count,
         rows: res.rows,
         limit,
         offset,
-        // loveNotes,
-        // loveNoteEvents,
+        loveNotes,
+        loveNoteEvents,
       };
     }
 
