@@ -15,6 +15,11 @@ const getLoveNotes = async userEvents => {
         userEvent.name === 'lovenote-received',
     )
     .map(userEvent => userEvent.id);
+
+  if (loveNoteUserEventIds.length < 1) {
+    return { loveNoteEvents: [], loveNotes: [] };
+  }
+
   const loveNoteEvents = await LoveNoteEvent.findAll({
     where: {
       userEventId: {
@@ -22,6 +27,11 @@ const getLoveNotes = async userEvents => {
       },
     },
   });
+
+  if (loveNoteEvents.length < 1) {
+    return { loveNoteEvents, loveNotes: [] };
+  }
+
   const loveNoteIds = loveNoteEvents.map(
     loveNoteEvent => loveNoteEvent.loveNoteId,
   );
