@@ -26,3 +26,21 @@ https://stackoverflow.com/questions/9540681/list-postgres-enum-type
 https://www.postgresql.org/docs/9.5/static/sql-altertype.html
 
 `alter type public."enum_UserEvent_name" add value 'quiz-item-answered';`
+
+### sqlite
+
+**Logging in locally**
+
+`sqlite3 database.sqlite`
+
+**list tables**
+
+`.tables`
+
+**list table schema**
+
+`.schema <table name>`
+
+**add column**
+
+`ALTER TABLE table_name ADD new_column_name column_definition;`

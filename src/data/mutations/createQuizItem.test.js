@@ -2,8 +2,9 @@ import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
-import models, { UserEvent } from '../models';
+import { UserEvent } from '../models';
 import { UserNotLoggedInError } from '../errors';
+import { modelsSync } from '../test-helpers';
 
 const getSuccessfulCreateQuizItemResponse = async () => {
   const query = `mutation {
@@ -39,6 +40,18 @@ const getSuccessfulCreateQuizItemResponse = async () => {
 };
 
 describe('createQuizItem', () => {
+  let originalTimeout;
+
+  beforeAll(async () => {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+    await modelsSync;
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+  });
+
   describe('when required args not provided', () => {
     it('should return required args error array', async () => {
       const query = `mutation {
@@ -74,9 +87,7 @@ describe('createQuizItem', () => {
   });
 
   describe('when user is logged in', () => {
-    beforeAll(async () => {
-      await models.sync();
-    });
+    beforeAll(async () => {});
 
     it('should create and return a quizItem', async () => {
       const {

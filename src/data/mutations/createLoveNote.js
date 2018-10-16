@@ -1,12 +1,24 @@
-import graphql, { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLNonNull,
+} from 'graphql';
 import _ from 'lodash';
 
 import LoveNoteType from '../types/LoveNoteType';
-import { User, LoveNote, Coin, Jalapeno, UserEvent } from '../models';
-import config from '../../config';
+import {
+  User,
+  LoveNote,
+  LoveNoteEvent,
+  Coin,
+  Jalapeno,
+  UserEvent,
+} from '../models';
 import validateJwtToken from '../helpers/validateJwtToken';
 import { sendPushNotification } from '../../services/pushNotifications';
 import analytics from '../../services/analytics';
+import { UserNotLoggedInError } from '../errors';
 
 const bulkCreate = async (
   model,
@@ -24,8 +36,13 @@ const bulkCreate = async (
   return models;
 };
 
-const createUserEvents = (userId, loverId, relationshipId) => {
-  UserEvent.bulkCreate([
+const createUserEvents = async (
+  userId,
+  loverId,
+  relationshipId,
+  loveNoteId,
+) => {
+  const userEvents = await UserEvent.bulkCreate([
     {
       userId,
       relationshipId,
@@ -37,6 +54,12 @@ const createUserEvents = (userId, loverId, relationshipId) => {
       name: 'lovenote-received',
     },
   ]);
+  const loveNoteEventProps = userEvents.map(userEvent => ({
+    userEventId: userEvent.id,
+    loveNoteId,
+  }));
+
+  LoveNoteEvent.bulkCreate(loveNoteEventProps);
 };
 
 const getPluralTokenText = (n, verb) => `${n} ${verb}${n !== 1 ? 's' : ''}`;
@@ -66,15 +89,11 @@ const createLoveNote = {
     },
   }),
   args: {
-    note: { type: GraphQLString },
+    note: { type: new GraphQLNonNull(GraphQLString) },
     numJalapenos: { type: GraphQLInt },
     numLuvups: { type: GraphQLInt },
   },
   resolve: async ({ request }, { note, numJalapenos, numLuvups }) => {
-    if (!note) {
-      return {};
-    }
-
     const verify = await validateJwtToken(request);
 
     if (verify) {
@@ -97,7 +116,7 @@ const createLoveNote = {
         numJalapenos: numJalapenos || 0,
       });
 
-      createUserEvents(user.id, lover.id, relationshipId);
+      createUserEvents(user.id, lover.id, relationshipId, loveNote.id);
 
       const bulkObj = {
         relationshipId,
@@ -162,7 +181,7 @@ const createLoveNote = {
         },
       };
     }
-    return {};
+    throw UserNotLoggedInError;
   },
 };
 
