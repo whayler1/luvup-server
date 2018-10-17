@@ -1,4 +1,5 @@
 import { graphql } from 'graphql';
+import _ from 'lodash';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import { createLoggedInUser, modelsSync } from '../test-helpers';
@@ -118,6 +119,51 @@ describe('userEvents', () => {
           loveNoteId: loveNotes[0].id,
         }),
       );
+    });
+
+    it('should not return love notes is there are no love note events', async () => {
+      const { user, lover, rootValue } = await createLoggedInUser();
+      const eventNames = ['coin-received', 'lovenote-sent', 'quiz-item-sent'];
+      const userEventPromise = UserEvent.bulkCreate(
+        eventNames.map((name, i) => ({
+          userId: user.id,
+          relationshipId: user.RelationshipId,
+          createdAt: new Date(`2018-01-0${i + 1}`),
+          updatedAt: new Date(`2018-01-0${i + 1}`),
+          name,
+        })),
+      );
+      const loveNotePromise = LoveNote.bulkCreate(
+        _.times(2, () => ({
+          relationshipId: user.RelationshipId,
+          senderId: lover.id,
+          recipientId: user.id,
+          note: 'a',
+        })),
+      );
+
+      await Promise.all([userEventPromise, loveNotePromise]);
+
+      const query = `{
+        userEvents(
+          limit: 2
+        ) {
+          rows { id name }
+          count
+          limit
+          offset
+          loveNotes { id note }
+          loveNoteEvents { id userEventId loveNoteId }
+        }
+      }`;
+
+      const {
+        data: { userEvents: { count, rows, loveNotes, loveNoteEvents } },
+      } = await graphql(schema, query, rootValue, sequelize);
+      expect(count).toBe(3);
+      expect(rows).toHaveLength(2);
+      expect(loveNoteEvents).toHaveLength(0);
+      expect(loveNotes).toHaveLength(0);
     });
   });
 
