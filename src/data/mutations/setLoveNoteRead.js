@@ -2,7 +2,8 @@ import { GraphQLObjectType, GraphQLID, GraphQLNonNull } from 'graphql';
 
 import LoveNoteType from '../types/LoveNoteType';
 import validateJwtToken from '../helpers/validateJwtToken';
-import { UserNotLoggedInError } from '../errors';
+import { UserNotLoggedInError, LoveNoteNotFoundError } from '../errors';
+import { LoveNote, User } from '../models';
 
 const setLoveNoteRead = {
   type: new GraphQLObjectType({
@@ -17,9 +18,26 @@ const setLoveNoteRead = {
   },
   resolve: async ({ request }, { loveNoteId }) => {
     const verify = await validateJwtToken(request);
-    console.log('loveNoteId', loveNoteId);
 
     if (verify) {
+      const user = await User.findOne({
+        where: {
+          id: verify.id,
+        },
+      });
+
+      const loveNote = await LoveNote.findOne({
+        where: {
+          id: loveNoteId,
+          recipientId: user.id,
+        },
+      });
+      console.log('\n\n loveNote', loveNote);
+
+      if (!loveNote) {
+        throw LoveNoteNotFoundError;
+      }
+
       return {};
     }
     throw UserNotLoggedInError;
