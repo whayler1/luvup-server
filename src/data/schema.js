@@ -40,6 +40,7 @@ import setExpoPushToken from './mutations/setExpoPushToken';
 import invalidateExpoPushToken from './mutations/invalidateExpoPushToken';
 import createLoveNote from './mutations/createLoveNote';
 import updateLoveNote from './mutations/updateLoveNote';
+import setLoveNoteRead from './mutations/setLoveNoteRead';
 import setLoveNotesReadWithCreatedAt from './mutations/setLoveNotesReadWithCreatedAt';
 import createQuizItem from './mutations/createQuizItem';
 import answerQuizItem from './mutations/answerQuizItem';
@@ -90,6 +91,7 @@ const schema = new Schema({
       invalidateExpoPushToken,
       createLoveNote,
       updateLoveNote,
+      setLoveNoteRead,
       setLoveNotesReadWithCreatedAt,
       createQuizItem,
       answerQuizItem,
