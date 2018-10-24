@@ -3,7 +3,6 @@ import {
   GraphQLID as ID,
   GraphQLString as StringType,
   GraphQLNonNull as NonNull,
-  GraphQLList,
 } from 'graphql';
 
 const UserType = new ObjectType({
