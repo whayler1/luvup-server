@@ -32,13 +32,16 @@ const setLoveNoteRead = {
           recipientId: user.id,
         },
       });
-      console.log('\n\n loveNote', loveNote);
 
       if (!loveNote) {
         throw LoveNoteNotFoundError;
       }
 
-      return {};
+      const updatedLoveNote = await loveNote.update({
+        isRead: true,
+      });
+
+      return { loveNote: updatedLoveNote };
     }
     throw UserNotLoggedInError;
   },

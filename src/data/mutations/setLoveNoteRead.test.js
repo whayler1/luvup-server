@@ -20,7 +20,44 @@ describe('setLoveNoteRead', () => {
   });
 
   describe('when user is logged in', () => {
-    it('should throw an error isf there is no love note with that id', async () => {
+    it('should mark love note isRead as true', async () => {
+      const { user, lover, rootValue } = await createLoggedInUser();
+      const uuid = uuidv1();
+      const query = `mutation {
+        setLoveNoteRead(
+          loveNoteId: "${uuid}"
+        ) {
+          loveNote { id, note, isRead }
+        }
+      }`;
+
+      await LoveNote.create({
+        id: uuid,
+        note: 'a',
+        relationshipId: user.RelationshipId,
+        senderId: lover.id,
+        recipientId: user.id,
+        numLuvups: 0,
+        numJalapenos: 0,
+      });
+
+      const { data: { setLoveNoteRead: { loveNote } } } = await graphql(
+        schema,
+        query,
+        rootValue,
+        sequelize,
+      );
+
+      expect(loveNote).toEqual(
+        expect.objectContaining({
+          id: uuid,
+          note: 'a',
+          isRead: true,
+        }),
+      );
+    });
+
+    it('should throw an error if there is no love note with that id', async () => {
       const { rootValue } = await createLoggedInUser();
       const query = `mutation {
         setLoveNoteRead(
@@ -28,7 +65,7 @@ describe('setLoveNoteRead', () => {
         ) {
           loveNote { id }
         }
-       }`;
+      }`;
 
       const { errors } = await graphql(schema, query, rootValue, sequelize);
       expect(errors[0].message).toBe(LoveNoteNotFoundError.message);
