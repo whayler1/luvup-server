@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 import CoinType from '../types/CoinType';
 import QuizItemType from '../types/QuizItemType';
-import { QuizItem, UserEvent, Coin } from '../models';
+import { QuizItem, UserEvent, Coin, QuizItemEvent } from '../models';
 import { UserNotLoggedInError, PermissionError } from '../errors';
 import { validateJwtToken, getUser } from '../helpers';
 import { sendPushNotification } from '../../services/pushNotifications';
@@ -26,8 +26,13 @@ const trackEvent = (userId, loverId, relationshipId) => {
   });
 };
 
-const createUserEvents = (userId, loverId, relationshipId) => {
-  UserEvent.bulkCreate([
+const createUserEvents = async (
+  userId,
+  loverId,
+  relationshipId,
+  quizItemId,
+) => {
+  const userEvents = await UserEvent.bulkCreate([
     {
       userId,
       relationshipId,
@@ -39,6 +44,13 @@ const createUserEvents = (userId, loverId, relationshipId) => {
       name: 'quiz-item-sent-answered',
     },
   ]);
+
+  const quizItemEvents = userEvents.map(userEvent => ({
+    userEventId: userEvent.id,
+    quizItemId,
+  }));
+
+  QuizItemEvent.bulkCreate(quizItemEvents);
 };
 
 const sendLoverPushNotification = (user, lover) => {
@@ -86,7 +98,7 @@ const answerQuizItem = {
         quizItem = await quizItem.update({ recipientChoiceId });
         const coins = await createRewardIfChoicesMatch(user, lover, quizItem);
         sendLoverPushNotification(user, lover);
-        createUserEvents(user.id, lover.id, user.RelationshipId);
+        createUserEvents(user.id, lover.id, user.RelationshipId, quizItemId);
         trackEvent(user.id, lover.id, user.RelationshipId);
 
         return { quizItem, coins };
