@@ -140,7 +140,7 @@ describe('createQuizItem', () => {
       );
     });
 
-    it.only('should create quiz item events', async () => {
+    it('should create quiz item events', async () => {
       const {
         user,
         res: { data: { createQuizItem: { quizItem } } },
@@ -159,7 +159,6 @@ describe('createQuizItem', () => {
         },
       });
 
-      console.log('quizItemEvents', quizItemEvents);
       expect(quizItemEvents).toHaveLength(2);
     });
   });
