@@ -6,7 +6,7 @@ import LoveNoteEventType from '../types/LoveNoteEventType';
 import LoveNoteType from '../types/LoveNoteType';
 import { UserNotLoggedInError } from '../errors';
 import { validateJwtToken } from '../helpers';
-import { getLoveNotes } from './userEvents.helpers';
+import { getLoveNotes, getQuizItems } from './userEvents.helpers';
 
 const userEvents = {
   type: new GraphQLObjectType({
@@ -42,7 +42,10 @@ const userEvents = {
         order: [['createdAt', 'DESC']],
       });
 
-      const { loveNotes, loveNoteEvents } = await getLoveNotes(res.rows);
+      const [
+        { loveNotes, loveNoteEvents },
+        { quizItems, quizItemEvents },
+      ] = await Promise.all([getLoveNotes(res.rows), getQuizItems(res.rows)]);
 
       return {
         count: res.count,
@@ -51,6 +54,8 @@ const userEvents = {
         offset,
         loveNotes,
         loveNoteEvents,
+        quizItems,
+        quizItemEvents,
       };
     }
 
