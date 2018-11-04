@@ -16,6 +16,7 @@ import RelationshipScore from './RelationshipScore';
 import ExpoPushToken from './ExpoPushToken';
 import QuizItem from './QuizItem';
 import QuizItemChoice from './QuizItemChoice';
+import QuizItemEvent from './QuizItemEvent';
 
 Relationship.hasMany(RelationshipScore, {
   as: 'relationshipScores',
@@ -92,6 +93,14 @@ LoveNoteEvent.belongsTo(LoveNote, {
 });
 
 LoveNoteEvent.belongsTo(UserEvent, {
+  as: 'userEvent',
+});
+
+QuizItemEvent.belongsTo(QuizItem, {
+  as: 'quizItem',
+});
+
+QuizItemEvent.belongsTo(UserEvent, {
   as: 'userEvent',
 });
 
@@ -203,4 +212,5 @@ export {
   ExpoPushToken,
   QuizItem,
   QuizItemChoice,
+  QuizItemEvent,
 };
