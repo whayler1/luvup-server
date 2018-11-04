@@ -21,7 +21,7 @@ const mapChoicesToQuizItems = (quizItems, quizItemChoices) =>
     ),
   }));
 
-const appendChoicesToQuizItems = async quizItems => {
+export const appendChoicesToQuizItems = async quizItems => {
   const quizItemChoices = await getQuizItemChoices(quizItems);
   return mapChoicesToQuizItems(quizItems, quizItemChoices);
 };
