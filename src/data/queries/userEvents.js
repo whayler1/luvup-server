@@ -1,50 +1,12 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLList } from 'graphql';
 
-import { User, UserEvent, LoveNoteEvent, LoveNote } from '../models';
+import { User, UserEvent } from '../models';
 import UserEventType from '../types/UserEventType';
 import LoveNoteEventType from '../types/LoveNoteEventType';
 import LoveNoteType from '../types/LoveNoteType';
 import { UserNotLoggedInError } from '../errors';
 import { validateJwtToken } from '../helpers';
-
-const getLoveNotes = async userEvents => {
-  const loveNoteUserEventIds = userEvents
-    .filter(
-      userEvent =>
-        userEvent.name === 'lovenote-sent' ||
-        userEvent.name === 'lovenote-received',
-    )
-    .map(userEvent => userEvent.id);
-
-  if (loveNoteUserEventIds.length < 1) {
-    return { loveNoteEvents: [], loveNotes: [] };
-  }
-
-  const loveNoteEvents = await LoveNoteEvent.findAll({
-    where: {
-      userEventId: {
-        $or: loveNoteUserEventIds,
-      },
-    },
-  });
-
-  if (loveNoteEvents.length < 1) {
-    return { loveNoteEvents, loveNotes: [] };
-  }
-
-  const loveNoteIds = loveNoteEvents.map(
-    loveNoteEvent => loveNoteEvent.loveNoteId,
-  );
-  const loveNotes = await LoveNote.findAll({
-    where: {
-      id: {
-        $or: loveNoteIds,
-      },
-    },
-  });
-
-  return { loveNoteEvents, loveNotes };
-};
+import { getLoveNotes } from './userEvents.helpers';
 
 const userEvents = {
   type: new GraphQLObjectType({
