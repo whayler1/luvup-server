@@ -1,4 +1,5 @@
 import { graphql } from 'graphql';
+import dateFns from 'date-fns';
 import _ from 'lodash';
 import sequelize from '../sequelize';
 import schema from '../schema';
@@ -25,16 +26,24 @@ const getSuccessfulQueryWithQuizItems = async () => {
     quizItemSentAnsweredEvent,
     quizItemReceivedAnsweredEvent,
   ] = await UserEvent.bulkCreate(
-    eventNames.map((name, i) => ({
-      userId: user.id,
-      relationshipId: user.RelationshipId,
-      createdAt: new Date(`2018-01-0${i + 1}`),
-      updatedAt: new Date(`2018-01-0${i + 1}`),
-      name,
-    })),
+    eventNames.map((name, i) => {
+      const createdAt = dateFns.subDays(new Date(`2018-01-01`), i);
+      return {
+        userId: user.id,
+        relationshipId: user.RelationshipId,
+        createdAt,
+        updatedAt: createdAt,
+        name,
+      };
+    }),
   );
 
-  const [sentQuizItem, receivedQuizItem] = await Promise.all([
+  const [
+    sentQuizItem,
+    receivedQuizItem,
+    sentQuizItem2,
+    receivedQuizItem2,
+  ] = await Promise.all([
     createQuizItem(
       user,
       lover,
@@ -51,9 +60,25 @@ const getSuccessfulQueryWithQuizItems = async () => {
       ['d', 'e', 'f'],
       1,
     ),
+    createQuizItem(
+      user,
+      lover,
+      'I am the users second question',
+      2,
+      ['g', 'h', 'i'],
+      1,
+    ),
+    createQuizItem(
+      lover,
+      user,
+      'I am the lovers second question',
+      2,
+      ['k', 'l', 'm'],
+      1,
+    ),
   ]);
 
-  const quizItemEvents = await QuizItemEvent.bulkCreate([
+  await QuizItemEvent.bulkCreate([
     {
       quizItemId: sentQuizItem.id,
       userEventId: quizItemSentEvent.id,
@@ -63,20 +88,21 @@ const getSuccessfulQueryWithQuizItems = async () => {
       userEventId: quizItemReceivedEvent.id,
     },
     {
-      quizItemId: receivedQuizItem.id,
+      quizItemId: sentQuizItem2.id,
       userEventId: quizItemSentAnsweredEvent.id,
     },
     {
-      quizItemId: sentQuizItem.id,
+      quizItemId: receivedQuizItem2.id,
       userEventId: quizItemReceivedAnsweredEvent.id,
     },
   ]);
-  console.log('\n\n --- userEvents test ----\nquizItemEvents', quizItemEvents);
+
   const query = `{
     userEvents(
       limit: 5
     ) {
       count
+      rows { id name }
       quizItemEvents { quizItemId userEventId }
       quizItems {
         senderId
@@ -254,9 +280,44 @@ describe('userEvents', () => {
     });
   });
 
-  it.only('should return quiz items', async () => {
-    const { res } = await getSuccessfulQueryWithQuizItems();
-    console.log('\n\n ---- res ---\n', res);
+  it('should return quiz items', async () => {
+    const {
+      res: { data: { userEvents: { rows, count, quizItemEvents, quizItems } } },
+    } = await getSuccessfulQueryWithQuizItems();
+    expect(count).toBe(6);
+    expect(rows).toHaveLength(5);
+    expect(quizItemEvents).toHaveLength(3);
+    expect(quizItems).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          question: 'I am the users question',
+          reward: 2,
+          choices: expect.arrayContaining([
+            { answer: 'a' },
+            { answer: 'b' },
+            { answer: 'c' },
+          ]),
+        }),
+        expect.objectContaining({
+          question: 'I am the lovers question',
+          reward: 2,
+          choices: expect.arrayContaining([
+            { answer: 'd' },
+            { answer: 'e' },
+            { answer: 'f' },
+          ]),
+        }),
+        expect.objectContaining({
+          question: 'I am the users second question',
+          reward: 2,
+          choices: expect.arrayContaining([
+            { answer: 'g' },
+            { answer: 'h' },
+            { answer: 'i' },
+          ]),
+        }),
+      ]),
+    );
   });
 
   describe('when user is not logged in', () => {

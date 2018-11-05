@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+import _ from 'lodash';
 import { LoveNoteEvent, LoveNote, QuizItem, QuizItemEvent } from '../models';
 import { appendChoicesToQuizItems } from '../helpers/getQuizItemsWithChoices';
 
@@ -10,12 +11,9 @@ const quizItemEventNames = [
 ];
 
 export const getQuizItems = async userEvents => {
-  console.log('getQuizItems', userEvents);
   const quizItemEventIds = userEvents
     .filter(userEvent => quizItemEventNames.includes(userEvent.name))
     .map(userEvent => userEvent.id);
-
-  console.log('--- quizItemEventIds', quizItemEventIds);
 
   if (quizItemEventIds.length < 1) {
     return { quizItemEvents: [], quizItems: [] };
@@ -24,11 +22,10 @@ export const getQuizItems = async userEvents => {
   const quizItemEvents = await QuizItemEvent.findAll({
     where: {
       userEventId: {
-        $or: quizItemEventIds,
+        $or: _.uniq(quizItemEventIds),
       },
     },
   });
-  console.log('quizItemEvents', quizItemEvents);
 
   if (quizItemEvents.length < 1) {
     return { quizItemEvents, quizItems: [] };
@@ -41,7 +38,7 @@ export const getQuizItems = async userEvents => {
   const quizItemsWithoutChoices = await QuizItem.findAll({
     where: {
       id: {
-        $or: quizItemIds,
+        $or: _.uniq(quizItemIds),
       },
     },
   });
@@ -67,7 +64,7 @@ export const getLoveNotes = async userEvents => {
   const loveNoteEvents = await LoveNoteEvent.findAll({
     where: {
       userEventId: {
-        $or: loveNoteUserEventIds,
+        $or: _.uniq(loveNoteUserEventIds),
       },
     },
   });
@@ -82,7 +79,7 @@ export const getLoveNotes = async userEvents => {
   const loveNotes = await LoveNote.findAll({
     where: {
       id: {
-        $or: loveNoteIds,
+        $or: _.uniq(loveNoteIds),
       },
     },
   });
