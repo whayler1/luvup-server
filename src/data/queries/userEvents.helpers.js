@@ -11,7 +11,7 @@ const quizItemEventNames = [
 
 export const getQuizItems = async userEvents => {
   const quizItemEventIds = userEvents
-    .filter(userEvent => quizItemEventNames.contains(userEvent.name))
+    .filter(userEvent => quizItemEventNames.includes(userEvent.name))
     .map(userEvent => userEvent.id);
 
   if (quizItemEventIds.length < 1) {

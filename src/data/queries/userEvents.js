@@ -4,6 +4,8 @@ import { User, UserEvent } from '../models';
 import UserEventType from '../types/UserEventType';
 import LoveNoteEventType from '../types/LoveNoteEventType';
 import LoveNoteType from '../types/LoveNoteType';
+import QuizItemEventType from '../types/QuizItemEventType';
+import QuizItemType from '../types/QuizItemType';
 import { UserNotLoggedInError } from '../errors';
 import { validateJwtToken } from '../helpers';
 import { getLoveNotes, getQuizItems } from './userEvents.helpers';
@@ -20,6 +22,8 @@ const userEvents = {
       offset: { type: GraphQLInt },
       loveNoteEvents: { type: new GraphQLList(LoveNoteEventType) },
       loveNotes: { type: new GraphQLList(LoveNoteType) },
+      quizItemEvents: { type: new GraphQLList(QuizItemEventType) },
+      quizItems: { type: new GraphQLList(QuizItemType) },
     },
   }),
   args: {
