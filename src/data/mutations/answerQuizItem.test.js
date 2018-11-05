@@ -4,7 +4,7 @@ import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { PermissionError } from '../errors';
 import { createQuizItem } from '../helpers';
-import { UserEvent } from '../models';
+import { UserEvent, QuizItemEvent } from '../models';
 import { modelsSync } from '../test-helpers';
 
 const getSuccessfulQuizItemAnswered = async () => {
@@ -26,7 +26,7 @@ const getSuccessfulQuizItemAnswered = async () => {
       quizItemId: "${originalQuizItem.id}"
       recipientChoiceId: "${recipientChoiceId}"
     ) {
-      quizItem { recipientChoiceId }
+      quizItem { recipientChoiceId, id }
       coins { relationshipId senderId recipientId }
     }
   }`;
@@ -94,6 +94,30 @@ describe('answerQuizItem', () => {
             }),
           ]),
         );
+      });
+
+      it('should create quiz item events', async () => {
+        const {
+          user,
+          res: { data: { answerQuizItem: { quizItem } } },
+        } = await getSuccessfulQuizItemAnswered();
+
+        const userEvents = await UserEvent.findAll({
+          where: {
+            relationshipId: user.RelationshipId,
+          },
+        });
+
+        const quizItemEvents = await QuizItemEvent.findAll({
+          where: {
+            quizItemId: quizItem.id,
+            userEventId: {
+              $or: userEvents.map(userEvent => userEvent.id),
+            },
+          },
+        });
+
+        expect(quizItemEvents).toHaveLength(2);
       });
 
       it("should return an empty coins array if answer doesn't match", async () => {

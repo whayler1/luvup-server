@@ -8,7 +8,7 @@ import {
 import _ from 'lodash';
 
 import QuizItemType from '../types/QuizItemType';
-import { User, UserEvent } from '../models';
+import { User, UserEvent, QuizItemEvent } from '../models';
 import { UserNotLoggedInError } from '../errors';
 import validateJwtToken from '../helpers/validateJwtToken';
 import { sendPushNotification } from '../../services/pushNotifications';
@@ -41,8 +41,13 @@ const trackEvent = (userId, loverId, relationshipId) => {
   });
 };
 
-const createUserEvents = (userId, loverId, relationshipId) => {
-  UserEvent.bulkCreate([
+const createUserEvents = async (
+  userId,
+  loverId,
+  relationshipId,
+  quizItemId,
+) => {
+  const userEvents = await UserEvent.bulkCreate([
     {
       userId,
       relationshipId,
@@ -54,6 +59,11 @@ const createUserEvents = (userId, loverId, relationshipId) => {
       name: 'quiz-item-received',
     },
   ]);
+  const quizItemEvents = userEvents.map(userEvent => ({
+    userEventId: userEvent.id,
+    quizItemId,
+  }));
+  QuizItemEvent.bulkCreate(quizItemEvents);
 };
 
 const sendLoverPushNotification = (user, lover) => {
@@ -96,7 +106,7 @@ const createQuizItem = {
       );
 
       sendLoverPushNotification(user, lover);
-      createUserEvents(user.id, lover.id, relationshipId);
+      createUserEvents(user.id, lover.id, relationshipId, quizItem.id);
       trackEvent(user.id, lover.id, relationshipId);
 
       return { quizItem };

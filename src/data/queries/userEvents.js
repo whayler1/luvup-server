@@ -1,50 +1,14 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLList } from 'graphql';
 
-import { User, UserEvent, LoveNoteEvent, LoveNote } from '../models';
+import { User, UserEvent } from '../models';
 import UserEventType from '../types/UserEventType';
 import LoveNoteEventType from '../types/LoveNoteEventType';
 import LoveNoteType from '../types/LoveNoteType';
+import QuizItemEventType from '../types/QuizItemEventType';
+import QuizItemType from '../types/QuizItemType';
 import { UserNotLoggedInError } from '../errors';
 import { validateJwtToken } from '../helpers';
-
-const getLoveNotes = async userEvents => {
-  const loveNoteUserEventIds = userEvents
-    .filter(
-      userEvent =>
-        userEvent.name === 'lovenote-sent' ||
-        userEvent.name === 'lovenote-received',
-    )
-    .map(userEvent => userEvent.id);
-
-  if (loveNoteUserEventIds.length < 1) {
-    return { loveNoteEvents: [], loveNotes: [] };
-  }
-
-  const loveNoteEvents = await LoveNoteEvent.findAll({
-    where: {
-      userEventId: {
-        $or: loveNoteUserEventIds,
-      },
-    },
-  });
-
-  if (loveNoteEvents.length < 1) {
-    return { loveNoteEvents, loveNotes: [] };
-  }
-
-  const loveNoteIds = loveNoteEvents.map(
-    loveNoteEvent => loveNoteEvent.loveNoteId,
-  );
-  const loveNotes = await LoveNote.findAll({
-    where: {
-      id: {
-        $or: loveNoteIds,
-      },
-    },
-  });
-
-  return { loveNoteEvents, loveNotes };
-};
+import { getLoveNotes, getQuizItems } from './userEvents.helpers';
 
 const userEvents = {
   type: new GraphQLObjectType({
@@ -58,6 +22,8 @@ const userEvents = {
       offset: { type: GraphQLInt },
       loveNoteEvents: { type: new GraphQLList(LoveNoteEventType) },
       loveNotes: { type: new GraphQLList(LoveNoteType) },
+      quizItemEvents: { type: new GraphQLList(QuizItemEventType) },
+      quizItems: { type: new GraphQLList(QuizItemType) },
     },
   }),
   args: {
@@ -80,7 +46,10 @@ const userEvents = {
         order: [['createdAt', 'DESC']],
       });
 
-      const { loveNotes, loveNoteEvents } = await getLoveNotes(res.rows);
+      const [
+        { loveNotes, loveNoteEvents },
+        { quizItems, quizItemEvents },
+      ] = await Promise.all([getLoveNotes(res.rows), getQuizItems(res.rows)]);
 
       return {
         count: res.count,
@@ -89,6 +58,8 @@ const userEvents = {
         offset,
         loveNotes,
         loveNoteEvents,
+        quizItems,
+        quizItemEvents,
       };
     }
 

@@ -2,7 +2,7 @@ import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
-import { UserEvent } from '../models';
+import { UserEvent, QuizItemEvent } from '../models';
 import { UserNotLoggedInError } from '../errors';
 import { modelsSync } from '../test-helpers';
 
@@ -138,6 +138,28 @@ describe('createQuizItem', () => {
           }),
         ]),
       );
+    });
+
+    it('should create quiz item events', async () => {
+      const {
+        user,
+        res: { data: { createQuizItem: { quizItem } } },
+      } = await getSuccessfulCreateQuizItemResponse();
+
+      const userEvents = await UserEvent.findAll({
+        where: { relationshipId: user.RelationshipId },
+      });
+
+      const quizItemEvents = await QuizItemEvent.findAll({
+        where: {
+          quizItemId: quizItem.id,
+          userEventId: {
+            $or: userEvents.map(userEvent => userEvent.id),
+          },
+        },
+      });
+
+      expect(quizItemEvents).toHaveLength(2);
     });
   });
 
