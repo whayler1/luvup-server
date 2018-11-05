@@ -10,9 +10,12 @@ const quizItemEventNames = [
 ];
 
 export const getQuizItems = async userEvents => {
+  console.log('getQuizItems', userEvents);
   const quizItemEventIds = userEvents
     .filter(userEvent => quizItemEventNames.includes(userEvent.name))
     .map(userEvent => userEvent.id);
+
+  console.log('--- quizItemEventIds', quizItemEventIds);
 
   if (quizItemEventIds.length < 1) {
     return { quizItemEvents: [], quizItems: [] };
@@ -20,17 +23,20 @@ export const getQuizItems = async userEvents => {
 
   const quizItemEvents = await QuizItemEvent.findAll({
     where: {
-      quizItemId: {
+      userEventId: {
         $or: quizItemEventIds,
       },
     },
   });
+  console.log('quizItemEvents', quizItemEvents);
 
   if (quizItemEvents.length < 1) {
     return { quizItemEvents, quizItems: [] };
   }
 
-  const quizItemIds = quizItemEvents.map(quizItem => quizItem.id);
+  const quizItemIds = quizItemEvents.map(
+    quizItemEvent => quizItemEvent.quizItemId,
+  );
 
   const quizItemsWithoutChoices = await QuizItem.findAll({
     where: {

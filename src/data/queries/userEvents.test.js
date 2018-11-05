@@ -33,6 +33,7 @@ const getSuccessfulQueryWithQuizItems = async () => {
       name,
     })),
   );
+
   const [sentQuizItem, receivedQuizItem] = await Promise.all([
     createQuizItem(
       user,
@@ -51,7 +52,8 @@ const getSuccessfulQueryWithQuizItems = async () => {
       1,
     ),
   ]);
-  await QuizItemEvent.bulkCreate([
+
+  const quizItemEvents = await QuizItemEvent.bulkCreate([
     {
       quizItemId: sentQuizItem.id,
       userEventId: quizItemSentEvent.id,
@@ -69,6 +71,7 @@ const getSuccessfulQueryWithQuizItems = async () => {
       userEventId: quizItemReceivedAnsweredEvent.id,
     },
   ]);
+  console.log('\n\n --- userEvents test ----\nquizItemEvents', quizItemEvents);
   const query = `{
     userEvents(
       limit: 5
