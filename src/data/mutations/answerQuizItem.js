@@ -11,6 +11,7 @@ import QuizItemType from '../types/QuizItemType';
 import { QuizItem, UserEvent, Coin, QuizItemEvent } from '../models';
 import { UserNotLoggedInError, PermissionError } from '../errors';
 import { validateJwtToken, getUser } from '../helpers';
+import { appendChoicesToQuizItems } from '../helpers/getQuizItemsWithChoices';
 import { sendPushNotification } from '../../services/pushNotifications';
 import analytics from '../../services/analytics';
 
@@ -92,10 +93,15 @@ const answerQuizItem = {
 
     if (verify) {
       const { user, lover } = await getUser(verify.id);
-      let quizItem = await QuizItem.findOne({ where: { id: quizItemId } });
+      const originalQuizItem = await QuizItem.findOne({
+        where: { id: quizItemId },
+      });
 
-      if (quizItem.recipientId === user.id) {
-        quizItem = await quizItem.update({ recipientChoiceId });
+      if (originalQuizItem.recipientId === user.id) {
+        const updatedQuizItem = await originalQuizItem.update({
+          recipientChoiceId,
+        });
+        const [quizItem] = await appendChoicesToQuizItems([updatedQuizItem]);
         const coins = await createRewardIfChoicesMatch(user, lover, quizItem);
         sendLoverPushNotification(user, lover);
         createUserEvents(user.id, lover.id, user.RelationshipId, quizItemId);

@@ -26,7 +26,10 @@ const getSuccessfulQuizItemAnswered = async () => {
       quizItemId: "${originalQuizItem.id}"
       recipientChoiceId: "${recipientChoiceId}"
     ) {
-      quizItem { recipientChoiceId, id }
+      quizItem {
+        recipientChoiceId id
+        choices { answer }
+      }
       coins { relationshipId senderId recipientId }
     }
   }`;
@@ -51,7 +54,7 @@ describe('answerQuizItem', () => {
 
   describe('when user is logged in', () => {
     describe('and is answering an item they are the recipient of', () => {
-      it('should return the updated quizItem and coins', async () => {
+      it('should return the updated quizItem, choices and coins', async () => {
         const {
           res: { data: { answerQuizItem: { quizItem, coins } } },
           user,
@@ -60,6 +63,9 @@ describe('answerQuizItem', () => {
         } = await getSuccessfulQuizItemAnswered();
 
         expect(quizItem.recipientChoiceId).toEqual(recipientChoiceId);
+        expect(quizItem.choices[0].answer).toEqual('a');
+        expect(quizItem.choices[1].answer).toEqual('b');
+        expect(quizItem.choices[2].answer).toEqual('c');
         expect(coins).toHaveLength(2);
         const coinExpectation = {
           relationshipId: user.RelationshipId,
