@@ -1,12 +1,7 @@
 import bcrypt from 'bcrypt';
-import graphql, {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLBoolean,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLBoolean } from 'graphql';
 import moment from 'moment';
-import { User, UserRequest } from '../models';
+import { UserRequest } from '../models';
 
 const confirmUserRequestCode = {
   type: new GraphQLObjectType({

@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
-import graphql, { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+import { GraphQLObjectType, GraphQLString } from 'graphql';
 import moment from 'moment';
-import UserRequestType from '../types/UserRequestType';
 import UserType from '../types/UserType';
 import { User, UserRequest } from '../models';
 import emailHelper from '../helpers/email';
