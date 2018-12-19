@@ -1,5 +1,6 @@
 import { graphql } from 'graphql';
 import uuidv1 from 'uuid/v1';
+import bcrypt from 'bcrypt';
 
 import schema from '../schema';
 import { UserRequest } from '../models';
@@ -71,5 +72,28 @@ describe('userRequest', () => {
       email,
       error: null,
     });
+  });
+
+  it('should set userCode to 012345 if using admin email hack', async () => {
+    const uuid = uuidv1();
+    const email = `justin+${uuid}@luvup.io`;
+
+    const query = `mutation {
+      userRequest(email: "${email}") {
+        email error
+      }
+    }`;
+
+    await graphql(schema, query, {}, {});
+
+    const userRequest = await UserRequest.findOne({
+      where: {
+        email,
+      },
+    });
+
+    const isCodeMatch = await bcrypt.compare('012345', userRequest.code);
+
+    expect(isCodeMatch).toBe(true);
   });
 });
