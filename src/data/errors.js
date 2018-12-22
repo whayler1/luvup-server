@@ -9,4 +9,5 @@ export default {
   UserNotLoggedInError,
   PermissionError,
   LoveNoteNotFoundError,
+  LoverRequestNotFoundError,
 };

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import config from '../../config';
 import { UserRequest, Relationship } from '../models';
 
-const createUser = async (userShape = {}) => {
+export const createUser = async (userShape = {}) => {
   const uuid = uuidv1();
   const email = `fake+${uuid}@gmail.com`;
   const newUserRequest = await UserRequest.create({

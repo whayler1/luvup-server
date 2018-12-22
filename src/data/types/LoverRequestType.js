@@ -3,8 +3,6 @@ import {
   GraphQLID,
   GraphQLString,
   GraphQLNonNull,
-  GraphQLInt,
-  GraphQLFloat,
   GraphQLBoolean,
 } from 'graphql';
 

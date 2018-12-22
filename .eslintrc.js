@@ -30,6 +30,7 @@ module.exports = {
     beforeAll: true,
     afterAll: true,
     jasmine: true,
+    jest: true,
   },
 
   env: {
