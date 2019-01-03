@@ -5,6 +5,7 @@ import { UserNotLoggedInError, LoverRequestNotFoundError } from '../errors';
 import createLoggedInUser, {
   createUser,
 } from '../test-helpers/create-logged-in-user';
+import analytics from '../../services/analytics';
 
 describe('acceptLoverRequest', () => {
   describe('when user is logged in', () => {
@@ -32,27 +33,76 @@ describe('acceptLoverRequest', () => {
     });
 
     describe('when lover request exists', () => {
-      it.only('foo', async () => {
-        const { user, rootValue } = await createLoggedInUser({
+      const originalAnalyticsTrack = analytics.track;
+      let user;
+      let user2;
+      let request;
+      let user2LoverRequest;
+
+      beforeEach(async () => {
+        analytics.track = jest.fn();
+
+        const loggedInUser = await createLoggedInUser({
           isInRelationship: false,
         });
 
-        const user2 = await createUser();
-        const loverRequest = await user2.createLoverRequest({
+        user = loggedInUser.user;
+
+        user2 = await createUser();
+        user2LoverRequest = await user2.createLoverRequest({
           recipientId: user.id,
         });
 
         const query = `mutation {
           acceptLoverRequest(
-            loverRequestId: "${loverRequest.id}"
+            loverRequestId: "${user2LoverRequest.id}"
           ) {
-            loverRequest { id }
+            loverRequest {
+              id
+              isAccepted
+              isSenderCanceled
+              isRecipientCanceled
+            }
           }
         }`;
 
-        const res = await graphql(schema, query, rootValue, sequelize);
+        request = await graphql(
+          schema,
+          query,
+          loggedInUser.rootValue,
+          sequelize,
+        );
+      });
 
-        console.log('res', res);
+      afterAll(() => {
+        analytics.track = originalAnalyticsTrack;
+      });
+
+      it('should return accepted lover request object', async () => {
+        const { data: { acceptLoverRequest: { loverRequest } } } = request;
+
+        expect(loverRequest.id).toBe(user2LoverRequest.id);
+        expect(loverRequest.isAccepted).toBe(true);
+        expect(loverRequest.isSenderCanceled).toBe(false);
+        expect(loverRequest.isRecipientCanceled).toBe(false);
+      });
+
+      it('should call analytics track', async () => {
+        const { calls } = analytics.track.mock;
+        const { data: { acceptLoverRequest: { loverRequest } } } = request;
+
+        expect(calls).toHaveLength(1);
+        expect(calls[0][0]).toEqual(
+          expect.objectContaining({
+            userId: user.id,
+            event: 'acceptLoverRequest',
+            properties: expect.objectContaining({
+              category: 'loverRequest',
+              loverRequestId: loverRequest.id,
+              senderId: user2.id,
+            }),
+          }),
+        );
       });
     });
   });

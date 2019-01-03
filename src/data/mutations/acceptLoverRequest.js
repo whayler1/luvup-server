@@ -56,27 +56,23 @@ const acceptLoverRequest = {
     if (!loverRequest) {
       throw LoverRequestNotFoundError;
     }
-    console.log('-- here 1', request);
 
     const user = await User.findOne({ where: { id: verify.id } });
     const recipient = await loverRequest.getRecipient();
     if (recipient.id !== user.id) {
       return { error: 'recipient id does not match' };
     }
-    console.log('-- here 2');
 
     const lover = await User.findOne({ where: { id: loverRequest.UserId } });
     if (!lover) {
       return { error: 'lover invalid' };
     }
-    console.log('-- here 3');
     /**
        * If either user is already in a relationship we have to set end date.
        */
     const userRelationship = await user.getRelationship();
     const loverRelationship = await lover.getRelationship();
     const endDate = datetimeAndTimestamp(moment());
-    console.log('-- here 4');
 
     if (userRelationship) {
       userRelationship.update({ endDate });
@@ -84,26 +80,22 @@ const acceptLoverRequest = {
     if (loverRelationship) {
       loverRelationship.update({ endDate });
     }
-    console.log('-- here 5');
 
     const relationship = await Relationship.create();
     await relationship.addLover(user);
     await relationship.addLover(lover);
     await user.setRelationship(relationship);
     await lover.setRelationship(relationship);
-    console.log('-- here 6');
 
     await loverRequest.update({
       isAccepted: true,
     });
-    console.log('-- here 7');
 
     /**
        * JW: Generate initial relationship score as soon as relationship is created.
        */
     generateScore(user);
     generateScore(lover);
-    console.log('-- here 8');
 
     analytics.track({
       userId: user.id,
@@ -114,7 +106,6 @@ const acceptLoverRequest = {
         senderId: lover.id,
       },
     });
-    console.log('-- here 9');
 
     sendPushNotification(
       lover.id,
@@ -123,14 +114,12 @@ const acceptLoverRequest = {
         type: 'lover-request-accepted',
       },
     );
-    console.log('-- here 10');
 
     try {
       await sendEmails(lover, user);
     } catch (err) {
       console.error('error sending acceptLoverRequest email');
     }
-    console.log('-- here 11');
     return { loverRequest };
   },
 };
