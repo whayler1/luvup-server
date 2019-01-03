@@ -1,6 +1,7 @@
 import { graphql } from 'graphql';
 import schema from '../schema';
 import sequelize from '../sequelize';
+import { Relationship } from '../models';
 import { UserNotLoggedInError, LoverRequestNotFoundError } from '../errors';
 import createLoggedInUser, {
   createUser,
@@ -85,6 +86,18 @@ describe('acceptLoverRequest', () => {
         expect(loverRequest.isAccepted).toBe(true);
         expect(loverRequest.isSenderCanceled).toBe(false);
         expect(loverRequest.isRecipientCanceled).toBe(false);
+      });
+
+      it('should set user and lovers relationship', async () => {
+        await user.reload();
+        await user2.reload();
+        const [relationship] = await Relationship.findAll({
+          limit: 1,
+          order: [['createdAt', 'DESC']],
+        });
+
+        expect(user.RelationshipId).toBe(relationship.id);
+        expect(user2.RelationshipId).toBe(relationship.id);
       });
 
       it('should call analytics track', async () => {
