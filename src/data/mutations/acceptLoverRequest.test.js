@@ -100,6 +100,19 @@ describe('acceptLoverRequest', () => {
         expect(user2.RelationshipId).toBe(relationship.id);
       });
 
+      it('should add lover ids to relationship', async () => {
+        const [relationship] = await Relationship.findAll({
+          limit: 1,
+          order: [['createdAt', 'DESC']],
+        });
+
+        const lovers = await relationship.getLover();
+
+        expect(lovers[0].id).toBe(user.id);
+        expect(lovers[1].id).toBe(user2.id);
+        expect(lovers).toHaveLength(2);
+      });
+
       it('should call analytics track', async () => {
         const { calls } = analytics.track.mock;
         const { data: { acceptLoverRequest: { loverRequest } } } = request;
