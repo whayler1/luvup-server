@@ -1,12 +1,15 @@
 import { graphql } from 'graphql';
 import schema from '../schema';
 import sequelize from '../sequelize';
-import { Relationship } from '../models';
+import { Relationship, RelationshipScore } from '../models';
 import { UserNotLoggedInError, LoverRequestNotFoundError } from '../errors';
 import createLoggedInUser, {
   createUser,
 } from '../test-helpers/create-logged-in-user';
 import analytics from '../../services/analytics';
+import pushNotifications from '../../services/pushNotifications';
+
+jest.mock('../../services/pushNotifications');
 
 describe('acceptLoverRequest', () => {
   describe('when user is logged in', () => {
@@ -75,6 +78,12 @@ describe('acceptLoverRequest', () => {
         );
       });
 
+      afterEach(() => {
+        /* eslint-disable import/no-named-as-default-member */
+        pushNotifications.sendPushNotification.mockReset();
+        /* eslint-enable import/no-named-as-default-member */
+      });
+
       afterAll(() => {
         analytics.track = originalAnalyticsTrack;
       });
@@ -113,6 +122,43 @@ describe('acceptLoverRequest', () => {
         expect(lovers).toHaveLength(2);
       });
 
+      it('should generate relationship scores', async () => {
+        const [relationship] = await Relationship.findAll({
+          limit: 1,
+          order: [['createdAt', 'DESC']],
+        });
+
+        const [userRelationshipScore] = await RelationshipScore.findAll({
+          limit: 1,
+          where: {
+            userId: user.id,
+          },
+          order: [['createdAt', 'DESC']],
+        });
+        const [loverRelationshipScore] = await RelationshipScore.findAll({
+          limit: 1,
+          where: {
+            userId: user2.id,
+          },
+          order: [['createdAt', 'DESC']],
+        });
+
+        expect(userRelationshipScore.dataValues).toEqual(
+          expect.objectContaining({
+            userId: user.id,
+            relationshipId: relationship.id,
+            score: 0,
+          }),
+        );
+        expect(loverRelationshipScore.dataValues).toEqual(
+          expect.objectContaining({
+            userId: user2.id,
+            relationshipId: relationship.id,
+            score: 0,
+          }),
+        );
+      });
+
       it('should call analytics track', async () => {
         const { calls } = analytics.track.mock;
         const { data: { acceptLoverRequest: { loverRequest } } } = request;
@@ -127,6 +173,22 @@ describe('acceptLoverRequest', () => {
               loverRequestId: loverRequest.id,
               senderId: user2.id,
             }),
+          }),
+        );
+      });
+
+      it('should send push notification', async () => {
+        /* eslint-disable import/no-named-as-default-member */
+        const { calls } = pushNotifications.sendPushNotification.mock;
+        /* eslint-enable import/no-named-as-default-member */
+        expect(calls).toHaveLength(1);
+        expect(calls[0][0]).toBe(user2.id);
+        expect(calls[0][1]).toBe(
+          'Jason Wents has accepted your lover request! 💞',
+        );
+        expect(calls[0][2]).toEqual(
+          expect.objectContaining({
+            type: 'lover-request-accepted',
           }),
         );
       });

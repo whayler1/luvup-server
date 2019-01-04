@@ -94,8 +94,8 @@ const acceptLoverRequest = {
     /**
        * JW: Generate initial relationship score as soon as relationship is created.
        */
-    generateScore(user);
-    generateScore(lover);
+    await generateScore(user);
+    await generateScore(lover);
 
     analytics.track({
       userId: user.id,

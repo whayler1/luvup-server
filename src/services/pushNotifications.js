@@ -80,11 +80,8 @@ export const sendPushNotification = async (
       ...options,
     }));
 
-    const chunks = expo.chunkPushNotifications(notifications);
-
-    const { erroredTokens } = await sendChunks(notifications);
-
-    // invalidateErroredTokens(userId, erroredTokens);
+    expo.chunkPushNotifications(notifications);
+    await sendChunks(notifications);
   }
 };
 
