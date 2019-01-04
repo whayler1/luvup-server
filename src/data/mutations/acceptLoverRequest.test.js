@@ -8,8 +8,10 @@ import createLoggedInUser, {
 } from '../test-helpers/create-logged-in-user';
 import analytics from '../../services/analytics';
 import pushNotifications from '../../services/pushNotifications';
+import emailHelper from '../helpers/email';
 
 jest.mock('../../services/pushNotifications');
+jest.mock('../helpers/email');
 
 describe('acceptLoverRequest', () => {
   describe('when user is logged in', () => {
@@ -81,6 +83,7 @@ describe('acceptLoverRequest', () => {
       afterEach(() => {
         /* eslint-disable import/no-named-as-default-member */
         pushNotifications.sendPushNotification.mockReset();
+        emailHelper.sendEmail.mockReset();
         /* eslint-enable import/no-named-as-default-member */
       });
 
@@ -190,6 +193,23 @@ describe('acceptLoverRequest', () => {
           expect.objectContaining({
             type: 'lover-request-accepted',
           }),
+        );
+      });
+
+      it('should send emails', () => {
+        const { calls } = emailHelper.sendEmail.mock;
+
+        expect(calls[0][0].to).toBe(user2.email);
+        expect(calls[0][0].subject).toBe(
+          'You have been accepted by a new lover!',
+        );
+        expect(calls[0][0].html).toBe(
+          '<p>Hi Jason Wents,</p><p>Congratulations, <b>Jason Wents</b> has accepted your lover request on Luvup!</p>',
+        );
+        expect(calls[1][0].to).toBe(user.email);
+        expect(calls[1][0].subject).toBe('You have accepted a new lover!');
+        expect(calls[1][0].html).toBe(
+          '<p>Hi Jason Wents,</p><p>Congratulations, you have accepted <b>Jason Wents</b> as your new lover on Luvup!</p>',
         );
       });
     });
