@@ -1,5 +1,4 @@
 import { GraphQLString, GraphQLObjectType } from 'graphql';
-import _ from 'lodash';
 import moment from 'moment';
 
 import LoverRequestType from '../types/LoverRequestType';
@@ -9,6 +8,8 @@ import emailHelper from '../helpers/email';
 import { generateScore } from '../helpers/relationshipScore';
 import analytics from '../../services/analytics';
 import { sendPushNotification } from '../../services/pushNotifications';
+import { UserNotLoggedInError, LoverRequestNotFoundError } from '../errors';
+import { validateJwtToken } from '../helpers';
 
 const sendEmails = (sender, recipient) => {
   const senderEmail = emailHelper.sendEmail({
@@ -37,9 +38,10 @@ const acceptLoverRequest = {
     loverRequestId: { type: GraphQLString },
   },
   resolve: async ({ request }, { loverRequestId }) => {
-    const id_token = _.get(request, 'cookies.id_token');
-    if (!id_token || !loverRequestId || !('user' in request)) {
-      return {};
+    const verify = await validateJwtToken(request);
+
+    if (!verify) {
+      throw UserNotLoggedInError;
     }
 
     const loverRequest = await LoverRequest.findOne({
@@ -51,73 +53,74 @@ const acceptLoverRequest = {
       },
     });
 
-    if (loverRequest) {
-      const user = await User.findOne({ where: { id: request.user.id } });
-      const recipient = await loverRequest.getRecipient();
-      if (recipient.id !== user.id) {
-        return { error: 'recipient id does not match' };
-      }
+    if (!loverRequest) {
+      throw LoverRequestNotFoundError;
+    }
 
-      const lover = await User.findOne({ where: { id: loverRequest.UserId } });
-      if (!lover) {
-        return { error: 'lover invalid' };
-      }
-      /**
+    const user = await User.findOne({ where: { id: verify.id } });
+    const recipient = await loverRequest.getRecipient();
+    if (recipient.id !== user.id) {
+      return { error: 'recipient id does not match' };
+    }
+
+    const lover = await User.findOne({ where: { id: loverRequest.UserId } });
+    if (!lover) {
+      return { error: 'lover invalid' };
+    }
+    /**
        * If either user is already in a relationship we have to set end date.
        */
-      const userRelationship = await user.getRelationship();
-      const loverRelationship = await lover.getRelationship();
-      const endDate = datetimeAndTimestamp(moment());
+    const userRelationship = await user.getRelationship();
+    const loverRelationship = await lover.getRelationship();
+    const endDate = datetimeAndTimestamp(moment());
 
-      if (userRelationship) {
-        userRelationship.update({ endDate });
-      }
-      if (loverRelationship) {
-        loverRelationship.update({ endDate });
-      }
+    if (userRelationship) {
+      userRelationship.update({ endDate });
+    }
+    if (loverRelationship) {
+      loverRelationship.update({ endDate });
+    }
 
-      const relationship = await Relationship.create();
-      await relationship.addLover(user);
-      await relationship.addLover(lover);
-      await user.setRelationship(relationship);
-      await lover.setRelationship(relationship);
+    const relationship = await Relationship.create();
+    await relationship.addLover(user);
+    await relationship.addLover(lover);
+    await user.setRelationship(relationship);
+    await lover.setRelationship(relationship);
 
-      await loverRequest.update({
-        isAccepted: true,
-      });
+    await loverRequest.update({
+      isAccepted: true,
+    });
 
-      /**
+    /**
        * JW: Generate initial relationship score as soon as relationship is created.
        */
-      generateScore(user);
-      generateScore(lover);
+    await generateScore(user);
+    await generateScore(lover);
 
-      analytics.track({
-        userId: user.id,
-        event: 'acceptLoverRequest',
-        properties: {
-          category: 'loverRequest',
-          loverRequestId,
-          senderId: lover.id,
-        },
-      });
+    analytics.track({
+      userId: user.id,
+      event: 'acceptLoverRequest',
+      properties: {
+        category: 'loverRequest',
+        loverRequestId,
+        senderId: lover.id,
+      },
+    });
 
-      sendPushNotification(
-        lover.id,
-        `${user.fullName} has accepted your lover request! 💞`,
-        {
-          type: 'lover-request-accepted',
-        },
-      );
+    sendPushNotification(
+      lover.id,
+      `${user.fullName} has accepted your lover request! 💞`,
+      {
+        type: 'lover-request-accepted',
+      },
+    );
 
-      try {
-        await sendEmails(lover, user);
-      } catch (err) {
-        console.error('error sending acceptLoverRequest email');
-      }
-      return { loverRequest };
+    try {
+      await sendEmails(lover, user);
+    } catch (err) {
+      console.error('error sending acceptLoverRequest email');
     }
-    return { error: 'invalid' };
+    return { loverRequest };
   },
 };
 
