@@ -47,12 +47,10 @@ describe('userRequest', () => {
     }`;
 
     const result = await graphql(schema, query, {}, {});
-    const { data } = result;
 
-    expect(data.userRequest).toMatchObject({
-      email: null,
-      error: 'used',
-    });
+    expect(result.errors[0].message).toBe(
+      'There is already a user with this email',
+    );
   });
 
   it('should allow user to request access', async () => {
