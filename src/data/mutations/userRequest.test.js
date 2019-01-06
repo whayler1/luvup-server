@@ -42,7 +42,7 @@ describe('userRequest', () => {
 
     const query = `mutation {
       userRequest(email: "${email}") {
-        email error
+        email
       }
     }`;
 
@@ -59,17 +59,14 @@ describe('userRequest', () => {
 
     const query = `mutation {
       userRequest(email: "${email}") {
-        email error
+        email
       }
     }`;
 
     const result = await graphql(schema, query, {}, {});
-    const { data } = result;
+    const { data: { userRequest } } = result;
 
-    expect(data.userRequest).toMatchObject({
-      email,
-      error: null,
-    });
+    expect(userRequest).toMatchObject({ email });
   });
 
   it('should set userCode to 012345 if using admin email hack', async () => {
@@ -78,7 +75,7 @@ describe('userRequest', () => {
 
     const query = `mutation {
       userRequest(email: "${email}") {
-        email error
+        email
       }
     }`;
 
@@ -93,6 +90,28 @@ describe('userRequest', () => {
     const isCodeMatch = await bcrypt.compare('012345', userRequest.code);
 
     expect(isCodeMatch).toBe(true);
+  });
+
+  it('should create a new user request and email if unused user request exists', async () => {
+    const uuid = uuidv1();
+    const email = `justin+${uuid}@luvup.io`;
+
+    const salt = await bcrypt.genSalt();
+    const code = await bcrypt.hash('012345', salt);
+
+    await UserRequest.create({
+      email,
+      code,
+    });
+
+    const query = `mutation {
+        userRequest(email: "${email}") {
+          email
+        }
+      }`;
+
+    const { data: { userRequest } } = await graphql(schema, query, {}, {});
+    expect(userRequest).toMatchObject({ email });
   });
 
   describe('when sendEmail rejects', () => {
@@ -112,12 +131,34 @@ describe('userRequest', () => {
 
       const query = `mutation {
         userRequest(email: "${email}") {
-          email error
+          email
         }
       }`;
 
       const result = await graphql(schema, query, {}, {});
 
+      expect(result.errors[0].message).toBe('Error sending confirmation email');
+    });
+
+    it('should return send email error when user request exists', async () => {
+      const uuid = uuidv1();
+      const email = `justin+${uuid}@luvup.io`;
+
+      const salt = await bcrypt.genSalt();
+      const code = await bcrypt.hash('012345', salt);
+
+      await UserRequest.create({
+        email,
+        code,
+      });
+
+      const query = `mutation {
+          userRequest(email: "${email}") {
+            email
+          }
+        }`;
+
+      const result = await graphql(schema, query, {}, {});
       expect(result.errors[0].message).toBe('Error sending confirmation email');
     });
   });
