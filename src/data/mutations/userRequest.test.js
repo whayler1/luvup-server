@@ -4,21 +4,21 @@ import bcrypt from 'bcrypt';
 
 import schema from '../schema';
 import { UserRequest } from '../models';
-import config from '../../config';
 import { modelsSync } from '../test-helpers';
+import emailHelper from '../helpers/email';
+
+jest.mock('../helpers/email');
 
 describe('userRequest', () => {
   let originalTimeout;
 
   beforeAll(async () => {
-    config.disableEmail = 'true';
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
     await modelsSync;
   });
 
   afterAll(() => {
-    config.disableEmail = false;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
@@ -93,5 +93,32 @@ describe('userRequest', () => {
     const isCodeMatch = await bcrypt.compare('012345', userRequest.code);
 
     expect(isCodeMatch).toBe(true);
+  });
+
+  describe('when sendEmail rejects', () => {
+    /* eslint-disable no-underscore-dangle */
+    beforeAll(() => {
+      emailHelper.__setIsSendEmailResolve(false);
+    });
+
+    afterAll(() => {
+      emailHelper.__setIsSendEmailResolve(true);
+    });
+    /* eslint-disable no-underscore-dangle */
+
+    it('should return send email error', async () => {
+      const uuid = uuidv1();
+      const email = `justin+${uuid}@luvup.io`;
+
+      const query = `mutation {
+        userRequest(email: "${email}") {
+          email error
+        }
+      }`;
+
+      const result = await graphql(schema, query, {}, {});
+
+      expect(result.errors[0].message).toBe('Error sending confirmation email');
+    });
   });
 });
