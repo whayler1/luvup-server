@@ -28,6 +28,7 @@ const userRequest = {
     email: { type: GraphQLString },
   },
   resolve: async ({ request }, { email }) => {
+    // throw EmailExistsError;
     const existingUserRequest = await UserRequest.findOne({ where: { email } });
 
     if (existingUserRequest) {

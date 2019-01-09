@@ -2,11 +2,13 @@ import nodemailer from 'nodemailer';
 
 import config from '../../config';
 
+const { inviteFromEmail, inviteFromPassword, disableEmail } = config;
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: config.inviteFromEmail,
-    pass: config.inviteFromPassword,
+    user: inviteFromEmail,
+    pass: inviteFromPassword,
   },
 });
 
@@ -16,7 +18,12 @@ const defaultOptions = {
 
 const sendEmail = options =>
   new Promise((resolve, reject) => {
-    if (config.disableEmail === 'true') {
+    if (
+      (!inviteFromEmail || !inviteFromPassword) &&
+      process.env.NODE_ENV === 'development'
+    ) {
+      resolve();
+    } else if (disableEmail === 'true') {
       resolve();
     } else {
       const mailOptions = Object.assign({}, defaultOptions, options);
