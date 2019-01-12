@@ -6,6 +6,8 @@ import emailHelper from '../helpers/email';
 import config from '../../config';
 
 const getIsAdminTestRequest = email => /^justin\+.*?@luvup.io$/i.test(email);
+const SendEmailError = new Error('Error sending confirmation email');
+const EmailExistsError = new Error('There is already a user with this email');
 
 const getUserCode = email =>
   getIsAdminTestRequest(email)
@@ -26,16 +28,14 @@ const userRequest = {
     email: { type: GraphQLString },
   },
   resolve: async ({ request }, { email }) => {
+    // throw EmailExistsError;
     const existingUserRequest = await UserRequest.findOne({ where: { email } });
 
     if (existingUserRequest) {
       const user = await existingUserRequest.getUser();
 
       if (user) {
-        return {
-          email: null,
-          error: 'used',
-        };
+        throw EmailExistsError;
       }
       const userCode = getUserCode(email);
       const salt = await bcrypt.genSalt();
@@ -54,10 +54,7 @@ const userRequest = {
           email,
         };
       } catch (err) {
-        return {
-          email,
-          error: 'email error',
-        };
+        throw SendEmailError;
       }
     }
     const userCode = getUserCode(email);
@@ -79,10 +76,7 @@ const userRequest = {
         email,
       };
     } catch (err) {
-      return {
-        email,
-        error: 'email error',
-      };
+      throw SendEmailError;
     }
   },
 };
