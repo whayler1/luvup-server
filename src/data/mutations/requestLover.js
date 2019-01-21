@@ -1,11 +1,12 @@
-import graphql, { GraphQLString, GraphQLID } from 'graphql';
-import _ from 'lodash';
+import { GraphQLID } from 'graphql';
 
 import LoverRequestType from '../types/LoverRequestType';
-import { User, LoverRequest } from '../models';
+import { User } from '../models';
 import emailHelper from '../helpers/email';
 import config from '../../config';
 import analytics from '../../services/analytics';
+import { validateJwtToken } from '../helpers';
+import { UserNotLoggedInError } from '../errors';
 
 const sendEmails = (sender, recipient) => {
   const senderEmail = emailHelper.sendEmail({
@@ -28,8 +29,10 @@ const requestLover = {
     recipientId: { type: GraphQLID },
   },
   resolve: async ({ request }, { recipientId }) => {
-    if (!('user' in request)) {
-      return false;
+    const verify = await validateJwtToken(request);
+
+    if (!verify) {
+      throw UserNotLoggedInError;
     }
 
     const user = await User.find({ where: { id: request.user.id } });
