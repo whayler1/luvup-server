@@ -1,11 +1,13 @@
-import graphql, { GraphQLString, GraphQLID } from 'graphql';
-import _ from 'lodash';
+import { GraphQLID } from 'graphql';
 
 import LoverRequestType from '../types/LoverRequestType';
-import { User, LoverRequest } from '../models';
+import { User } from '../models';
 import emailHelper from '../helpers/email';
 import config from '../../config';
 import analytics from '../../services/analytics';
+import { validateJwtToken } from '../helpers';
+import { UserNotLoggedInError } from '../errors';
+import { sendPushNotification } from '../../services/pushNotifications';
 
 const sendEmails = (sender, recipient) => {
   const senderEmail = emailHelper.sendEmail({
@@ -28,11 +30,13 @@ const requestLover = {
     recipientId: { type: GraphQLID },
   },
   resolve: async ({ request }, { recipientId }) => {
-    if (!('user' in request)) {
-      return false;
+    const verify = await validateJwtToken(request);
+
+    if (!verify) {
+      throw UserNotLoggedInError;
     }
 
-    const user = await User.find({ where: { id: request.user.id } });
+    const user = await User.find({ where: { id: verify.id } });
     const recipient = await User.find({ where: { id: recipientId } });
 
     const loverRequest = await user.createLoverRequest();
@@ -48,6 +52,14 @@ const requestLover = {
       },
     });
 
+    sendPushNotification(
+      recipient.id,
+      `${user.fullName} has requested you as a lover!`,
+      {
+        type: 'lover-request-received',
+      },
+    );
+
     try {
       await sendEmails(user, recipient);
     } catch (err) {
@@ -55,6 +67,7 @@ const requestLover = {
     }
 
     return Object.assign({}, loverRequest.dataValues, {
+      sender: user.dataValues,
       recipient: recipient.dataValues,
     });
   },
