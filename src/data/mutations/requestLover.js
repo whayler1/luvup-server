@@ -35,7 +35,7 @@ const requestLover = {
       throw UserNotLoggedInError;
     }
 
-    const user = await User.find({ where: { id: request.user.id } });
+    const user = await User.find({ where: { id: verify.id } });
     const recipient = await User.find({ where: { id: recipientId } });
 
     const loverRequest = await user.createLoverRequest();
@@ -58,6 +58,7 @@ const requestLover = {
     }
 
     return Object.assign({}, loverRequest.dataValues, {
+      sender: user.dataValues,
       recipient: recipient.dataValues,
     });
   },
