@@ -7,6 +7,7 @@ import config from '../../config';
 import analytics from '../../services/analytics';
 import { validateJwtToken } from '../helpers';
 import { UserNotLoggedInError } from '../errors';
+import { sendPushNotification } from '../../services/pushNotifications';
 
 const sendEmails = (sender, recipient) => {
   const senderEmail = emailHelper.sendEmail({
@@ -50,6 +51,14 @@ const requestLover = {
         loverRequestId: loverRequest.id,
       },
     });
+
+    sendPushNotification(
+      recipient.id,
+      `${user.fullName} has requested you as a lover!`,
+      {
+        type: 'lover-request-received',
+      },
+    );
 
     try {
       await sendEmails(user, recipient);

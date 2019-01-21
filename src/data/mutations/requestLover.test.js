@@ -137,6 +137,16 @@ describe('requestLover', () => {
           loverRequestId: loverRequest.id,
         });
       });
+
+      it('should send a push notification to the recipient', () => {
+        /* eslint-disable import/no-named-as-default-member */
+        const { calls } = pushNotifications.sendPushNotification.mock;
+        /* eslint-enable import/no-named-as-default-member */
+
+        expect(calls[0][0]).toBe(user2.id);
+        expect(calls[0][1]).toBe('Jason Wents has requested you as a lover!');
+        expect(calls[0][2]).toMatchObject({ type: 'lover-request-received' });
+      });
     });
   });
 });
