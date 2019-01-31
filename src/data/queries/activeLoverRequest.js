@@ -1,4 +1,4 @@
-import { GraphQLInt, GraphQLObjectType, GraphQLList as List } from 'graphql';
+import { GraphQLObjectType } from 'graphql';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 
