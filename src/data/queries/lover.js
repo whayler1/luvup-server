@@ -21,7 +21,7 @@ const resolve = async ({ request }) => {
       },
     },
   });
-  const relationshipScore = await RelationshipScore.findAll({
+  const [relationshipScore] = await RelationshipScore.findAll({
     limit: 1,
     where: {
       relationshipId: relationship.id,
