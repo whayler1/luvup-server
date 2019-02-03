@@ -4,8 +4,27 @@ import schema from '../schema';
 import sequelize from '../sequelize';
 import { createLoggedInUser } from '../test-helpers';
 import { generateScore } from '../helpers/relationshipScore';
+import { UserNotLoggedInError } from '../errors';
 
 describe('lover', () => {
+  describe('when user is not logged in', () => {
+    it('should return UserNotLoggedInError', async () => {
+      const query = `{
+        lover {
+          id email username firstName lastName
+          relationshipScore { id createdAt updatedAt score relationshipId userId }
+        }
+      }`;
+      const { errors: [firstError] } = await graphql(
+        schema,
+        query,
+        {},
+        sequelize,
+      );
+
+      expect(firstError.message).toBe(UserNotLoggedInError.message);
+    });
+  });
   describe('when user is logged in', () => {
     describe('when lover exists', () => {
       let res;
