@@ -30,9 +30,14 @@ const resolve = async ({ request }) => {
     order: [['createdAt', 'DESC']],
   });
 
+  console.log('\n\n relationshipScore', relationshipScore.dataValues);
+
   return {
     ...lover.dataValues,
-    relationshipScore,
+    relationshipScore: {
+      ...relationshipScore.dataValues,
+      score: Math.round(relationshipScore.dataValues.score),
+    },
   };
 };
 
