@@ -8,7 +8,7 @@ import emailHelper from '../helpers/email';
 import { generateScore } from '../helpers/relationshipScore';
 import analytics from '../../services/analytics';
 import { sendPushNotification } from '../../services/pushNotifications';
-import { UserNotLoggedInError, LoverRequestNotFoundError } from '../errors';
+import { LoverRequestNotFoundError } from '../errors';
 import { validateJwtToken } from '../helpers';
 
 const sendEmails = (sender, recipient) => {
@@ -39,10 +39,6 @@ const acceptLoverRequest = {
   },
   resolve: async ({ request }, { loverRequestId }) => {
     const verify = await validateJwtToken(request);
-
-    if (!verify) {
-      throw UserNotLoggedInError;
-    }
 
     const loverRequest = await LoverRequest.findOne({
       where: {
