@@ -1,9 +1,8 @@
-import graphql, { GraphQLObjectType, GraphQLInt } from 'graphql';
+import { GraphQLObjectType, GraphQLInt } from 'graphql';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 
 import { User, Coin } from '../models';
-import MeType from '../types/MeType';
 import config from '../../config';
 
 const coinCount = {

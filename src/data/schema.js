@@ -16,6 +16,7 @@ import userEvents from './queries/userEvents';
 import relationshipScores from './queries/relationshipScores';
 import relationshipScoresByDay from './queries/relationshipScoresByDay';
 import unviewedEventCounts from './queries/unviewedEventCounts';
+import lover from './queries/lover';
 import receivedLoveNotes from './queries/receivedLoveNotes';
 import sentLoveNotes from './queries/sentLoveNotes';
 import receivedQuizItems from './queries/receivedQuizItems';
@@ -62,6 +63,7 @@ const schema = new Schema({
       relationshipScores,
       relationshipScoresByDay,
       unviewedEventCounts,
+      lover,
       receivedLoveNotes,
       sentLoveNotes,
       receivedQuizItems,

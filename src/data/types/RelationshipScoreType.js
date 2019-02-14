@@ -4,8 +4,6 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLInt,
-  GraphQLFloat,
-  GraphQLBoolean,
 } from 'graphql';
 
 const RelationshipScoreType = new GraphQLObjectType({

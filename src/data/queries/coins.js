@@ -1,7 +1,6 @@
 import { GraphQLInt, GraphQLObjectType, GraphQLList as List } from 'graphql';
 import CoinType from '../types/CoinType';
 import { Coin } from '../models';
-import getFieldDict from '../helpers/getFieldDict';
 
 const coins = {
   type: new GraphQLObjectType({

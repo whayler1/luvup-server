@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 import uuidv1 from 'uuid/v1';
 
-import models, { User, UserRequest, Relationship } from '../src/data/models';
+import { UserRequest, Relationship } from '../src/data/models';
 import config from '../src/config';
 
 export const createUser = async (
