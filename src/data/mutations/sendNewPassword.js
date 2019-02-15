@@ -26,10 +26,9 @@ const sendNewPassword = {
     email: { type: new GraphQLNonNull(GraphQLString) },
   },
   resolve: async ({ request }, { email }) => {
-    let user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email: email.toLowerCase() } });
 
     if (!user) {
-      user = await User.findOne({ where: { username: email } });
       throw NoUserWithThatEmailError;
     }
 

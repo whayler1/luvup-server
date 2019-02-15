@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import moment from 'moment';
 
 import { datetimeAndTimestamp } from './dateFormats';
@@ -111,7 +110,7 @@ export const generateScore = async user => {
     0,
   );
 
-  const score = Math.min(Math.max(scoreFuzzy * 100, 0), 100);
+  const score = Math.round(Math.min(Math.max(scoreFuzzy * 100, 0), 100));
 
   const relationshipScore = await RelationshipScore.create({
     score,
