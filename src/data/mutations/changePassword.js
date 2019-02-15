@@ -1,17 +1,9 @@
 import bcrypt from 'bcrypt';
-import graphql, {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLBoolean,
-} from 'graphql';
-import moment from 'moment';
+import { GraphQLObjectType, GraphQLString, GraphQLBoolean } from 'graphql';
 import _ from 'lodash';
 import jwt from 'jsonwebtoken';
 
-import UserRequestType from '../types/UserRequestType';
-import UserType from '../types/UserType';
-import { User, UserEvent } from '../models';
+import { User } from '../models';
 import emailHelper from '../helpers/email';
 import config from '../../config';
 import analytics from '../../services/analytics';

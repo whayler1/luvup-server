@@ -59,7 +59,7 @@ const sendNewPassword = {
     await emailHelper.sendEmail({
       to: email,
       subject: 'Luvup Password Reset',
-      html: `<p>This is your temporary password: <b>${resetPassword}</b></p>`,
+      html: `<p>Your temporary password is: <b>${resetPassword}</b></p><p>Log in with this password to reset your password. You will be prompted to set a new password after.</p>`,
     });
 
     return { success: true };

@@ -44,7 +44,7 @@ describe('sendNewPassword', () => {
       expect(calls).toHaveLength(1);
       expect(call.to).toBe(user.email);
       expect(call.subject).toBe('Luvup Password Reset');
-      expect(call.html).toContain('This is your temporary password');
+      expect(call.html).toContain('Your temporary password is');
     });
 
     it('should respond with success', () => {
