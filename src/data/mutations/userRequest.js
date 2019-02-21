@@ -6,8 +6,8 @@ import UserRequestType from '../types/UserRequestType';
 import { UserRequest } from '../models';
 import emailHelper from '../helpers/email';
 import config from '../../config';
+import { getIsAdminTestRequest } from '../helpers';
 
-const getIsAdminTestRequest = email => /^justin\+.*?@luvup.io$/i.test(email);
 const SendEmailError = new Error('Error sending confirmation email');
 const EmailExistsError = new Error('There is already a user with this email');
 
@@ -31,7 +31,7 @@ const userRequest = {
   },
   resolve: async ({ request }, { email }) => {
     // throw EmailExistsError;
-    const sanitizedEmail = _.trim(email.toLowerCase);
+    const sanitizedEmail = _.trim(email.toLowerCase());
     const existingUserRequest = await UserRequest.findOne({
       where: { email: sanitizedEmail },
     });

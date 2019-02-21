@@ -26,7 +26,7 @@ const confirmUser = {
     { request },
     { email, username, firstName, lastName, password, code },
   ) => {
-    const sanitizedEmail = _.trim(email.toLowerCase);
+    const sanitizedEmail = _.trim(email.toLowerCase());
     const sanitizedFirstName = _.trim(_.upperFirst(firstName));
     const sanitizedLastName = _.trim(_.upperFirst(lastName));
 

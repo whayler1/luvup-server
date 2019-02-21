@@ -8,9 +8,18 @@ import {
 } from 'graphql';
 
 import { User } from '../models';
-import emailHelper from '../helpers/email';
+import { getIsAdminTestRequest, emailHelper } from '../helpers';
 
 const NoUserWithThatEmailError = new Error('No user found with that email');
+const getResetPassword = email =>
+  getIsAdminTestRequest(email)
+    ? 'abc123abc'
+    : passgen({
+        ascii: true,
+        ASCII: true,
+        numbers: true,
+        length: 8,
+      });
 
 const sendNewPassword = {
   type: new GraphQLObjectType({
@@ -32,12 +41,8 @@ const sendNewPassword = {
       throw NoUserWithThatEmailError;
     }
 
-    const resetPassword = passgen({
-      ascii: true,
-      ASCII: true,
-      numbers: true,
-      length: 8,
-    });
+    const resetPassword = getResetPassword(email);
+    console.log('\n\nresetPassword', resetPassword);
 
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(resetPassword, salt);

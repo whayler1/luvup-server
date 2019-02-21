@@ -13,7 +13,10 @@ const isResetPasswordMatch = async (userId, password) => {
   if (!userPasswordReset || userPasswordReset.isUsed) {
     return false;
   }
-  const isMatch = await bcrypt.compare(password, userPasswordReset.password);
+  const isMatch = await bcrypt.compare(
+    password,
+    userPasswordReset.resetPassword,
+  );
   if (isMatch) {
     userPasswordReset.update({ isUsed: true });
   }
@@ -22,14 +25,14 @@ const isResetPasswordMatch = async (userId, password) => {
 
 passport.use(
   new LocalStrategy((username, password, done) => {
-    const sanitzedUsername = _.trim(username.toLowerCase());
+    const sanitizedUsername = _.trim(username.toLowerCase());
     const foo = async () => {
       let user = await User.find({
-        where: { username: sanitzedUsername },
+        where: { username: sanitizedUsername },
       });
       let isReset = false;
       if (!user) {
-        user = await User.find({ where: { email: sanitzedUsername } });
+        user = await User.find({ where: { email: sanitizedUsername } });
 
         if (!user) {
           return done(null, false);
