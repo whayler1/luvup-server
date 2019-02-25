@@ -42,7 +42,6 @@ const sendNewPassword = {
     }
 
     const resetPassword = getResetPassword(email);
-    console.log('\n\nresetPassword', resetPassword);
 
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(resetPassword, salt);
