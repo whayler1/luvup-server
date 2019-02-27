@@ -35,6 +35,8 @@ import sendJalapeno from './mutations/sendJalapeno';
 import createRelationshipScore from './mutations/createRelationshipScore';
 import endRelationship from './mutations/endRelationship';
 import changePassword from './mutations/changePassword';
+import sendNewPassword from './mutations/sendNewPassword';
+import resetPasswordWithGeneratedPassword from './mutations/resetPasswordWithGeneratedPassword';
 import confirmUserRequestCode from './mutations/confirmUserRequestCode';
 import resendLoverRequestEmail from './mutations/resendLoverRequestEmail';
 import setExpoPushToken from './mutations/setExpoPushToken';
@@ -89,6 +91,8 @@ const schema = new Schema({
       createRelationshipScore,
       endRelationship,
       changePassword,
+      sendNewPassword,
+      resetPasswordWithGeneratedPassword,
       setExpoPushToken,
       invalidateExpoPushToken,
       createLoveNote,

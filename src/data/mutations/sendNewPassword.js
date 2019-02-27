@@ -1,16 +1,25 @@
 import bcrypt from 'bcrypt';
 import passgen from 'pass-gen';
-import graphql, {
+import {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
   GraphQLBoolean,
+  GraphQLNonNull,
 } from 'graphql';
-import moment from 'moment';
-import UserRequestType from '../types/UserRequestType';
-import UserType from '../types/UserType';
-import { UserRequest, UserPasswordReset, User } from '../models';
-import emailHelper from '../helpers/email';
+
+import { User } from '../models';
+import { getIsAdminTestRequest, emailHelper } from '../helpers';
+
+const NoUserWithThatEmailError = new Error('No user found with that email');
+const getResetPassword = email =>
+  getIsAdminTestRequest(email)
+    ? 'abc123abc'
+    : passgen({
+        ascii: true,
+        ASCII: true,
+        numbers: true,
+        length: 8,
+      });
 
 const sendNewPassword = {
   type: new GraphQLObjectType({
@@ -20,33 +29,19 @@ const sendNewPassword = {
         type: GraphQLBoolean,
         defaultValue: false,
       },
-      error: { type: GraphQLString },
     },
   }),
   args: {
-    email: { type: GraphQLString },
+    email: { type: new GraphQLNonNull(GraphQLString) },
   },
   resolve: async ({ request }, { email }) => {
-    if (!email) {
-      return { error: 'no email' };
-    }
-
-    let user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email: email.toLowerCase() } });
 
     if (!user) {
-      user = await User.findOne({ where: { username: email } });
-
-      if (!user) {
-        return { error: 'invalid email' };
-      }
+      throw NoUserWithThatEmailError;
     }
 
-    const resetPassword = passgen({
-      ascii: true,
-      ASCII: true,
-      numbers: true,
-      length: 8,
-    });
+    const resetPassword = getResetPassword(email);
 
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(resetPassword, salt);
@@ -64,16 +59,11 @@ const sendNewPassword = {
       });
     }
 
-    try {
-      await emailHelper.sendEmail({
-        to: email,
-        subject: 'Luvup Password Reset',
-        html: `<p>This is your temporary password: <b>${resetPassword}</b></p>`,
-      });
-    } catch (err) {
-      console.error('Error sending confirm user email', err);
-      return { error: 'error sending email' };
-    }
+    await emailHelper.sendEmail({
+      to: email,
+      subject: 'Luvup Password Reset',
+      html: `<p>Your temporary password is: <b>${resetPassword}</b></p><p>Log in with this password to reset your password. You will be prompted to set a new password after.</p>`,
+    });
 
     return { success: true };
   },

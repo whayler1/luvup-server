@@ -1,11 +1,13 @@
 import bcrypt from 'bcrypt';
 import { GraphQLString } from 'graphql';
+import _ from 'lodash';
+
 import UserRequestType from '../types/UserRequestType';
 import { UserRequest } from '../models';
 import emailHelper from '../helpers/email';
 import config from '../../config';
+import { getIsAdminTestRequest } from '../helpers';
 
-const getIsAdminTestRequest = email => /^justin\+.*?@luvup.io$/i.test(email);
 const SendEmailError = new Error('Error sending confirmation email');
 const EmailExistsError = new Error('There is already a user with this email');
 
@@ -29,7 +31,10 @@ const userRequest = {
   },
   resolve: async ({ request }, { email }) => {
     // throw EmailExistsError;
-    const existingUserRequest = await UserRequest.findOne({ where: { email } });
+    const sanitizedEmail = _.trim(email.toLowerCase());
+    const existingUserRequest = await UserRequest.findOne({
+      where: { email: sanitizedEmail },
+    });
 
     if (existingUserRequest) {
       const user = await existingUserRequest.getUser();
@@ -49,7 +54,7 @@ const userRequest = {
         };
       }
       try {
-        await sendInviteEmail(email, userCode);
+        await sendInviteEmail(sanitizedEmail, userCode);
         return {
           email,
         };
@@ -62,7 +67,7 @@ const userRequest = {
     const hash = await bcrypt.hash(userCode, salt);
 
     await UserRequest.create({
-      email,
+      email: sanitizedEmail,
       code: hash,
     });
     if (config.disableEmail === 'true') {
@@ -71,9 +76,9 @@ const userRequest = {
       };
     }
     try {
-      await sendInviteEmail(email, userCode);
+      await sendInviteEmail(sanitizedEmail, userCode);
       return {
-        email,
+        email: sanitizedEmail,
       };
     } catch (err) {
       throw SendEmailError;
