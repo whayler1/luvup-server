@@ -159,7 +159,7 @@ app.post('/reauth', async (req, res) => {
   );
 
   const { ok, result } = verification;
-  if (!ok) {
+  if (!ok || !req.user || !req.cookies) {
     return res.status(400).json({
       error: result,
     });
