@@ -1,4 +1,5 @@
 import { graphql } from 'graphql';
+import _ from 'lodash';
 import schema from '../schema';
 import sequelize from '../sequelize';
 import { Relationship, RelationshipScore } from '../models';
@@ -69,6 +70,10 @@ describe('acceptLoverRequest', () => {
               isSenderCanceled
               isRecipientCanceled
             }
+            relationship {
+              id createdAt updatedAt endDate
+              lovers { id email firstName lastName }
+            }
           }
         }`;
 
@@ -98,6 +103,20 @@ describe('acceptLoverRequest', () => {
         expect(loverRequest.isAccepted).toBe(true);
         expect(loverRequest.isSenderCanceled).toBe(false);
         expect(loverRequest.isRecipientCanceled).toBe(false);
+      });
+
+      it.only('should return relationship object', async () => {
+        const { data: { acceptLoverRequest: { relationship } } } = request;
+        const [lover] = relationship.lovers;
+
+        expect(_.isString(relationship.id)).toBe(true);
+        expect(_.isString(relationship.createdAt)).toBe(true);
+        expect(_.isString(relationship.updatedAt)).toBe(true);
+        expect(relationship.endDate).toBeNull();
+        expect(_.isString(lover.id)).toBe(true);
+        expect(lover.email).toBe(user2.email);
+        expect(lover.firstName).toBe(user2.firstName);
+        expect(lover.lastName).toBe(user2.lastName);
       });
 
       it('should set user and lovers relationship', async () => {

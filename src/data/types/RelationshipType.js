@@ -3,10 +3,10 @@ import {
   GraphQLID,
   GraphQLString,
   GraphQLNonNull,
-  GraphQLInt,
-  GraphQLFloat,
-  GraphQLBoolean,
+  GraphQLList,
 } from 'graphql';
+
+import LoverType from './LoverType';
 
 const RelationshipType = new GraphQLObjectType({
   name: 'Relationship',
@@ -16,6 +16,9 @@ const RelationshipType = new GraphQLObjectType({
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
     endDate: { type: GraphQLString },
+    lovers: {
+      type: new GraphQLList(LoverType),
+    },
   },
 });
 

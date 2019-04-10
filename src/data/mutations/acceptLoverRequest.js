@@ -2,6 +2,7 @@ import { GraphQLString, GraphQLObjectType } from 'graphql';
 import moment from 'moment';
 
 import LoverRequestType from '../types/LoverRequestType';
+import RelationshipType from '../types/RelationshipType';
 import { User, LoverRequest, Relationship } from '../models';
 import { datetimeAndTimestamp } from '../helpers/dateFormats';
 import emailHelper from '../helpers/email';
@@ -31,6 +32,7 @@ const acceptLoverRequest = {
     name: 'AcceptLoverRequest',
     fields: {
       loverRequest: { type: LoverRequestType },
+      relationship: { type: RelationshipType },
       error: { type: GraphQLString },
     },
   }),
@@ -116,7 +118,13 @@ const acceptLoverRequest = {
     } catch (err) {
       console.error('error sending acceptLoverRequest email');
     }
-    return { loverRequest };
+    return {
+      loverRequest,
+      relationship: {
+        ...relationship.dataValues,
+        lovers: [lover.dataValues],
+      },
+    };
   },
 };
 
