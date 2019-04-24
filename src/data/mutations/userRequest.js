@@ -30,7 +30,6 @@ const userRequest = {
     email: { type: GraphQLString },
   },
   resolve: async ({ request }, { email }) => {
-    // throw EmailExistsError;
     const sanitizedEmail = _.trim(email.toLowerCase());
     const existingUserRequest = await UserRequest.findOne({
       where: { email: sanitizedEmail },
