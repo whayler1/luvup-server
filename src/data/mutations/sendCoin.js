@@ -64,7 +64,9 @@ const sendCoin = {
         type: 'luvup-received',
       });
 
-      const relationshipScore = await generateScore(recipient);
+      generateScore(recipient);
+      const relationshipScore = await generateScore(user);
+      console.log('\n\n relationshipScore', relationshipScore);
 
       return { coin, relationshipScore };
     }
