@@ -1,8 +1,9 @@
-import graphql, { GraphQLObjectType } from 'graphql';
+import { GraphQLObjectType } from 'graphql';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 
 import CoinType from '../types/CoinType';
+import RelationshipScoreType from '../types/RelationshipScoreType';
 import { User } from '../models';
 import config from '../../config';
 import { generateScore } from '../helpers/relationshipScore';
@@ -16,6 +17,7 @@ const sendCoin = {
       'Mutation to send a coin to the lover you are in a relationship with.',
     fields: {
       coin: { type: CoinType },
+      relationshipScore: { type: RelationshipScoreType },
     },
   }),
   resolve: async ({ request }) => {
@@ -40,11 +42,11 @@ const sendCoin = {
         recipientId: recipient.id,
       });
 
-      const userEvent = await user.createUserEvent({
+      user.createUserEvent({
         relationshipId: relationship.id,
         name: 'coin-sent',
       });
-      const recipientEvent = await recipient.createUserEvent({
+      recipient.createUserEvent({
         relationshipId: relationship.id,
         name: 'coin-received',
       });
@@ -62,13 +64,9 @@ const sendCoin = {
         type: 'luvup-received',
       });
 
-      /**
-       * JW: Not putting `await` on generateScore so it can just happen async in
-       * the background.
-       */
-      generateScore(recipient);
+      const relationshipScore = await generateScore(recipient);
 
-      return { coin };
+      return { coin, relationshipScore };
     }
     return {};
   },
