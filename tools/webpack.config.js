@@ -372,7 +372,7 @@ const serverConfig = {
   output: {
     ...config.output,
     path: path.resolve(__dirname, '../build'),
-    filename: '[name].js',
+    filename: 'index.js',
     chunkFilename: 'chunks/[name].js',
     libraryTarget: 'commonjs2',
   },

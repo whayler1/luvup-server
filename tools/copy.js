@@ -9,8 +9,8 @@
 
 import path from 'path';
 import chokidar from 'chokidar';
-import { writeFile, copyFile, makeDir, copyDir, cleanDir } from './lib/fs';
-import pkg from '../package.json';
+import { copyFile, makeDir, copyDir, cleanDir } from './lib/fs';
+// import pkg from '../package.json';
 import { format } from './run';
 
 /**
@@ -20,18 +20,19 @@ import { format } from './run';
 async function copy() {
   await makeDir('build');
   await Promise.all([
-    writeFile(
-      'build/package.json',
-      JSON.stringify(
-        {
-          private: true,
-          engines: pkg.engines,
-          dependencies: pkg.dependencies,
-        },
-        null,
-        2,
-      ),
-    ),
+    // writeFile(
+    //   'build/package.json',
+    //   JSON.stringify(
+    //     {
+    //       private: true,
+    //       engines: pkg.engines,
+    //       dependencies: pkg.dependencies,
+    //     },
+    //     null,
+    //     2,
+    //   ),
+    // ),
+    copyFile('package.json', 'build/package.json'),
     copyFile('now.json', 'build/now.json'),
     copyFile('LICENSE.txt', 'build/LICENSE.txt'),
     copyFile('yarn.lock', 'build/yarn.lock'),
