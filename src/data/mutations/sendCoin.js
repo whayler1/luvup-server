@@ -66,7 +66,6 @@ const sendCoin = {
 
       generateScore(recipient);
       const relationshipScore = await generateScore(user);
-      console.log('\n\n relationshipScore', relationshipScore);
 
       return { coin, relationshipScore };
     }
