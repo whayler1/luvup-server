@@ -20,6 +20,11 @@ const User = Model.define(
       defaultValue: false,
     },
 
+    isPlaceholder: {
+      type: DataType.BOOLEAN,
+      defaultValue: false,
+    },
+
     username: {
       type: DataType.STRING(20),
       allowNull: false,

@@ -1,7 +1,9 @@
-import { GraphQLID } from 'graphql';
+import { GraphQLID, GraphQLObjectType } from 'graphql';
+import uuid from 'uuid/v1';
 
 import LoverRequestType from '../types/LoverRequestType';
-import { User } from '../models';
+import RelationshipType from '../types/RelationshipType';
+import { User, Relationship } from '../models';
 import emailHelper from '../helpers/email';
 import config from '../../config';
 import analytics from '../../services/analytics';
@@ -25,7 +27,13 @@ const sendEmails = (sender, recipient) => {
 };
 
 const requestLover = {
-  type: LoverRequestType,
+  type: new GraphQLObjectType({
+    name: 'RequestLover',
+    fields: {
+      loverRequest: { type: LoverRequestType },
+      relationship: { type: RelationshipType },
+    },
+  }),
   args: {
     recipientId: { type: GraphQLID },
   },
@@ -41,6 +49,23 @@ const requestLover = {
 
     const loverRequest = await user.createLoverRequest();
     await loverRequest.setRecipient(recipient);
+
+    const relationship = await Relationship.create();
+    await relationship.addLover(user);
+    const placeholderLoverId = uuid();
+    const placeholderLover = await User.create({
+      id: placeholderLoverId,
+      email: recipient.email,
+      isPlaceholder: true,
+      username: placeholderLoverId,
+      firstName: recipient.firstName,
+      lastName: recipient.lastName,
+      fullName: recipient.fullName,
+      password: placeholderLoverId,
+    });
+    await relationship.addLover(placeholderLover);
+    await user.setRelationship(relationship);
+    await placeholderLover.setRelationship(relationship);
 
     analytics.track({
       userId: user.id,
@@ -66,10 +91,14 @@ const requestLover = {
       console.error('\n\nError sending request lover emails', err);
     }
 
-    return Object.assign({}, loverRequest.dataValues, {
-      sender: user.dataValues,
-      recipient: recipient.dataValues,
-    });
+    return {
+      loverRequest: {
+        ...loverRequest.dataValues,
+        sender: user.dataValues,
+        recipient: recipient.dataValues,
+      },
+      relationship,
+    };
   },
 };
 
