@@ -152,6 +152,10 @@ LoverRequest.belongsTo(User, {
   as: 'recipient',
 });
 
+LoverRequest.belongsTo(Relationship, {
+  as: 'relationship',
+});
+
 User.hasMany(Coin, {
   foreignKey: 'recipientId',
   sourceKey: 'id',

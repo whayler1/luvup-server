@@ -8,6 +8,11 @@ const LoverRequest = Model.define('LoverRequest', {
     primaryKey: true,
   },
 
+  relationshipId: {
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV1,
+  },
+
   isAccepted: {
     type: DataType.BOOLEAN,
     defaultValue: false,
