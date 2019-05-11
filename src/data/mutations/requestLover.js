@@ -3,7 +3,7 @@ import uuid from 'uuid/v1';
 
 import LoverRequestType from '../types/LoverRequestType';
 import RelationshipType from '../types/RelationshipType';
-import { User, Relationship } from '../models';
+import { User, UserRequest, Relationship } from '../models';
 import emailHelper from '../helpers/email';
 import config from '../../config';
 import analytics from '../../services/analytics';
@@ -53,7 +53,11 @@ const requestLover = {
     const relationship = await Relationship.create();
     await relationship.addLover(user);
     const placeholderLoverId = uuid();
-    const placeholderLover = await User.create({
+    const placeholderUserRequest = await UserRequest.create({
+      email: recipient.email,
+      code: 'placholder',
+    });
+    const placeholderLover = await placeholderUserRequest.createUser({
       id: placeholderLoverId,
       email: recipient.email,
       isPlaceholder: true,
@@ -97,7 +101,10 @@ const requestLover = {
         sender: user.dataValues,
         recipient: recipient.dataValues,
       },
-      relationship,
+      relationship: {
+        ...relationship.dataValues,
+        lovers: [placeholderLover],
+      },
     };
   },
 };
