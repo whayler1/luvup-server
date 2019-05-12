@@ -1,4 +1,6 @@
 import { graphql } from 'graphql';
+import isNull from 'lodash/isNull';
+
 import schema from '../schema';
 import sequelize from '../sequelize';
 import { UserNotLoggedInError } from '../errors';
@@ -61,7 +63,7 @@ describe('requestLover', () => {
             }
             relationship {
               id createdAt updatedAt endDate
-              lovers { id email username firstName lastName }
+              lovers { id email username firstName lastName isPlaceholder }
             }
           }
         }`;
@@ -153,6 +155,26 @@ describe('requestLover', () => {
         expect(calls[0][0]).toBe(user2.id);
         expect(calls[0][1]).toBe('Jason Wents has requested you as a lover!');
         expect(calls[0][2]).toMatchObject({ type: 'lover-request-received' });
+      });
+
+      it('creates relationship with placeholderLover', () => {
+        const { id, createdAt, updatedAt, endDate } = requestLover.relationship;
+        expect(typeof id).toBe('string');
+        expect(typeof createdAt).toBe('string');
+        expect(typeof updatedAt).toBe('string');
+        expect(isNull(endDate)).toBe(true);
+      });
+
+      it.only('creates a placeholder lover', () => {
+        const {
+          lovers: [{ id, email, firstName, lastName, username, isPlaceholder }],
+        } = requestLover.relationship;
+        expect(typeof id).toBe('string');
+        expect(typeof username).toBe('string');
+        expect(email).toBe(user2.email);
+        expect(firstName).toBe(user2.firstName);
+        expect(lastName).toBe(user2.lastName);
+        expect(isPlaceholder).toBe(true);
       });
     });
   });
