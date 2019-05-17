@@ -59,26 +59,44 @@ const User = Model.define(
   },
 );
 
+User.createSkipUserRequest = async function createSkipUserRequest(opts = {}) {
+  const { email, username, firstName, lastName } = opts;
+  const randomId = uuid();
+  const userRequest = await UserRequest.create({
+    email: email || `email+${randomId}@mail.com`,
+    code: 'placholder',
+  });
+  return this.create({
+    id: userRequest.id,
+    email: email || `email+${randomId}@mail.com`,
+    isPlaceholder: false,
+    username: username || randomId,
+    firstName: firstName || 'Jane',
+    lastName: lastName || 'Doe',
+    fullName: 'Jane Doe',
+    password: 'somepassword',
+  });
+};
+
 User.createPlaceholderUserFromUser = async function createPlaceholderUserFromUser(
   userId,
 ) {
-  const recipient = this.findByPk(userId);
-  const placeholderUserRequest = await UserRequest.create({
-    email: recipient.email,
+  const randomId = uuid();
+  const user = this.findOne({ where: { id: userId } });
+  const userRequest = await UserRequest.create({
+    email: `placeholderLover+${randomId}@gmail.com`,
     code: 'placholder',
   });
-  const placeholderLoverId = uuid();
-  const placeholderLover = await placeholderUserRequest.createUser({
-    id: placeholderLoverId,
-    email: recipient.email,
+  return this.create({
+    id: userRequest.id,
+    email: user.email,
     isPlaceholder: true,
-    username: placeholderLoverId,
-    firstName: recipient.firstName,
-    lastName: recipient.lastName,
-    fullName: recipient.fullName,
-    password: placeholderLoverId,
+    username: randomId,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    fullName: user.fullName,
+    password: randomId,
   });
-  return placeholderLover;
 };
 
 export default User;

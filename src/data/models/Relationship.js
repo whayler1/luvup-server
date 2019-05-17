@@ -1,5 +1,7 @@
 import DataType from 'sequelize';
+
 import Model from '../sequelize';
+import User from './User';
 
 const Relationship = Model.define('Relationship', {
   id: {
@@ -11,6 +13,10 @@ const Relationship = Model.define('Relationship', {
   endDate: {
     type: DataType.DATE,
   },
+});
+
+Relationship.hasMany(User, {
+  as: 'lover',
 });
 
 export default Relationship;

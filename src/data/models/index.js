@@ -130,10 +130,6 @@ Relationship.hasMany(Coin, {
   foreignKey: 'relationshipId',
 });
 
-Relationship.hasMany(User, {
-  as: 'lover',
-});
-
 User.belongsTo(Relationship);
 
 UserRequest.hasOne(User, {

@@ -1,11 +1,9 @@
-import graphql, { GraphQLString, GraphQLID, GraphQLObjectType } from 'graphql';
-import jwt from 'jsonwebtoken';
+import { GraphQLString, GraphQLObjectType } from 'graphql';
 import _ from 'lodash';
-import moment from 'moment';
 
 import LoverRequestType from '../types/LoverRequestType';
-import { User, LoverRequest, Relationship } from '../models';
-import { datetimeAndTimestamp } from '../helpers/dateFormats';
+import RelationshipType from '../types/RelationshipType';
+import { User, LoverRequest } from '../models';
 import emailHelper from '../helpers/email';
 import analytics from '../../services/analytics';
 
@@ -31,6 +29,7 @@ const cancelLoverRequest = {
     name: 'CancelLoverRequest',
     fields: {
       loverRequest: { type: LoverRequestType },
+      relationship: { type: RelationshipType },
       error: { type: GraphQLString },
     },
   }),
@@ -64,9 +63,30 @@ const cancelLoverRequest = {
         await loverRequest.update({
           isSenderCanceled: true,
         });
+        const relationship = await user.getRelationship();
+        if (relationship) {
+          const promises = [
+            relationship.update({
+              endDate: new Date(),
+            }),
+            user.update({
+              RelationshipId: null,
+            }),
+          ];
+          if (lover.RelationshipId === relationship.id) {
+            promises.push(
+              lover.update({
+                RelationshipId: null,
+              }),
+            );
+          }
+          await Promise.all(promises);
+        }
         sendEmail(user, user, lover);
 
-        return { loverRequest };
+        const currentRelationship = await user.getRelationship();
+
+        return { loverRequest, relationship: currentRelationship };
       } else if (userId === loverRequest.recipientId) {
         const lover = await User.findOne({
           where: { id: loverRequest.UserId },
@@ -85,7 +105,8 @@ const cancelLoverRequest = {
             loverRequestId,
           },
         });
-        return { loverRequest };
+        const currentRelationship = await user.getRelationship();
+        return { loverRequest, relationship: currentRelationship };
       }
     }
     return { error: 'invalid' };

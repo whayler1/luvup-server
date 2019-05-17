@@ -36,7 +36,7 @@ const relateRelationshipandUsers = (relationship, users) =>
   users.reduce(
     (accumulator, user) => [
       ...accumulator,
-      user.setRelationship(relationship),
+      user.update({ RelationshipId: relationship.id }),
       relationship.addLover(user),
     ],
     [],
@@ -52,7 +52,7 @@ LoverRequest.createAndAddRelationshipAndPlaceholderLover = async function create
     placeholderLover,
     relationship,
   ] = await Promise.all([
-    ...[senderId, recipientId].map(id => User.findByPk(id)),
+    ...[senderId, recipientId].map(id => User.findOne({ where: { id } })),
     User.createPlaceholderUserFromUser(recipientId),
     Relationship.create(),
   ]);
