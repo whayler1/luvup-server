@@ -138,5 +138,11 @@ describe('LoverRequest', () => {
       expect(loverRequest.isSenderCanceled).toBe(true);
       expect(loverRequest.isRecipientCanceled).toBe(false);
     });
+
+    it('ends relationhip', () => {});
+
+    it('removes relationship from sender', () => {});
+
+    it('removes relationship from recipient', () => {});
   });
 });
