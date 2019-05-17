@@ -82,7 +82,7 @@ User.createPlaceholderUserFromUser = async function createPlaceholderUserFromUse
   userId,
 ) {
   const randomId = uuid();
-  const user = this.findOne({ where: { id: userId } });
+  const user = await this.findOne({ where: { id: userId } });
   const userRequest = await UserRequest.create({
     email: `placeholderLover+${randomId}@gmail.com`,
     code: 'placholder',
