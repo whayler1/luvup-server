@@ -1,5 +1,8 @@
 import DataType from 'sequelize';
+import uuid from 'uuid/v1';
+
 import Model from '../sequelize';
+import UserRequest from './UserRequest';
 
 const User = Model.define(
   'User',
@@ -55,5 +58,27 @@ const User = Model.define(
     indexes: [{ fields: ['email'] }],
   },
 );
+
+User.createPlaceholderUserFromUser = async function createPlaceholderUserFromUser(
+  userId,
+) {
+  const recipient = this.findByPk(userId);
+  const placeholderUserRequest = await UserRequest.create({
+    email: recipient.email,
+    code: 'placholder',
+  });
+  const placeholderLoverId = uuid();
+  const placeholderLover = await placeholderUserRequest.createUser({
+    id: placeholderLoverId,
+    email: recipient.email,
+    isPlaceholder: true,
+    username: placeholderLoverId,
+    firstName: recipient.firstName,
+    lastName: recipient.lastName,
+    fullName: recipient.fullName,
+    password: placeholderLoverId,
+  });
+  return placeholderLover;
+};
 
 export default User;
