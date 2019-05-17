@@ -20,11 +20,12 @@ describe('LoverRequest', () => {
         sender.id,
         recipient.id,
       );
+      await sender.reload();
+      await recipient.reload();
     });
 
     it('returns a loverRequest', async () => {
       const { loverRequest, relationship } = subject;
-      console.log('loverRequest', loverRequest);
 
       expect(isString(loverRequest.id)).toBe(true);
       expect(loverRequest.relationshipId).toBe(relationship.id);
@@ -37,6 +38,30 @@ describe('LoverRequest', () => {
           isRecipientCanceled: false,
         }),
       );
+    });
+
+    it('returns sender and recipient in lover request', async () => {
+      const {
+        loverRequest: {
+          sender: loverRequestSender,
+          recipient: loverRequestRecipient,
+        },
+      } = subject;
+
+      expect(loverRequestSender).toEqual(
+        expect.objectContaining(sender.dataValues),
+      );
+      expect(loverRequestRecipient).toEqual(
+        expect.objectContaining(recipient.dataValues),
+      );
+    });
+    it('returns a relationhip', () => {});
+    it('returns lovers in relationhip', () => {});
+    it('creates a new relationship', () => {
+      // This should actually look up relationhip
+    });
+    it('creates a placholder lover related to the relationship', () => {
+      // This should actually look up relationhip
     });
   });
 });
