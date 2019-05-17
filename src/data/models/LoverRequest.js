@@ -68,8 +68,8 @@ LoverRequest.createAndAddRelationshipAndPlaceholderLover = async function create
   return {
     loverRequest: {
       ...loverRequest.dataValues,
-      sender: sender.dataValues,
-      recipient: recipient.dataValues,
+      sender,
+      recipient,
     },
     relationship: {
       ...relationship.dataValues,
@@ -80,8 +80,10 @@ LoverRequest.createAndAddRelationshipAndPlaceholderLover = async function create
 
 LoverRequest.prototype.cancelBySender = async function cancelBySender() {
   await this.update({ isSenderCanceled: true });
-  const relationship = this.getRelationship();
-  const lovers = relationship.getLover();
+  const relationship = await Relationship.findOne({
+    where: { id: this.relationshipId },
+  });
+  const lovers = await relationship.getLover();
   const updateRemoveLoverRelationshipId = lovers.map(lover =>
     lover.update({
       RelationshipId: null,
