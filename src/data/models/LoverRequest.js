@@ -32,6 +32,24 @@ const LoverRequest = Model.define('LoverRequest', {
   },
 });
 
+LoverRequest.findPendingRequestBySenderId = async function findPendingRequestBySenderId(
+  senderId,
+) {
+  this.findOne({
+    where: {
+      senderId,
+      isAccepted: false,
+      isSenderCanceled: false,
+      isRecipientCanceled: false,
+    },
+  });
+};
+
+LoverRequest.cancelBySenderId = async function cancelBySenderId(senderId) {
+  const loverRequest = await this.findPendingRequestBySenderId(senderId);
+  return loverRequest.cancelBySender();
+};
+
 LoverRequest.findById = async function findById(id) {
   return this.findOne({ where: { id } });
 };
