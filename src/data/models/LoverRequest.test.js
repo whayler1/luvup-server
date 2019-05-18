@@ -116,12 +116,8 @@ describe('LoverRequest', () => {
         sender.id,
         recipient.id,
       );
-      loverRequest = await LoverRequest.findOne({
-        where: { id: res.loverRequest.id },
-      });
-      relationship = await Relationship.findOne({
-        where: { id: res.relationship.id },
-      });
+      loverRequest = await LoverRequest.findById(res.loverRequest.id);
+      relationship = await Relationship.findById(res.relationship.id);
       await sender.reload();
       await recipient.reload();
       await loverRequest.cancelBySender();
@@ -139,10 +135,16 @@ describe('LoverRequest', () => {
       expect(loverRequest.isRecipientCanceled).toBe(false);
     });
 
-    it('ends relationhip', () => {});
+    it('ends relationhip', () => {
+      expect(relationship.endDate).toBeInstanceOf(Date);
+    });
 
-    it('removes relationship from sender', () => {});
+    it('removes relationship from sender', () => {
+      expect(sender.RelationshipId).toBeNull();
+    });
 
-    it('removes relationship from recipient', () => {});
+    it('removes relationship from recipient', () => {
+      expect(recipient.RelationshipId).toBeNull();
+    });
   });
 });

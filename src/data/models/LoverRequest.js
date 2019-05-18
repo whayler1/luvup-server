@@ -32,7 +32,11 @@ const LoverRequest = Model.define('LoverRequest', {
   },
 });
 
-const relateRelationshipandUsers = (relationship, users) =>
+LoverRequest.findById = async function findById(id) {
+  return this.findOne({ where: { id } });
+};
+
+const relateRelationshipAndUsers = (relationship, users) =>
   users.reduce(
     (accumulator, user) => [
       ...accumulator,
@@ -62,7 +66,7 @@ LoverRequest.createAndAddRelationshipAndPlaceholderLover = async function create
       recipientId,
       relationshipId: relationship.id,
     }),
-    ...relateRelationshipandUsers(relationship, [sender, placeholderLover]),
+    ...relateRelationshipAndUsers(relationship, [sender, placeholderLover]),
   ]);
 
   return {
