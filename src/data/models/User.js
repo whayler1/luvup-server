@@ -59,6 +59,10 @@ const User = Model.define(
   },
 );
 
+User.findById = async function findById(id) {
+  return this.findOne({ where: { id } });
+};
+
 User.createSkipUserRequest = async function createSkipUserRequest(opts = {}) {
   const { email, username, firstName, lastName } = opts;
   const randomId = uuid();
@@ -82,7 +86,12 @@ User.createPlaceholderUserFromUser = async function createPlaceholderUserFromUse
   userId,
 ) {
   const randomId = uuid();
-  const user = await this.findOne({ where: { id: userId } });
+  const user = await this.findById(userId);
+  /**
+   * JW: Unfort I didn't know what I was doing when setting up the original schema
+   * and I required that the user id be the id of the user request, so we cant
+   * have a user without a user request 🙄
+   */
   const userRequest = await UserRequest.create({
     email: `placeholderLover+${randomId}@gmail.com`,
     code: 'placholder',
