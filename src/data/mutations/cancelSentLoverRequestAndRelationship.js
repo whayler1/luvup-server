@@ -3,10 +3,10 @@ import { GraphQLObjectType } from 'graphql';
 import LoverRequestType from '../types/LoverRequestType';
 import RelationshipType from '../types/RelationshipType';
 import { validateJwtToken } from '../helpers';
-import { LoverRequest } from '../models';
+import { LoverRequest, User } from '../models';
 import { sendLoverRequestCanceledEmail } from '../../emails';
 
-const getUserFromLoverById = (userId, lovers) =>
+const getUserFromLoversById = (userId, lovers) =>
   lovers.find(lover => lover.id === userId);
 
 const cancelSentLoverRequestAndRelationship = {
@@ -25,10 +25,11 @@ const cancelSentLoverRequestAndRelationship = {
       relationhip,
       lovers,
     } = await LoverRequest.cancelBySenderId(verify.id);
+    const recipient = await User.findById(loverRequest.recipientId);
 
     sendLoverRequestCanceledEmail(
-      getUserFromLoverById(verify.id, lovers),
-      getUserFromLoverById(loverRequest.recipientId, lovers),
+      getUserFromLoversById(verify.id, lovers),
+      recipient,
     );
 
     return {

@@ -35,9 +35,9 @@ const LoverRequest = Model.define('LoverRequest', {
 LoverRequest.findPendingRequestBySenderId = async function findPendingRequestBySenderId(
   senderId,
 ) {
-  this.findOne({
+  return this.findOne({
     where: {
-      senderId,
+      UserId: senderId,
       isAccepted: false,
       isSenderCanceled: false,
       isRecipientCanceled: false,
@@ -47,6 +47,9 @@ LoverRequest.findPendingRequestBySenderId = async function findPendingRequestByS
 
 LoverRequest.cancelBySenderId = async function cancelBySenderId(senderId) {
   const loverRequest = await this.findPendingRequestBySenderId(senderId);
+  if (!loverRequest) {
+    throw new Error(`No pending lover request for user: ${senderId}`);
+  }
   return loverRequest.cancelBySender();
 };
 
@@ -80,7 +83,7 @@ LoverRequest.createAndAddRelationshipAndPlaceholderLover = async function create
   ]);
   const [loverRequest] = await Promise.all([
     this.create({
-      senderId,
+      UserId: senderId,
       recipientId,
       relationshipId: relationship.id,
     }),
