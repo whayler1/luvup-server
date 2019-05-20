@@ -34,7 +34,7 @@ describe('cancelSentLoverRequestAndRelationship', () => {
       res = await graphql(schema, query, rootValue, sequelize);
     });
 
-    it('should return a cenceled lover request', () => {
+    it('returns a cenceled lover request', () => {
       const {
         data: {
           cancelSentLoverRequestAndRelationship: {
@@ -55,8 +55,32 @@ describe('cancelSentLoverRequestAndRelationship', () => {
       expect(isString(createdAt)).toBe(true);
     });
 
-    it('should return a cenceled relationhip', () => {});
-    it('should send an email', () => {});
-    it('should call analytics', () => {});
+    it('returns a canceled relationhip', () => {
+      const {
+        data: {
+          cancelSentLoverRequestAndRelationship: {
+            relationship: { id, createdAt, updatedAt, endDate, lovers },
+          },
+        },
+      } = res;
+      expect(isString(id)).toBe(true);
+      expect(isString(createdAt)).toBe(true);
+      expect(isString(updatedAt)).toBe(true);
+      expect(isString(endDate)).toBe(true);
+      expect(lovers).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            isPlaceholder: false,
+          }),
+          expect.objectContaining({
+            isPlaceholder: true,
+          }),
+        ]),
+      );
+    });
+
+    it('sends an email', () => {});
+
+    it('calls analytics', () => {});
   });
 });

@@ -22,7 +22,7 @@ const cancelSentLoverRequestAndRelationship = {
 
     const {
       loverRequest,
-      relationhip,
+      relationship,
       lovers,
     } = await LoverRequest.cancelBySenderId(verify.id);
     const recipient = await User.findById(loverRequest.recipientId);
@@ -34,7 +34,10 @@ const cancelSentLoverRequestAndRelationship = {
 
     return {
       loverRequest,
-      relationhip,
+      relationship: {
+        ...relationship.dataValues,
+        lovers,
+      },
     };
   },
 };
