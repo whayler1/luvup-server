@@ -8,10 +8,13 @@ import createLoggedInUser, {
   createUser,
 } from '../test-helpers/create-logged-in-user';
 import { sendPushNotification } from '../../services/pushNotifications';
+import emailHelper from '../helpers/email';
 
 jest.mock('../../services/pushNotifications/sendPushNotification');
+jest.mock('../helpers/email');
 
 describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
+  let user;
   let recipient;
   let res;
 
@@ -19,7 +22,7 @@ describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
     const loggedInUser = await createLoggedInUser({
       isInRelationship: false,
     });
-    // const user = loggedInUser.user;
+    user = loggedInUser.user;
     const rootValue = loggedInUser.rootValue;
     recipient = await createUser();
 
@@ -107,6 +110,23 @@ describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
     );
   });
 
-  it('sends emails', () => {});
+  it('sends emails', () => {
+    const { sendEmail: { mock: { calls } } } = emailHelper;
+    expect(calls[0][0]).toEqual(
+      expect.objectContaining({
+        to: user.email,
+        subject: `You sent lover request to ${recipient.email}!`,
+        html: `<p>Hi Jason,</p><p>You sent a lover request to Jason Wents at ${recipient.email}</p>`,
+      }),
+    );
+    expect(calls[1][0]).toEqual(
+      expect.objectContaining({
+        to: recipient.email,
+        subject: 'You received a lover request from Jason Wents on Luvup!',
+        html: `<p>Hi Jason,</p><p>You received a lover request from Jason Wents (${user.email}) on Luvup! Log in to Luvup to accept or deny your new lover request.</p>`,
+      }),
+    );
+  });
+
   it('sends analytics', () => {});
 });

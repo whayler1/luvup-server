@@ -5,6 +5,7 @@ import RelationshipType from '../types/RelationshipType';
 import { LoverRequest } from '../models';
 import { validateJwtToken } from '../helpers';
 import { createLoverRequestAndRelationshipWithPlaceholderLover as sendPushNotifications } from '../../services/pushNotifications';
+import { sendLoverRequestSentEmails } from '../../emails';
 
 const createLoverRequestAndRelationshipWithPlaceholderLover = {
   type: new GraphQLObjectType({
@@ -28,6 +29,7 @@ const createLoverRequestAndRelationshipWithPlaceholderLover = {
     const { loverRequest: { sender, recipient } } = res;
 
     sendPushNotifications(sender, recipient);
+    sendLoverRequestSentEmails(sender, recipient);
 
     return res;
   },
