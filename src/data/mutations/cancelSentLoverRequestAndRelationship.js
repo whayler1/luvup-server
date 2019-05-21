@@ -26,6 +26,7 @@ const cancelSentLoverRequestAndRelationship = {
       relationship,
       lovers,
     } = await LoverRequest.cancelBySenderId(verify.id);
+
     const recipient = await User.findById(loverRequest.recipientId);
 
     sendLoverRequestCanceledEmail(
