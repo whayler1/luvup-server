@@ -8,16 +8,22 @@ import createLoggedInUser, {
 } from '../test-helpers/create-logged-in-user';
 import { LoverRequest } from '../models';
 import emailHelper from '../helpers/email';
+import { trackCancelSentLoverRequestAndRelationship as tracking } from '../../analytics';
 
 jest.mock('../helpers/email');
+jest.mock('../../analytics/trackCancelSentLoverRequestAndRelationship');
 
 describe('cancelSentLoverRequestAndRelationship', () => {
   describe('when user is logged in', () => {
+    let user;
     let res;
+
     beforeAll(async () => {
-      const { user, rootValue } = await createLoggedInUser({
+      const loggedInUser = await createLoggedInUser({
         isInRelationship: false,
       });
+      user = loggedInUser.user;
+      const rootValue = loggedInUser.rootValue;
       const recipient = await createUser();
       await LoverRequest.createAndAddRelationshipAndPlaceholderLover(
         user.id,
@@ -86,12 +92,23 @@ describe('cancelSentLoverRequestAndRelationship', () => {
       const {
         sendEmail: { mock: { calls: [[{ to, subject, html }]] } },
       } = emailHelper;
-      console.log(emailHelper.sendEmail.mock.calls[0][0]);
       expect(to).toEqual(expect.stringMatching(/^fake\+.*@gmail\.com$/));
       expect(subject).toBe('You canceled a lover request');
       expect(html).toEqual(expect.stringMatching(/^<p>.*<\/p>$/));
     });
 
-    it('calls analytics', () => {});
+    it('calls analytics', () => {
+      const {
+        data: {
+          cancelSentLoverRequestAndRelationship: { loverRequest, relationship },
+        },
+      } = res;
+      const {
+        mock: { calls: [[userId, loverRequestId, relationshipId]] },
+      } = tracking;
+      expect(userId).toBe(user.id);
+      expect(loverRequestId).toBe(loverRequest.id);
+      expect(relationshipId).toBe(relationship.id);
+    });
   });
 });
