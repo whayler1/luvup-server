@@ -7,9 +7,11 @@ import sequelize from '../sequelize';
 import createLoggedInUser, {
   createUser,
 } from '../test-helpers/create-logged-in-user';
+import { sendPushNotification } from '../../services/pushNotifications';
+
+jest.mock('../../services/pushNotifications/sendPushNotification');
 
 describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
-  let user;
   let recipient;
   let res;
 
@@ -17,7 +19,7 @@ describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
     const loggedInUser = await createLoggedInUser({
       isInRelationship: false,
     });
-    user = loggedInUser.user;
+    // const user = loggedInUser.user;
     const rootValue = loggedInUser.rootValue;
     recipient = await createUser();
 
@@ -52,11 +54,6 @@ describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
         },
       },
     } = res;
-    console.log(
-      'res',
-      res.data.createLoverRequestAndRelationshipWithPlaceholderLover
-        .relationship.lovers,
-    );
     expect(isString(id)).toBe(true);
     expect(isAccepted).toBe(false);
     expect(isSenderCanceled).toBe(false);
@@ -98,7 +95,18 @@ describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
     expect(lastName).toBe(recipient.lastName);
   });
 
-  it('sends push updates', () => {});
+  it('sends push updates', () => {
+    expect(sendPushNotification.mock.calls[0]).toEqual(
+      expect.arrayContaining([
+        recipient.id,
+        'Jason Wents sent you a lover request! 💞',
+        expect.objectContaining({
+          type: 'lover-request-received',
+        }),
+      ]),
+    );
+  });
+
   it('sends emails', () => {});
   it('sends analytics', () => {});
 });
