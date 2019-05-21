@@ -23,7 +23,6 @@ const createLoverRequestAndRelationshipWithPlaceholderLover = {
       verify.id,
       recipientId,
     );
-    // console.log(res);
 
     return res;
   },
