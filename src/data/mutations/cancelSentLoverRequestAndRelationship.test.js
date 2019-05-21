@@ -7,6 +7,9 @@ import createLoggedInUser, {
   createUser,
 } from '../test-helpers/create-logged-in-user';
 import { LoverRequest } from '../models';
+import emailHelper from '../helpers/email';
+
+jest.mock('../helpers/email');
 
 describe('cancelSentLoverRequestAndRelationship', () => {
   describe('when user is logged in', () => {
@@ -79,7 +82,15 @@ describe('cancelSentLoverRequestAndRelationship', () => {
       );
     });
 
-    it('sends an email', () => {});
+    it('sends an email', () => {
+      const {
+        sendEmail: { mock: { calls: [[{ to, subject, html }]] } },
+      } = emailHelper;
+      console.log(emailHelper.sendEmail.mock.calls[0][0]);
+      expect(to).toEqual(expect.stringMatching(/^fake\+.*@gmail\.com$/));
+      expect(subject).toBe('You canceled a lover request');
+      expect(html).toEqual(expect.stringMatching(/^<p>.*<\/p>$/));
+    });
 
     it('calls analytics', () => {});
   });
