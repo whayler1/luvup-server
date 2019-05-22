@@ -8,10 +8,12 @@ import createLoggedInUser, {
 } from '../test-helpers/create-logged-in-user';
 import { LoverRequest } from '../models';
 import emailHelper from '../helpers/email';
-import { trackCancelSentLoverRequestAndRelationship as tracking } from '../../analytics';
+import { trackCancelSentLoverRequestAndRelationship as tracking } from '../../services/analytics';
 
 jest.mock('../helpers/email');
-jest.mock('../../analytics/trackCancelSentLoverRequestAndRelationship');
+jest.mock(
+  '../../services/analytics/trackCancelSentLoverRequestAndRelationship',
+);
 
 describe('cancelSentLoverRequestAndRelationship', () => {
   describe('when user is logged in', () => {
