@@ -5,7 +5,7 @@ import RelationshipType from '../types/RelationshipType';
 import { validateJwtToken } from '../helpers';
 import { LoverRequest, User } from '../models';
 import { sendLoverRequestCanceledEmail } from '../../emails';
-import { trackCancelSentLoverRequestAndRelationship } from '../../analytics';
+import { trackCancelSentLoverRequestAndRelationship } from '../../services/analytics';
 
 const getUserFromLoversById = (userId, lovers) =>
   lovers.find(lover => lover.id === userId);

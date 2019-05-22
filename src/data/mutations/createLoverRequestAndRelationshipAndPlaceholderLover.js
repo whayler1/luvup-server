@@ -4,12 +4,13 @@ import LoverRequestType from '../types/LoverRequestType';
 import RelationshipType from '../types/RelationshipType';
 import { LoverRequest } from '../models';
 import { validateJwtToken } from '../helpers';
-import { createLoverRequestAndRelationshipWithPlaceholderLover as sendPushNotifications } from '../../services/pushNotifications';
+import { createLoverRequestAndRelationshipAndPlaceholderLover as sendPushNotifications } from '../../services/pushNotifications';
+import { trackCreateLoverRequestAndRelationshipAndPlaceholderLover as trackAnalytics } from '../../services/analytics';
 import { sendLoverRequestSentEmails } from '../../emails';
 
-const createLoverRequestAndRelationshipWithPlaceholderLover = {
+const createLoverRequestAndRelationshipAndPlaceholderLover = {
   type: new GraphQLObjectType({
-    name: 'CreateLoverRequestAndRelationshipWithPlaceholderLover',
+    name: 'CreateLoverRequestAndRelationshipAndPlaceholderLover',
     fields: {
       loverRequest: { type: LoverRequestType },
       relationship: { type: RelationshipType },
@@ -30,9 +31,15 @@ const createLoverRequestAndRelationshipWithPlaceholderLover = {
 
     sendPushNotifications(sender, recipient);
     sendLoverRequestSentEmails(sender, recipient);
+    trackAnalytics(
+      sender.id,
+      recipient.id,
+      res.loverRequest.id,
+      res.relationship.id,
+    );
 
     return res;
   },
 };
 
-export default createLoverRequestAndRelationshipWithPlaceholderLover;
+export default createLoverRequestAndRelationshipAndPlaceholderLover;

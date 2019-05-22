@@ -1,4 +1,4 @@
-import analytics from '../services/analytics';
+import analytics from './analytics';
 
 const trackCancelSentLoverRequestAndRelationship = (
   userId,

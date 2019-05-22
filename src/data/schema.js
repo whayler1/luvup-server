@@ -31,7 +31,7 @@ import requestLover from './mutations/requestLover';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
 import cancelLoverRequest from './mutations/cancelLoverRequest';
 import cancelSentLoverRequestAndRelationship from './mutations/cancelSentLoverRequestAndRelationship';
-import createLoverRequestAndRelationshipWithPlaceholderLover from './mutations/createLoverRequestAndRelationshipWithPlaceholderLover';
+import createLoverRequestAndRelationshipAndPlaceholderLover from './mutations/createLoverRequestAndRelationshipAndPlaceholderLover';
 import sendCoin from './mutations/sendCoin';
 import sendJalapeno from './mutations/sendJalapeno';
 import createRelationshipScore from './mutations/createRelationshipScore';
@@ -88,7 +88,7 @@ const schema = new Schema({
       acceptLoverRequest,
       cancelLoverRequest,
       cancelSentLoverRequestAndRelationship,
-      createLoverRequestAndRelationshipWithPlaceholderLover,
+      createLoverRequestAndRelationshipAndPlaceholderLover,
       resendLoverRequestEmail,
       sendCoin,
       sendJalapeno,

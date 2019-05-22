@@ -1,4 +1,4 @@
 export { default as sendPushNotification } from './sendPushNotification';
 export {
-  default as createLoverRequestAndRelationshipWithPlaceholderLover,
-} from './createLoverRequestAndRelationshipWithPlaceholderLover';
+  default as createLoverRequestAndRelationshipAndPlaceholderLover,
+} from './createLoverRequestAndRelationshipAndPlaceholderLover';

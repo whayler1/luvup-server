@@ -9,11 +9,13 @@ import createLoggedInUser, {
 } from '../test-helpers/create-logged-in-user';
 import { sendPushNotification } from '../../services/pushNotifications';
 import emailHelper from '../helpers/email';
+import analytics from '../../services/analytics';
 
 jest.mock('../../services/pushNotifications/sendPushNotification');
 jest.mock('../helpers/email');
+jest.mock('../../services/analytics/analytics');
 
-describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
+describe('createLoverRequestAndRelationshipAndPlaceholderLover', () => {
   let user;
   let recipient;
   let res;
@@ -27,7 +29,7 @@ describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
     recipient = await createUser();
 
     const query = `mutation {
-      createLoverRequestAndRelationshipWithPlaceholderLover(
+      createLoverRequestAndRelationshipAndPlaceholderLover(
         recipientId: "${recipient.id}"
       ) {
         loverRequest {
@@ -46,7 +48,7 @@ describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
   it('returns lover request', () => {
     const {
       data: {
-        createLoverRequestAndRelationshipWithPlaceholderLover: {
+        createLoverRequestAndRelationshipAndPlaceholderLover: {
           loverRequest: {
             id,
             isAccepted,
@@ -67,7 +69,7 @@ describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
   it('returns relationship', () => {
     const {
       data: {
-        createLoverRequestAndRelationshipWithPlaceholderLover: {
+        createLoverRequestAndRelationshipAndPlaceholderLover: {
           relationship: { id, createdAt, updatedAt, endDate },
         },
       },
@@ -81,7 +83,7 @@ describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
   it('returns placeholderLover', () => {
     const {
       data: {
-        createLoverRequestAndRelationshipWithPlaceholderLover: {
+        createLoverRequestAndRelationshipAndPlaceholderLover: {
           relationship: {
             lovers: [
               { id, email, isPlaceholder, username, firstName, lastName },
@@ -128,5 +130,25 @@ describe('createLoverRequestAndRelationshipWithPlaceholderLover', () => {
     );
   });
 
-  it('sends analytics', () => {});
+  it('sends analytics', () => {
+    const {
+      data: {
+        createLoverRequestAndRelationshipAndPlaceholderLover: {
+          loverRequest,
+          relationship,
+        },
+      },
+    } = res;
+    expect(analytics.track.mock.calls[0][0]).toEqual(
+      expect.objectContaining({
+        userId: user.id,
+        event: 'createLoverRequestAndRelationshipAndPlaceholderLover',
+        properties: expect.objectContaining({
+          recipientId: recipient.id,
+          loverRequestId: loverRequest.id,
+          relationshipId: relationship.id,
+        }),
+      }),
+    );
+  });
 });
