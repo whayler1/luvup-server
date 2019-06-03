@@ -3,6 +3,7 @@ import DataType from 'sequelize';
 import Model from '../sequelize';
 import Relationship from './Relationship';
 import User from './User';
+import { generateScore } from '../helpers/relationshipScore';
 
 const LoverRequest = Model.define('LoverRequest', {
   id: {
@@ -89,6 +90,7 @@ LoverRequest.createAndAddRelationshipAndPlaceholderLover = async function create
     }),
     ...relateRelationshipAndUsers(relationship, [sender, placeholderLover]),
   ]);
+  await generateScore(placeholderLover);
 
   return {
     loverRequest: {
