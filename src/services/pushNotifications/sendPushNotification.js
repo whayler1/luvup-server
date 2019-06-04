@@ -1,6 +1,6 @@
 import Expo from 'expo-server-sdk';
 import _ from 'lodash';
-import { ExpoPushToken } from '../data/models';
+import { ExpoPushToken } from '../../data/models';
 
 // Create a new Expo SDK client
 const expo = new Expo();
@@ -50,7 +50,7 @@ const sendChunks = async chunks => {
 /* eslint-enable no-restricted-syntax */
 /* eslint-enable no-await-in-loop */
 
-export const sendPushNotification = async (
+const sendPushNotification = async (
   userId,
   body,
   data = {},
@@ -85,6 +85,4 @@ export const sendPushNotification = async (
   }
 };
 
-export default {
-  sendPushNotification,
-};
+export default sendPushNotification;

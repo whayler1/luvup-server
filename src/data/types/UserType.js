@@ -1,18 +1,20 @@
 import {
-  GraphQLObjectType as ObjectType,
-  GraphQLID as ID,
-  GraphQLString as StringType,
-  GraphQLNonNull as NonNull,
+  GraphQLObjectType,
+  GraphQLID,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLBoolean,
 } from 'graphql';
 
-const UserType = new ObjectType({
+const UserType = new GraphQLObjectType({
   name: 'User',
   fields: {
-    id: { type: new NonNull(ID) },
-    email: { type: StringType },
-    username: { type: StringType },
-    firstName: { type: StringType },
-    lastName: { type: StringType },
+    id: { type: new GraphQLNonNull(GraphQLID) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    username: { type: GraphQLString },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString },
+    isPlaceholder: { type: GraphQLBoolean },
   },
 });
 

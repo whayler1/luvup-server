@@ -1,4 +1,6 @@
 import { graphql } from 'graphql';
+import isNull from 'lodash/isNull';
+
 import schema from '../schema';
 import sequelize from '../sequelize';
 import { UserNotLoggedInError } from '../errors';
@@ -18,7 +20,9 @@ describe('requestLover', () => {
   describe('when user not logged in', () => {
     it('should return UserNotLoggedInError', async () => {
       const query = `mutation {
-        requestLover(recipientId: "abc123") { id }
+        requestLover(recipientId: "abc123") {
+          loverRequest { id }
+        }
       }`;
       const { errors: [firstError] } = await graphql(
         schema,
@@ -48,12 +52,18 @@ describe('requestLover', () => {
         });
         const query = `mutation {
           requestLover(recipientId: "${user2.id}") {
-            id, isAccepted, isSenderCanceled, isRecipientCanceled, createdAt,
-            sender {
-              id, email, username, firstName, lastName
-            },
-            recipient {
-              id, email, username, firstName, lastName
+            loverRequest {
+              id, isAccepted, isSenderCanceled, isRecipientCanceled, createdAt,
+              sender {
+                id, email, username, firstName, lastName
+              },
+              recipient {
+                id, email, username, firstName, lastName
+              }
+            }
+            relationship {
+              id createdAt updatedAt endDate
+              lovers { id email username firstName lastName isPlaceholder }
             }
           }
         }`;
@@ -77,18 +87,17 @@ describe('requestLover', () => {
       });
 
       it('should return loverRequest', async () => {
-        expect(requestLover).toMatchObject({
+        expect(requestLover.loverRequest).toMatchObject({
           id: loverRequest.id,
           isAccepted: false,
           isSenderCanceled: false,
           isRecipientCanceled: false,
         });
-
-        expect(requestLover.createdAt).toBeTruthy();
+        expect(requestLover.loverRequest.createdAt).toBeTruthy();
       });
 
       it('should return sender', () => {
-        expect(requestLover.sender).toMatchObject({
+        expect(requestLover.loverRequest.sender).toMatchObject({
           id: user.user.id,
           email: user.user.email,
           username: user.user.username,
@@ -98,7 +107,7 @@ describe('requestLover', () => {
       });
 
       it('should return recipient', () => {
-        expect(requestLover.recipient).toMatchObject({
+        expect(requestLover.loverRequest.recipient).toMatchObject({
           id: user2.id,
           email: user2.email,
           username: user2.username,
@@ -146,6 +155,26 @@ describe('requestLover', () => {
         expect(calls[0][0]).toBe(user2.id);
         expect(calls[0][1]).toBe('Jason Wents has requested you as a lover!');
         expect(calls[0][2]).toMatchObject({ type: 'lover-request-received' });
+      });
+
+      it('creates relationship with placeholderLover', () => {
+        const { id, createdAt, updatedAt, endDate } = requestLover.relationship;
+        expect(typeof id).toBe('string');
+        expect(typeof createdAt).toBe('string');
+        expect(typeof updatedAt).toBe('string');
+        expect(isNull(endDate)).toBe(true);
+      });
+
+      it.only('creates a placeholder lover', () => {
+        const {
+          lovers: [{ id, email, firstName, lastName, username, isPlaceholder }],
+        } = requestLover.relationship;
+        expect(typeof id).toBe('string');
+        expect(typeof username).toBe('string');
+        expect(email).toBe(user2.email);
+        expect(firstName).toBe(user2.firstName);
+        expect(lastName).toBe(user2.lastName);
+        expect(isPlaceholder).toBe(true);
       });
     });
   });

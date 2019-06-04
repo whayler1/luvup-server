@@ -1,5 +1,8 @@
 import DataType from 'sequelize';
+import uuid from 'uuid/v1';
+
 import Model from '../sequelize';
+import UserRequest from './UserRequest';
 
 const User = Model.define(
   'User',
@@ -16,6 +19,11 @@ const User = Model.define(
     },
 
     emailConfirmed: {
+      type: DataType.BOOLEAN,
+      defaultValue: false,
+    },
+
+    isPlaceholder: {
       type: DataType.BOOLEAN,
       defaultValue: false,
     },
@@ -50,5 +58,54 @@ const User = Model.define(
     indexes: [{ fields: ['email'] }],
   },
 );
+
+User.findById = async function findById(id) {
+  return this.findOne({ where: { id } });
+};
+
+User.createSkipUserRequest = async function createSkipUserRequest(opts = {}) {
+  const { email, username, firstName, lastName } = opts;
+  const randomId = uuid();
+  const userRequest = await UserRequest.create({
+    email: email || `email+${randomId}@mail.com`,
+    code: 'placholder',
+  });
+  return this.create({
+    id: userRequest.id,
+    email: email || `email+${randomId}@mail.com`,
+    isPlaceholder: false,
+    username: username || randomId,
+    firstName: firstName || 'Jane',
+    lastName: lastName || 'Doe',
+    fullName: 'Jane Doe',
+    password: 'somepassword',
+  });
+};
+
+User.createPlaceholderUserFromUser = async function createPlaceholderUserFromUser(
+  userId,
+) {
+  const randomId = uuid();
+  const user = await this.findById(userId);
+  /**
+   * JW: Unfort I didn't know what I was doing when setting up the original schema
+   * and I required that the user id be the id of the user request, so we cant
+   * have a user without a user request 🙄
+   */
+  const userRequest = await UserRequest.create({
+    email: `placeholderLover+${randomId}@gmail.com`,
+    code: 'placholder',
+  });
+  return this.create({
+    id: userRequest.id,
+    email: user.email,
+    isPlaceholder: true,
+    username: randomId,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    fullName: user.fullName,
+    password: randomId,
+  });
+};
 
 export default User;

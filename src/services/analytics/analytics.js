@@ -1,5 +1,5 @@
 import Analytics from 'analytics-node';
-import config from '../config';
+import config from '../../config';
 
 const { analytics: { segmentWriteKey } } = config;
 

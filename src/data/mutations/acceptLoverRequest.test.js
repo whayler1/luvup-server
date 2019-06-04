@@ -8,7 +8,7 @@ import createLoggedInUser, {
   createUser,
 } from '../test-helpers/create-logged-in-user';
 import analytics from '../../services/analytics';
-import pushNotifications from '../../services/pushNotifications';
+import { sendPushNotification } from '../../services/pushNotifications';
 import emailHelper from '../helpers/email';
 
 jest.mock('../../services/pushNotifications');
@@ -87,7 +87,7 @@ describe('acceptLoverRequest', () => {
 
       afterEach(() => {
         /* eslint-disable import/no-named-as-default-member */
-        pushNotifications.sendPushNotification.mockReset();
+        sendPushNotification.mockReset();
         emailHelper.sendEmail.mockReset();
         /* eslint-enable import/no-named-as-default-member */
       });
@@ -105,7 +105,7 @@ describe('acceptLoverRequest', () => {
         expect(loverRequest.isRecipientCanceled).toBe(false);
       });
 
-      it.only('should return relationship object', async () => {
+      it('should return relationship object', async () => {
         const { data: { acceptLoverRequest: { relationship } } } = request;
         const [lover] = relationship.lovers;
 
@@ -201,7 +201,7 @@ describe('acceptLoverRequest', () => {
 
       it('should send push notification', async () => {
         /* eslint-disable import/no-named-as-default-member */
-        const { calls } = pushNotifications.sendPushNotification.mock;
+        const { calls } = sendPushNotification.mock;
         /* eslint-enable import/no-named-as-default-member */
         expect(calls).toHaveLength(1);
         expect(calls[0][0]).toBe(user2.id);

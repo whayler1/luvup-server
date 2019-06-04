@@ -30,6 +30,8 @@ import confirmUser from './mutations/confirmUser';
 import requestLover from './mutations/requestLover';
 import acceptLoverRequest from './mutations/acceptLoverRequest';
 import cancelLoverRequest from './mutations/cancelLoverRequest';
+import cancelSentLoverRequestAndRelationship from './mutations/cancelSentLoverRequestAndRelationship';
+import createLoverRequestAndRelationshipAndPlaceholderLover from './mutations/createLoverRequestAndRelationshipAndPlaceholderLover';
 import sendCoin from './mutations/sendCoin';
 import sendJalapeno from './mutations/sendJalapeno';
 import createRelationshipScore from './mutations/createRelationshipScore';
@@ -85,6 +87,8 @@ const schema = new Schema({
       requestLover,
       acceptLoverRequest,
       cancelLoverRequest,
+      cancelSentLoverRequestAndRelationship,
+      createLoverRequestAndRelationshipAndPlaceholderLover,
       resendLoverRequestEmail,
       sendCoin,
       sendJalapeno,
