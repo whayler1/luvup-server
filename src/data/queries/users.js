@@ -9,7 +9,7 @@ import _ from 'lodash';
 
 import sequelize from '../sequelize';
 import UserType from '../types/UserType';
-import { Coin, User } from '../models';
+import { User } from '../models';
 import config from '../../config';
 
 const users = {
@@ -43,6 +43,7 @@ const users = {
         where: {
           $not: {
             id: verify.id,
+            isPlaceholder: true,
           },
           $or: [
             {
