@@ -3,6 +3,7 @@ import { GraphQLString, GraphQLObjectType } from 'graphql';
 
 import LoverRequestType from '../types/LoverRequestType';
 import RelationshipType from '../types/RelationshipType';
+import { acceptLoverRequest as sendPushNotification } from '../../services/pushNotifications';
 // import { User, LoverRequest, Relationship } from '../models';
 // import { datetimeAndTimestamp } from '../helpers/dateFormats';
 import {
@@ -10,9 +11,8 @@ import {
   acceptLoverRequestAndDuplicatePlaceholderDataForLover,
   validateJwtToken,
 } from '../helpers';
-import { generateScore } from '../helpers/relationshipScore';
 import analytics from '../../services/analytics';
-import { sendPushNotification } from '../../services/pushNotifications';
+// import { sendPushNotification } from '../../services/pushNotifications';
 // import { LoverRequestNotFoundError } from '../errors';
 
 const sendEmails = (sender, recipient) => {
@@ -45,52 +45,6 @@ const acceptLoverRequest = {
   resolve: async ({ request }, { loverRequestId }) => {
     const verify = await validateJwtToken(request);
 
-    // const loverRequest = await LoverRequest.findOne({
-    //   where: {
-    //     id: loverRequestId,
-    //     isAccepted: false,
-    //     isSenderCanceled: false,
-    //     isRecipientCanceled: false,
-    //   },
-    // });
-    //
-    // if (!loverRequest) {
-    //   throw LoverRequestNotFoundError;
-    // }
-    //
-    // const user = await User.findById(verify.id);
-    // const recipient = await loverRequest.getRecipient();
-    // if (recipient.id !== user.id) {
-    //   return { error: 'recipient id does not match' };
-    // }
-    //
-    // const lover = await User.findOne({ where: { id: loverRequest.UserId } });
-    // if (!lover) {
-    //   return { error: 'lover invalid' };
-    // }
-    // /**
-    //    * If either user is already in a relationship we have to set end date.
-    //    */
-    // const userRelationship = await user.getRelationship();
-    // const loverRelationship = await lover.getRelationship();
-    // const endDate = datetimeAndTimestamp(moment());
-    //
-    // if (userRelationship) {
-    //   userRelationship.update({ endDate });
-    // }
-    // if (loverRelationship) {
-    //   loverRelationship.update({ endDate });
-    // }
-    //
-    // const relationship = await Relationship.create();
-    // await relationship.addLover(user);
-    // await relationship.addLover(lover);
-    // await user.setRelationship(relationship);
-    // await lover.setRelationship(relationship);
-    //
-    // await loverRequest.update({
-    //   isAccepted: true,
-    // });
     const {
       user,
       sender,
@@ -102,12 +56,6 @@ const acceptLoverRequest = {
       loverRequestId,
     );
 
-    /**
-       * JW: Generate initial relationship score as soon as relationship is created.
-       */
-    await generateScore(user);
-    await generateScore(sender);
-
     analytics.track({
       userId: user.id,
       event: 'acceptLoverRequest',
@@ -118,13 +66,7 @@ const acceptLoverRequest = {
       },
     });
 
-    sendPushNotification(
-      sender.id,
-      `${user.fullName} has accepted your lover request! 💞`,
-      {
-        type: 'lover-request-accepted',
-      },
-    );
+    sendPushNotification(sender, user);
 
     try {
       await sendEmails(sender, user);

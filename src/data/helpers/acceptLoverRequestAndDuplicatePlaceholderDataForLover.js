@@ -1,6 +1,7 @@
 import isString from 'lodash/isString';
 import { User, LoverRequest, Relationship } from '../models';
 import { LoverRequestNotFoundError } from '../errors';
+import { generateScore } from '../helpers/relationshipScore';
 
 const removePlaceholderLover = async relationship => {
   const placeholderLover = await relationship.getPlaceholderLover();
@@ -44,6 +45,9 @@ const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
     isAccepted: true,
   });
   await user.setRelationship(relationship);
+
+  await generateScore(user);
+  await generateScore(sender);
 
   return {
     user,
