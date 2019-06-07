@@ -1,16 +1,19 @@
 import { GraphQLString, GraphQLObjectType } from 'graphql';
-import moment from 'moment';
+// import moment from 'moment';
 
 import LoverRequestType from '../types/LoverRequestType';
 import RelationshipType from '../types/RelationshipType';
-import { User, LoverRequest, Relationship } from '../models';
-import { datetimeAndTimestamp } from '../helpers/dateFormats';
-import emailHelper from '../helpers/email';
+// import { User, LoverRequest, Relationship } from '../models';
+// import { datetimeAndTimestamp } from '../helpers/dateFormats';
+import {
+  emailHelper,
+  acceptLoverRequestAndDuplicatePlaceholderDataForLover,
+  validateJwtToken,
+} from '../helpers';
 import { generateScore } from '../helpers/relationshipScore';
 import analytics from '../../services/analytics';
 import { sendPushNotification } from '../../services/pushNotifications';
-import { LoverRequestNotFoundError } from '../errors';
-import { validateJwtToken } from '../helpers';
+// import { LoverRequestNotFoundError } from '../errors';
 
 const sendEmails = (sender, recipient) => {
   const senderEmail = emailHelper.sendEmail({
@@ -42,58 +45,68 @@ const acceptLoverRequest = {
   resolve: async ({ request }, { loverRequestId }) => {
     const verify = await validateJwtToken(request);
 
-    const loverRequest = await LoverRequest.findOne({
-      where: {
-        id: loverRequestId,
-        isAccepted: false,
-        isSenderCanceled: false,
-        isRecipientCanceled: false,
-      },
-    });
-
-    if (!loverRequest) {
-      throw LoverRequestNotFoundError;
-    }
-
-    const user = await User.findOne({ where: { id: verify.id } });
-    const recipient = await loverRequest.getRecipient();
-    if (recipient.id !== user.id) {
-      return { error: 'recipient id does not match' };
-    }
-
-    const lover = await User.findOne({ where: { id: loverRequest.UserId } });
-    if (!lover) {
-      return { error: 'lover invalid' };
-    }
-    /**
-       * If either user is already in a relationship we have to set end date.
-       */
-    const userRelationship = await user.getRelationship();
-    const loverRelationship = await lover.getRelationship();
-    const endDate = datetimeAndTimestamp(moment());
-
-    if (userRelationship) {
-      userRelationship.update({ endDate });
-    }
-    if (loverRelationship) {
-      loverRelationship.update({ endDate });
-    }
-
-    const relationship = await Relationship.create();
-    await relationship.addLover(user);
-    await relationship.addLover(lover);
-    await user.setRelationship(relationship);
-    await lover.setRelationship(relationship);
-
-    await loverRequest.update({
-      isAccepted: true,
-    });
+    // const loverRequest = await LoverRequest.findOne({
+    //   where: {
+    //     id: loverRequestId,
+    //     isAccepted: false,
+    //     isSenderCanceled: false,
+    //     isRecipientCanceled: false,
+    //   },
+    // });
+    //
+    // if (!loverRequest) {
+    //   throw LoverRequestNotFoundError;
+    // }
+    //
+    // const user = await User.findById(verify.id);
+    // const recipient = await loverRequest.getRecipient();
+    // if (recipient.id !== user.id) {
+    //   return { error: 'recipient id does not match' };
+    // }
+    //
+    // const lover = await User.findOne({ where: { id: loverRequest.UserId } });
+    // if (!lover) {
+    //   return { error: 'lover invalid' };
+    // }
+    // /**
+    //    * If either user is already in a relationship we have to set end date.
+    //    */
+    // const userRelationship = await user.getRelationship();
+    // const loverRelationship = await lover.getRelationship();
+    // const endDate = datetimeAndTimestamp(moment());
+    //
+    // if (userRelationship) {
+    //   userRelationship.update({ endDate });
+    // }
+    // if (loverRelationship) {
+    //   loverRelationship.update({ endDate });
+    // }
+    //
+    // const relationship = await Relationship.create();
+    // await relationship.addLover(user);
+    // await relationship.addLover(lover);
+    // await user.setRelationship(relationship);
+    // await lover.setRelationship(relationship);
+    //
+    // await loverRequest.update({
+    //   isAccepted: true,
+    // });
+    const {
+      user,
+      sender,
+      // placeholderLover,
+      loverRequest,
+      relationship,
+    } = await acceptLoverRequestAndDuplicatePlaceholderDataForLover(
+      verify.id,
+      loverRequestId,
+    );
 
     /**
        * JW: Generate initial relationship score as soon as relationship is created.
        */
     await generateScore(user);
-    await generateScore(lover);
+    await generateScore(sender);
 
     analytics.track({
       userId: user.id,
@@ -101,12 +114,12 @@ const acceptLoverRequest = {
       properties: {
         category: 'loverRequest',
         loverRequestId,
-        senderId: lover.id,
+        senderId: sender.id,
       },
     });
 
     sendPushNotification(
-      lover.id,
+      sender.id,
       `${user.fullName} has accepted your lover request! 💞`,
       {
         type: 'lover-request-accepted',
@@ -114,7 +127,7 @@ const acceptLoverRequest = {
     );
 
     try {
-      await sendEmails(lover, user);
+      await sendEmails(sender, user);
     } catch (err) {
       console.error('error sending acceptLoverRequest email');
     }
@@ -122,7 +135,7 @@ const acceptLoverRequest = {
       loverRequest,
       relationship: {
         ...relationship.dataValues,
-        lovers: [lover.dataValues],
+        lovers: [sender.dataValues],
       },
     };
   },
