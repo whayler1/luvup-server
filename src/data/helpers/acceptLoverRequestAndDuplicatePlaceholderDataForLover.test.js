@@ -69,4 +69,28 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
       }),
     );
   });
+
+  it('returns lover request', () => {
+    expect(isUUID.v1(subject.loverRequest.id)).toBe(true);
+    expect(subject.loverRequest).toEqual(
+      expect.objectContaining({
+        relationshipId: relationship.id,
+        isAccepted: true,
+        isSenderCanceled: false,
+        isRecipientCanceled: false,
+        UserId: sender.id,
+        recipientId: recipient.id,
+      }),
+    );
+  });
+
+  it('returns relationship', () => {
+    console.log(subject.relationship);
+    expect(subject.relationship).toEqual(
+      expect.objectContaining({
+        id: relationship.id,
+        endDate: null,
+      }),
+    );
+  });
 });
