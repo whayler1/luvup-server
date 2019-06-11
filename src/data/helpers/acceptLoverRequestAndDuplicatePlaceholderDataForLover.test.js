@@ -39,4 +39,19 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
       }),
     );
   });
+
+  it('returns sender with relationship id', () => {
+    expect(subject.sender).toEqual(
+      expect.objectContaining({
+        id: sender.id,
+        email: sender.email,
+        isPlaceholder: false,
+        username: sender.username,
+        firstName: sender.firstName,
+        lastName: sender.lastName,
+        fullName: sender.fullName,
+        RelationshipId: relationship.id,
+      }),
+    );
+  });
 });
