@@ -6,6 +6,8 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
   let sender;
   let recipient;
   let loverRequest;
+  let relationship;
+  let subject;
 
   beforeAll(async () => {
     [sender, recipient] = await Promise.all(
@@ -16,13 +18,25 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
       recipient.id,
     );
     loverRequest = loverRequestRes.loverRequest;
-  });
-
-  it('does something', async () => {
-    const subject = await acceptLoverRequestAndDuplicatePlaceholderDataForLover(
+    relationship = loverRequestRes.relationship;
+    subject = await acceptLoverRequestAndDuplicatePlaceholderDataForLover(
       recipient.id,
       loverRequest.id,
     );
-    console.log('subject', subject);
+  });
+
+  it('returns user with relationship id', async () => {
+    expect(subject.user).toEqual(
+      expect.objectContaining({
+        id: recipient.id,
+        email: recipient.email,
+        isPlaceholder: false,
+        username: recipient.username,
+        firstName: recipient.firstName,
+        lastName: recipient.lastName,
+        fullName: recipient.fullName,
+        RelationshipId: relationship.id,
+      }),
+    );
   });
 });
