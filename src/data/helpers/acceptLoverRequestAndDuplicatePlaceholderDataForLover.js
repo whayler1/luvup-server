@@ -6,7 +6,7 @@ import { generateScore } from '../helpers/relationshipScore';
 const removePlaceholderLover = async relationship => {
   const placeholderLover = await relationship.getPlaceholderLover();
   if (placeholderLover) {
-    await placeholderLover.update({ RelationshipId: '' });
+    await placeholderLover.update({ RelationshipId: null });
   }
   return placeholderLover;
 };
@@ -15,7 +15,7 @@ const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
   userId,
   loverRequestId,
 ) => {
-  const loverRequest = await LoverRequest.findByPk(loverRequestId);
+  const loverRequest = await LoverRequest.findById(loverRequestId);
   if (!loverRequest) {
     throw LoverRequestNotFoundError;
   }
@@ -29,7 +29,7 @@ const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
   const [user, sender, relationship] = await Promise.all([
     User.findById(userId),
     User.findById(loverRequest.UserId),
-    Relationship.findByPk(loverRequest.relationshipId),
+    Relationship.findById(loverRequest.relationshipId),
   ]);
   if (isString(user.RelationshipId) && user.RelationshipId.length > 0) {
     throw new Error(
@@ -37,14 +37,13 @@ const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
     );
   }
   const placeholderLover = await removePlaceholderLover(relationship);
-  const senderRelationship = await sender.getRelationship();
-  if (senderRelationship) {
-    await senderRelationship.endRelationship();
-  }
   await loverRequest.update({
     isAccepted: true,
   });
-  await user.setRelationship(relationship);
+  await Promise.all([
+    user.setRelationship(relationship),
+    relationship.addLover(user),
+  ]);
 
   await generateScore(user);
   await generateScore(sender);

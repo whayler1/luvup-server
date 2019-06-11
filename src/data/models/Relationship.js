@@ -21,19 +21,28 @@ Relationship.hasMany(User, {
   as: 'lover',
 });
 
-Relationship.prototype.getPlaceholderLover = () =>
-  User.findOne({
+Relationship.findById = async function findById(id) {
+  return this.findOne({ where: { id } });
+};
+
+Relationship.prototype.getPlaceholderLover = async function getPlaceholderLover() {
+  return User.findOne({
     where: {
       RelationshipId: this.id,
       isPlaceholder: true,
     },
   });
+};
 
-Relationship.prototype.endRelationship = async () => {
+Relationship.prototype.endRelationship = async function endRelationship() {
   const endDate = datetimeAndTimestamp(moment());
   await this.update({ endDate });
-  const lovers = this.getLover();
-  await Promise.all(lovers.map(lover => lover.update({ RelationshipId: '' })));
+  const lovers = await this.getLover();
+  console.log('lovers', lovers);
+  await Promise.all(
+    lovers.map(lover => lover.update({ RelationshipId: null })),
+  );
+  console.log('this tihng');
   return this;
 };
 

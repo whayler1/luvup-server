@@ -5,3 +5,6 @@ export {
 export {
   default as sendLoverRequestSentEmails,
 } from './sendLoverRequestSentEmails';
+export {
+  default as sendAcceptLoverRequestEmails,
+} from './sendAcceptLoverRequestEmails';
