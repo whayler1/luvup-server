@@ -1,3 +1,4 @@
+import isUUID from 'is-uuid';
 import times from 'lodash/times';
 import acceptLoverRequestAndDuplicatePlaceholderDataForLover from './acceptLoverRequestAndDuplicatePlaceholderDataForLover';
 import { User, LoverRequest } from '../models';
@@ -51,6 +52,20 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
         lastName: sender.lastName,
         fullName: sender.fullName,
         RelationshipId: relationship.id,
+      }),
+    );
+  });
+
+  it('returns placeholder lover with no relationship id', () => {
+    expect(isUUID.v1(subject.placeholderLover.id)).toBe(true);
+    expect(subject.placeholderLover).toEqual(
+      expect.objectContaining({
+        email: recipient.email,
+        isPlaceholder: true,
+        firstName: recipient.firstName,
+        lastName: recipient.lastName,
+        fullName: recipient.fullName,
+        RelationshipId: null,
       }),
     );
   });
