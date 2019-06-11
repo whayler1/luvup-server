@@ -2,6 +2,7 @@ import { GraphQLString, GraphQLObjectType } from 'graphql';
 
 import LoverRequestType from '../types/LoverRequestType';
 import RelationshipType from '../types/RelationshipType';
+import RelationshipScoreType from '../types/RelationshipScoreType';
 import { acceptLoverRequest as sendPushNotification } from '../../services/pushNotifications';
 import { sendAcceptLoverRequestEmails } from '../../emails';
 import {
@@ -16,7 +17,7 @@ const acceptLoverRequest = {
     fields: {
       loverRequest: { type: LoverRequestType },
       relationship: { type: RelationshipType },
-      error: { type: GraphQLString },
+      relationshipScore: { type: RelationshipScoreType },
     },
   }),
   args: {
@@ -30,6 +31,7 @@ const acceptLoverRequest = {
       sender,
       loverRequest,
       relationship,
+      relationshipScore,
     } = await acceptLoverRequestAndDuplicatePlaceholderDataForLover(
       verify.id,
       loverRequestId,
@@ -45,6 +47,7 @@ const acceptLoverRequest = {
         ...relationship.dataValues,
         lovers: [sender.dataValues],
       },
+      relationshipScore,
     };
   },
 };

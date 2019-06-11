@@ -45,7 +45,7 @@ const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
     relationship.addLover(user),
   ]);
 
-  await generateScore(user);
+  const relationshipScore = await generateScore(user);
   await generateScore(sender);
 
   return {
@@ -54,6 +54,7 @@ const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
     placeholderLover,
     loverRequest,
     relationship,
+    relationshipScore,
   };
 };
 
