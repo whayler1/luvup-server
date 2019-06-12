@@ -5,14 +5,13 @@ import schema from '../schema';
 import sequelize from '../sequelize';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { User, LoverRequest } from '../models';
-
-// createUser,
-// import analytics from '../../services/analytics';
-// import { sendPushNotification } from '../../services/pushNotifications';
+import { trackAcceptLoverRequest } from '../../services/analytics';
+import { acceptLoverRequest as sendPushNotification } from '../../services/pushNotifications';
 // import emailHelper from '../helpers/email';
 
+jest.mock('../../services/analytics');
 jest.mock('../../services/pushNotifications');
-jest.mock('../helpers/email');
+// jest.mock('../helpers/email');
 
 describe('acceptLoverRequest', () => {
   let sender;
@@ -44,6 +43,7 @@ describe('acceptLoverRequest', () => {
       }
     }`;
     subject = await graphql(schema, query, rootValue, sequelize);
+    await Promise.all([sender.reload(), recipient.reload()]);
   });
 
   it('returns loverRequest', () => {
@@ -89,6 +89,23 @@ describe('acceptLoverRequest', () => {
     expect(isUUID.v1(relationshipScoreRes.id)).toBe(true);
     expect(isString(relationshipScoreRes.createdAt)).toBe(true);
     expect(isString(relationshipScoreRes.updatedAt)).toBe(true);
+  });
+
+  it('calls trackAcceptLoverRequest', () => {
+    expect(trackAcceptLoverRequest.mock.calls[0]).toMatchObject([
+      recipient.id,
+      sender.id,
+      loverRequest.id,
+    ]);
+  });
+
+  it('calls sendPushNotification', async () => {
+    expect(sendPushNotification.mock.calls[0][0].dataValues).toEqual(
+      sender.dataValues,
+    );
+    expect(sendPushNotification.mock.calls[0][1].dataValues).toEqual(
+      recipient.dataValues,
+    );
   });
 });
 
