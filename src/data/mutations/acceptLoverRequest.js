@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLObjectType } from 'graphql';
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from 'graphql';
 
 import LoverRequestType from '../types/LoverRequestType';
 import RelationshipType from '../types/RelationshipType';
@@ -21,7 +21,7 @@ const acceptLoverRequest = {
     },
   }),
   args: {
-    loverRequestId: { type: GraphQLString },
+    loverRequestId: { type: new GraphQLNonNull(GraphQLString) },
   },
   resolve: async ({ request }, { loverRequestId }) => {
     const verify = await validateJwtToken(request);
