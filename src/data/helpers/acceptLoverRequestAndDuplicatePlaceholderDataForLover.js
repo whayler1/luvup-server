@@ -5,6 +5,8 @@ import {
   UserEvent,
   Coin,
   Jalapeno,
+  LoveNote,
+  QuizItem,
   LoverRequest,
   Relationship,
 } from '../models';
@@ -30,6 +32,14 @@ const sendables = [
   },
   {
     model: Jalapeno,
+    userId: 'recipientId',
+  },
+  {
+    model: QuizItem,
+    userId: 'recipientId',
+  },
+  {
+    model: LoveNote,
     userId: 'recipientId',
   },
 ];

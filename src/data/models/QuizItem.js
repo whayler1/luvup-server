@@ -21,4 +21,13 @@ const QuizItem = Model.define('QuizItem', {
   },
 });
 
+QuizItem.getWithUserAndRelationship = async function getWithUserAndRelationship(
+  recipientId,
+  relationshipId,
+) {
+  return this.findAll({
+    where: { recipientId, relationshipId },
+  });
+};
+
 export default QuizItem;

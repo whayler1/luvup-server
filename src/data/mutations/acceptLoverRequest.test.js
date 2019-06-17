@@ -119,6 +119,13 @@ describe('acceptLoverRequest', () => {
     ).toMatchObject(sender.dataValues);
     expect(
       sendAcceptLoverRequestEmails.mock.calls[0][1].dataValues,
-    ).toMatchObject(recipient.dataValues);
+    ).toMatchObject({
+      fullName: recipient.dataValues.fullName,
+      id: recipient.dataValues.id,
+      isPlaceholder: false,
+      lastName: recipient.dataValues.lastName,
+      password: recipient.dataValues.password,
+      username: recipient.dataValues.username,
+    });
   });
 });
