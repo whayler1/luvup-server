@@ -1,5 +1,6 @@
 import isString from 'lodash/isString';
-import { User, LoverRequest, Relationship } from '../models';
+import uuidv1 from 'uuid/v1';
+import { User, UserEvent, LoverRequest, Relationship } from '../models';
 import { LoverRequestNotFoundError } from '../errors';
 import { generateScore } from '../helpers/relationshipScore';
 
@@ -9,6 +10,23 @@ const removePlaceholderLover = async relationship => {
     await placeholderLover.update({ RelationshipId: null });
   }
   return placeholderLover;
+};
+
+const addPlacedholderLoverUserEventsToUser = async (
+  placeholderLover,
+  user,
+  relationship,
+) => {
+  const placeholderLoverEvents = await UserEvent.getWithUserAndRelationship(
+    placeholderLover.id,
+    relationship.id,
+  );
+  const newUserEventArgs = placeholderLoverEvents.map(userEvent => ({
+    ...userEvent.dataValues,
+    id: uuidv1(),
+    userId: user.id,
+  }));
+  return UserEvent.bulkCreate(newUserEventArgs);
 };
 
 const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
@@ -47,6 +65,12 @@ const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
 
   const relationshipScore = await generateScore(user);
   await generateScore(sender);
+
+  await addPlacedholderLoverUserEventsToUser(
+    placeholderLover,
+    user,
+    relationship,
+  );
 
   return {
     user,

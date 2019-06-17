@@ -32,4 +32,13 @@ const UserEvent = Model.define('UserEvent', {
   },
 });
 
+UserEvent.getWithUserAndRelationship = async function getWithUserAndRelationship(
+  userId,
+  relationshipId,
+) {
+  return this.findAll({
+    where: { userId, relationshipId },
+  });
+};
+
 export default UserEvent;
