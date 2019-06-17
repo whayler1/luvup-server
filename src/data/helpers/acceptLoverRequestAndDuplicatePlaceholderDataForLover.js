@@ -1,6 +1,13 @@
 import isString from 'lodash/isString';
 import uuidv1 from 'uuid/v1';
-import { User, UserEvent, LoverRequest, Relationship } from '../models';
+import {
+  User,
+  UserEvent,
+  Coin,
+  Jalapeno,
+  LoverRequest,
+  Relationship,
+} from '../models';
 import { LoverRequestNotFoundError } from '../errors';
 import { generateScore } from '../helpers/relationshipScore';
 
@@ -12,22 +19,56 @@ const removePlaceholderLover = async relationship => {
   return placeholderLover;
 };
 
-const addPlacedholderLoverUserEventsToUser = async (
+const sendables = [
+  {
+    model: UserEvent,
+    userId: 'userId',
+  },
+  {
+    model: Coin,
+    userId: 'recipientId',
+  },
+  {
+    model: Jalapeno,
+    userId: 'recipientId',
+  },
+];
+
+const addSendablesToUser = async (
+  sendable,
   placeholderLover,
   user,
   relationship,
 ) => {
-  const placeholderLoverEvents = await UserEvent.getWithUserAndRelationship(
+  console.log('sendable called', sendable);
+  const placeholderLoverEvents = await sendable.model.getWithUserAndRelationship(
     placeholderLover.id,
     relationship.id,
   );
-  const newUserEventArgs = placeholderLoverEvents.map(userEvent => ({
-    ...userEvent.dataValues,
-    id: uuidv1(),
-    userId: user.id,
-  }));
-  return UserEvent.bulkCreate(newUserEventArgs);
+  console.log('placeholderLoverEvents', placeholderLoverEvents);
+  if (placeholderLoverEvents.length > 0) {
+    const newSendableArgs = placeholderLoverEvents.map(data => ({
+      ...data.dataValues,
+      id: uuidv1(),
+      [sendable.userId]: user.id,
+    }));
+    console.log('newSendableArgs', newSendableArgs);
+
+    return sendable.model.bulkCreate(newSendableArgs);
+  }
+  return Promise.resolve();
 };
+
+const addPlacedholderLoverUserEventsToUser = async (
+  placeholderLover,
+  user,
+  relationship,
+) =>
+  Promise.all(
+    sendables.map(sendable =>
+      addSendablesToUser(sendable, placeholderLover, user, relationship),
+    ),
+  );
 
 const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
   userId,
@@ -63,14 +104,11 @@ const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
     relationship.addLover(user),
   ]);
 
-  const relationshipScore = await generateScore(user);
-  await generateScore(sender);
-
-  await addPlacedholderLoverUserEventsToUser(
-    placeholderLover,
-    user,
-    relationship,
-  );
+  const [relationshipScore] = await Promise.all([
+    generateScore(user),
+    generateScore(sender),
+    addPlacedholderLoverUserEventsToUser(placeholderLover, user, relationship),
+  ]);
 
   return {
     user,

@@ -103,9 +103,14 @@ describe('acceptLoverRequest', () => {
     expect(sendPushNotification.mock.calls[0][0].dataValues).toMatchObject(
       sender.dataValues,
     );
-    expect(sendPushNotification.mock.calls[0][1].dataValues).toMatchObject(
-      recipient.dataValues,
-    );
+    expect(sendPushNotification.mock.calls[0][1].dataValues).toMatchObject({
+      fullName: recipient.dataValues.fullName,
+      id: recipient.dataValues.id,
+      isPlaceholder: false,
+      lastName: recipient.dataValues.lastName,
+      password: recipient.dataValues.password,
+      username: recipient.dataValues.username,
+    });
   });
 
   it('calls sendAcceptLoverRequestEmails', () => {
