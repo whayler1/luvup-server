@@ -65,6 +65,7 @@ const addSendablesToUser = async (
       ...data.dataValues,
       id: uuidv1(),
       [userId]: user.id,
+      relationshipId: relationship.id,
     }));
 
     await model.bulkCreate(newSendableArgs);

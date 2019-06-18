@@ -134,4 +134,15 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
       }),
     );
   });
+
+  it.only('adds coins to user', async () => {
+    const coins = await Coin.findAll({
+      where: {
+        recipientId: recipient.id,
+        senderId: sender.id,
+        relationshipId: relationship.id,
+      },
+    });
+    expect(coins).toHaveLength(1);
+  });
 });
