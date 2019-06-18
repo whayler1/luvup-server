@@ -25,22 +25,27 @@ const sendables = [
   {
     model: UserEvent,
     userId: 'userId',
+    disableKey: 'isViewed',
   },
   {
     model: Coin,
     userId: 'recipientId',
+    disableKey: 'isUsed',
   },
   {
     model: Jalapeno,
     userId: 'recipientId',
+    disableKey: 'isExpired',
   },
   {
     model: QuizItem,
     userId: 'recipientId',
+    disableKey: 'isArchived',
   },
   {
     model: LoveNote,
     userId: 'recipientId',
+    disableKey: 'isRead',
   },
 ];
 
@@ -50,21 +55,31 @@ const addSendablesToUser = async (
   user,
   relationship,
 ) => {
-  console.log('sendable called', sendable);
-  const placeholderLoverEvents = await sendable.model.getWithUserAndRelationship(
+  const { model, userId, disableKey } = sendable;
+  const placeholderLoverEvents = await model.getWithUserAndRelationship(
     placeholderLover.id,
     relationship.id,
   );
-  console.log('placeholderLoverEvents', placeholderLoverEvents);
   if (placeholderLoverEvents.length > 0) {
     const newSendableArgs = placeholderLoverEvents.map(data => ({
       ...data.dataValues,
       id: uuidv1(),
-      [sendable.userId]: user.id,
+      [userId]: user.id,
     }));
-    console.log('newSendableArgs', newSendableArgs);
 
-    return sendable.model.bulkCreate(newSendableArgs);
+    await model.bulkCreate(newSendableArgs);
+    await model.update(
+      {
+        [disableKey]: true,
+        relationshipId: null,
+      },
+      {
+        where: {
+          [userId]: placeholderLover.id,
+          relationshipId: relationship.id,
+        },
+      },
+    );
   }
   return Promise.resolve();
 };
@@ -114,10 +129,14 @@ const acceptLoverRequestAndDuplicatePlaceholderDataForLover = async (
     relationship.addLover(user),
   ]);
 
+  await addPlacedholderLoverUserEventsToUser(
+    placeholderLover,
+    user,
+    relationship,
+  );
   const [relationshipScore] = await Promise.all([
     generateScore(user),
     generateScore(sender),
-    addPlacedholderLoverUserEventsToUser(placeholderLover, user, relationship),
   ]);
 
   return {

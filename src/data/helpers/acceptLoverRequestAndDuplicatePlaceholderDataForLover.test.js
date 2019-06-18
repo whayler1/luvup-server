@@ -1,7 +1,16 @@
+import uuidv1 from 'uuid/v1';
 import isUUID from 'is-uuid';
 import times from 'lodash/times';
 import acceptLoverRequestAndDuplicatePlaceholderDataForLover from './acceptLoverRequestAndDuplicatePlaceholderDataForLover';
-import { User, LoverRequest } from '../models';
+import {
+  User,
+  UserEvent,
+  Coin,
+  Jalapeno,
+  LoveNote,
+  QuizItem,
+  LoverRequest,
+} from '../models';
 
 describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
   let sender;
@@ -20,6 +29,39 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
     );
     loverRequest = loverRequestRes.loverRequest;
     relationship = loverRequestRes.relationship;
+    await UserEvent.create({
+      id: uuidv1(),
+      name: 'coin-sent',
+      userId: relationship.lovers[0].id,
+      relationshipId: relationship.id,
+    });
+    await Coin.create({
+      id: uuidv1(),
+      senderId: sender.id,
+      recipientId: relationship.lovers[0].id,
+      relationshipId: relationship.id,
+    });
+    await Jalapeno.create({
+      id: uuidv1(),
+      senderId: sender.id,
+      recipientId: relationship.lovers[0].id,
+      relationshipId: relationship.id,
+    });
+    await LoveNote.create({
+      id: uuidv1(),
+      note: 'foo',
+      senderId: sender.id,
+      recipientId: relationship.lovers[0].id,
+      relationshipId: relationship.id,
+    });
+    await QuizItem.create({
+      id: uuidv1(),
+      question: 'foo?',
+      senderId: sender.id,
+      recipientId: relationship.lovers[0].id,
+      relationshipId: relationship.id,
+    });
+
     subject = await acceptLoverRequestAndDuplicatePlaceholderDataForLover(
       recipient.id,
       loverRequest.id,
@@ -85,7 +127,6 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
   });
 
   it('returns relationship', () => {
-    console.log(subject.relationship);
     expect(subject.relationship).toEqual(
       expect.objectContaining({
         id: relationship.id,
