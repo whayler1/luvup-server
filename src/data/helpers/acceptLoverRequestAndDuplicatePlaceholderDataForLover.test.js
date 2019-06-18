@@ -9,6 +9,7 @@ import {
   Jalapeno,
   LoveNote,
   QuizItem,
+  QuizItemChoice,
   LoverRequest,
 } from '../models';
 
@@ -54,13 +55,23 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
       recipientId: relationship.lovers[0].id,
       relationshipId: relationship.id,
     });
-    await QuizItem.create({
-      id: uuidv1(),
-      question: 'foo?',
-      senderId: sender.id,
-      recipientId: relationship.lovers[0].id,
-      relationshipId: relationship.id,
-    });
+    const quizItemId = uuidv1();
+    await Promise.all([
+      QuizItem.create({
+        id: quizItemId,
+        question: 'foo?',
+        senderId: sender.id,
+        recipientId: relationship.lovers[0].id,
+        relationshipId: relationship.id,
+      }),
+      ...times(3, n =>
+        QuizItemChoice.create({
+          id: uuidv1(),
+          answer: `answer ${n}`,
+          quizItemId,
+        }),
+      ),
+    ]);
 
     subject = await acceptLoverRequestAndDuplicatePlaceholderDataForLover(
       recipient.id,
@@ -135,7 +146,18 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
     );
   });
 
-  it.only('adds coins to user', async () => {
+  it('adds user event to user', async () => {
+    const userEvent = await UserEvent.findAll({
+      where: {
+        userId: recipient.id,
+        relationshipId: relationship.id,
+        name: 'coin-sent',
+      },
+    });
+    expect(userEvent).toHaveLength(1);
+  });
+
+  it('adds coins to user', async () => {
     const coins = await Coin.findAll({
       where: {
         recipientId: recipient.id,
@@ -144,5 +166,56 @@ describe('acceptLoverRequestAndDuplicatePlaceholderDataForLover', () => {
       },
     });
     expect(coins).toHaveLength(1);
+  });
+
+  it('adds jalapeno to user', async () => {
+    const jalapeno = await Jalapeno.findAll({
+      where: {
+        recipientId: recipient.id,
+        senderId: sender.id,
+        relationshipId: relationship.id,
+      },
+    });
+    expect(jalapeno).toHaveLength(1);
+  });
+
+  it('adds love note to user', async () => {
+    const lovenote = await LoveNote.findAll({
+      where: {
+        recipientId: recipient.id,
+        note: 'foo',
+        senderId: sender.id,
+        relationshipId: relationship.id,
+      },
+    });
+    expect(lovenote).toHaveLength(1);
+  });
+
+  it('adds quiz item to user', async () => {
+    const quizItem = await QuizItem.findAll({
+      where: {
+        recipientId: recipient.id,
+        question: 'foo?',
+        senderId: sender.id,
+        relationshipId: relationship.id,
+      },
+    });
+    expect(quizItem).toHaveLength(1);
+  });
+
+  it('adds quiz item choices to user', async () => {
+    const quizItem = await QuizItem.findAll({
+      where: {
+        recipientId: recipient.id,
+        question: 'foo?',
+        senderId: sender.id,
+        relationshipId: relationship.id,
+      },
+    });
+    const choices = await QuizItemChoice.findAll({
+      where: { quizItemId: quizItem[0].id },
+    });
+    expect(quizItem).toHaveLength(1);
+    expect(choices).toHaveLength(3);
   });
 });

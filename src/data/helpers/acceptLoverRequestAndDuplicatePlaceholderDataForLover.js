@@ -7,6 +7,7 @@ import {
   Jalapeno,
   LoveNote,
   QuizItem,
+  QuizItemChoice,
   LoverRequest,
   Relationship,
 } from '../models';
@@ -21,7 +22,7 @@ const removePlaceholderLover = async relationship => {
   return placeholderLover;
 };
 
-const sendables = [
+const receivables = [
   {
     model: UserEvent,
     userId: 'userId',
@@ -49,26 +50,71 @@ const sendables = [
   },
 ];
 
+const getQuizItemInstanceStuff = async instance => {
+  const quizItemId = uuidv1();
+  const choices = await instance.getChoices();
+  return {
+    quizItem: {
+      ...instance.dataValues,
+      id: quizItemId,
+    },
+    choices: choices.map(choice => ({
+      ...choice.dataValues,
+      id: uuidv1(),
+      quizItemId,
+    })),
+  };
+};
+
+const getQuizItemAndChoicesMap = instances =>
+  Promise.all(instances.map(instance => getQuizItemInstanceStuff(instance)));
+
 const addSendablesToUser = async (
-  sendable,
+  receivable,
   placeholderLover,
   user,
   relationship,
 ) => {
-  const { model, userId, disableKey } = sendable;
+  const { model, userId, disableKey } = receivable;
   const placeholderLoverEvents = await model.getWithUserAndRelationship(
     placeholderLover.id,
     relationship.id,
   );
   if (placeholderLoverEvents.length > 0) {
-    const newSendableArgs = placeholderLoverEvents.map(data => ({
-      ...data.dataValues,
-      id: uuidv1(),
-      [userId]: user.id,
-      relationshipId: relationship.id,
-    }));
+    if (model === QuizItem) {
+      const quizItemData = await getQuizItemAndChoicesMap(
+        placeholderLoverEvents,
+      );
+      const { quizItemArgs, quizItemChoiceArgs } = quizItemData.reduce(
+        (accumulator, data) => ({
+          quizItemArgs: [
+            ...accumulator.quizItemArgs,
+            {
+              ...data.quizItem,
+              recipientId: user.id,
+            },
+          ],
+          quizItemChoiceArgs: [
+            ...accumulator.quizItemChoiceArgs,
+            ...data.choices,
+          ],
+        }),
+        { quizItemArgs: [], quizItemChoiceArgs: [] },
+      );
+      await Promise.all([
+        QuizItem.bulkCreate(quizItemArgs),
+        QuizItemChoice.bulkCreate(quizItemChoiceArgs),
+      ]);
+    } else {
+      const newSendableArgs = placeholderLoverEvents.map(data => ({
+        ...data.dataValues,
+        id: uuidv1(),
+        [userId]: user.id,
+        relationshipId: relationship.id,
+      }));
 
-    await model.bulkCreate(newSendableArgs);
+      await model.bulkCreate(newSendableArgs);
+    }
     await model.update(
       {
         [disableKey]: true,
@@ -91,8 +137,8 @@ const addPlacedholderLoverUserEventsToUser = async (
   relationship,
 ) =>
   Promise.all(
-    sendables.map(sendable =>
-      addSendablesToUser(sendable, placeholderLover, user, relationship),
+    receivables.map(receivable =>
+      addSendablesToUser(receivable, placeholderLover, user, relationship),
     ),
   );
 
