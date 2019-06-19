@@ -78,7 +78,7 @@ LoverRequest.createAndAddRelationshipAndPlaceholderLover = async function create
     placeholderLover,
     relationship,
   ] = await Promise.all([
-    ...[senderId, recipientId].map(id => User.findOne({ where: { id } })),
+    ...[senderId, recipientId].map(id => User.findById(id)),
     User.createPlaceholderUserFromUser(recipientId),
     Relationship.create(),
   ]);

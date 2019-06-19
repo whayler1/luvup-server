@@ -100,7 +100,10 @@ User.createPlaceholderUserFromUser = async function createPlaceholderUserFromUse
     id: userRequest.id,
     email: user.email,
     isPlaceholder: true,
-    username: randomId,
+    /**
+     * JW: 😭 Set user to 20 char limit and uuid is more. Should probably alter the db
+     */
+    username: randomId.substr(0, 20),
     firstName: user.firstName,
     lastName: user.lastName,
     fullName: user.fullName,

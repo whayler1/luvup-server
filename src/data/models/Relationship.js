@@ -38,11 +38,9 @@ Relationship.prototype.endRelationship = async function endRelationship() {
   const endDate = datetimeAndTimestamp(moment());
   await this.update({ endDate });
   const lovers = await this.getLover();
-  console.log('lovers', lovers);
   await Promise.all(
     lovers.map(lover => lover.update({ RelationshipId: null })),
   );
-  console.log('this tihng');
   return this;
 };
 
