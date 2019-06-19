@@ -65,9 +65,7 @@ const getWeightedAverage = ary =>
 export const generateScore = async user => {
   const userId = user.id;
   const relationshipId = user.RelationshipId;
-  const relationship = await Relationship.findOne({
-    where: { id: relationshipId },
-  });
+  const relationship = await Relationship.findById(relationshipId);
   const [lover] = await relationship.getLover({
     where: {
       $not: {

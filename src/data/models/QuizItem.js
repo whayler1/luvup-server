@@ -1,5 +1,6 @@
 import DataType from 'sequelize';
 import Model from '../sequelize';
+import QuizItemChoice from './QuizItemChoice';
 
 const QuizItem = Model.define('QuizItem', {
   id: {
@@ -20,5 +21,33 @@ const QuizItem = Model.define('QuizItem', {
     defaultValue: false,
   },
 });
+
+QuizItem.getWithUserAndRelationship = async function getWithUserAndRelationship(
+  recipientId,
+  relationshipId,
+) {
+  return this.findAll({
+    where: { recipientId, relationshipId },
+  });
+};
+
+QuizItem.prototype.getChoices = async function getChoices() {
+  return QuizItemChoice.findAll({
+    where: {
+      quizItemId: this.id,
+    },
+  });
+};
+
+QuizItem.prototype.bulkCreateChoices = async function bulkCreateChoices(
+  choiceArray,
+) {
+  return QuizItemChoice.bulkCreate(
+    choiceArray.map(answer => ({
+      answer,
+      quizItemId: this.id,
+    })),
+  );
+};
 
 export default QuizItem;

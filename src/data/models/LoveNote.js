@@ -28,4 +28,13 @@ const LoveNote = Model.define('LoveNote', {
   },
 });
 
+LoveNote.getWithUserAndRelationship = async function getWithUserAndRelationship(
+  recipientId,
+  relationshipId,
+) {
+  return this.findAll({
+    where: { recipientId, relationshipId },
+  });
+};
+
 export default LoveNote;
