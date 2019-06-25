@@ -9,6 +9,7 @@ import LoveNote from './LoveNote';
 import LoveNoteEvent from './LoveNoteEvent';
 import LoverRequest from './LoverRequest';
 import Relationship from './Relationship';
+import RelationshipInvite from './RelationshipInvite';
 import Coin from './Coin';
 import Jalapeno from './Jalapeno';
 import UserEvent from './UserEvent';
@@ -31,6 +32,14 @@ Relationship.hasMany(LoveNote, {
 Relationship.hasMany(QuizItem, {
   as: 'quizItems',
   foreignKey: 'relationshipId',
+});
+
+RelationshipInvite.belongsTo(User, {
+  as: 'sender',
+});
+
+RelationshipInvite.belongsTo(Relationship, {
+  as: 'relationship',
 });
 
 User.hasMany(QuizItem, {
@@ -207,6 +216,7 @@ export {
   LoveNoteEvent,
   LoverRequest,
   Relationship,
+  RelationshipInvite,
   RelationshipScore,
   UserEvent,
   ExpoPushToken,
