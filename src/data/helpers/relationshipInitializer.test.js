@@ -2,7 +2,10 @@ import times from 'lodash/times';
 import isString from 'lodash/isString';
 
 import { User } from '../models';
-import { createRelationshipWithLoverRequest } from './relationshipInitializer';
+import {
+  createRelationshipWithLoverRequest,
+  createRelationshipWithInvite,
+} from './relationshipInitializer';
 
 describe('relationhipInitializer', () => {
   describe('createRelationshipWithLoverRequest', () => {
@@ -96,6 +99,44 @@ describe('relationhipInitializer', () => {
       expect(updatedAt).toBeInstanceOf(Date);
       expect(createdAt).toBeInstanceOf(Date);
       expect(RelationshipId).toBe(subject.relationship.id);
+    });
+  });
+
+  describe.only('createRelationshipWithInvite', () => {
+    let sender;
+    let recipient;
+    let subject;
+
+    beforeAll(async () => {
+      const users = await Promise.all(
+        times(2, () => User.createSkipUserRequest()),
+      );
+      sender = users[0];
+      recipient = users[1];
+      subject = await createRelationshipWithInvite(
+        sender.id,
+        'test@email.com',
+        'Bob',
+        'recipient',
+      );
+      await sender.reload();
+      await recipient.reload();
+    });
+
+    it('returns a loverRequest', async () => {
+      const { loverRequest, relationship } = subject;
+
+      expect(isString(loverRequest.id)).toBe(true);
+      expect(loverRequest.relationshipId).toBe(relationship.id);
+      expect(loverRequest.createdAt).toBeInstanceOf(Date);
+      expect(loverRequest.updatedAt).toBeInstanceOf(Date);
+      expect(loverRequest).toEqual(
+        expect.objectContaining({
+          isAccepted: false,
+          isSenderCanceled: false,
+          isRecipientCanceled: false,
+        }),
+      );
     });
   });
 });
