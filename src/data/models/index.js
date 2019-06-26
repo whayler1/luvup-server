@@ -1,5 +1,6 @@
 import sequelize from '../sequelize';
 import User from './User';
+import UserInvite from './UserInvite';
 import UserLogin from './UserLogin';
 import UserClaim from './UserClaim';
 import UserProfile from './UserProfile';
@@ -60,6 +61,18 @@ User.hasMany(UserEvent, {
 User.hasMany(ExpoPushToken, {
   as: 'expoPushTokens',
   foreignKey: 'userId',
+});
+
+UserInvite.belongsTo(User, {
+  as: 'sender',
+});
+
+UserInvite.belongsTo(Relationship, {
+  as: 'relationship',
+});
+
+UserInvite.belongsTo(LoverRequest, {
+  as: 'loverRequest',
 });
 
 UserEvent.belongsTo(Relationship, {
@@ -196,6 +209,7 @@ function sync(...args) {
 export default { sync };
 export {
   User,
+  UserInvite,
   UserLogin,
   UserClaim,
   UserProfile,

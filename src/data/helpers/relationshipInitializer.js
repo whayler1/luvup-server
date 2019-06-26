@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { User, Relationship, LoverRequest } from '../models';
+import { User, UserInvite, Relationship, LoverRequest } from '../models';
 import { generateScore } from './relationshipScore';
 
 const relateRelationshipAndUsers = (relationship, users) =>
@@ -55,8 +55,7 @@ export const createRelationshipWithInvite = async (
   recipientFirstName,
   recipientLastName,
 ) => {
-  /* eslint-disable no-unused-vars */
-  const [sender, placeholderUser, relationship] = await Promise.all([
+  const [sender, placeholderLover, relationship] = await Promise.all([
     User.findById(senderId),
     User.createPlaceholderUser(
       recipientEmail,
@@ -65,4 +64,33 @@ export const createRelationshipWithInvite = async (
     ),
     Relationship.create(),
   ]);
+  const loverRequest = await LoverRequest.create({
+    UserId: senderId,
+    relationshipId: relationship.id,
+  });
+  const [userInvite] = await Promise.all([
+    UserInvite.create({
+      senderId: sender.id,
+      relationshipId: relationship.id,
+      loverRequestId: loverRequest.id,
+      recipientEmail,
+      recipientFirstName,
+      recipientLastName,
+    }),
+    ...relateRelationshipAndUsers(relationship, [sender, placeholderLover]),
+  ]);
+  await generateScore(placeholderLover);
+
+  return {
+    loverRequest: {
+      ...loverRequest.dataValues,
+      sender,
+    },
+    relationship: {
+      ...relationship.dataValues,
+      lovers: [placeholderLover],
+    },
+    sender,
+    userInvite,
+  };
 };
