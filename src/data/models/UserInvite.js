@@ -19,6 +19,14 @@ const UserInvite = Model.define('UserInvite', {
     allowNull: false,
   },
 
+  loverRequestId: {
+    type: DataType.UUID,
+  },
+
+  userRequestId: {
+    type: DataType.UUID,
+  },
+
   recipientEmail: {
     type: DataType.STRING(255),
     validate: { isEmail: true },

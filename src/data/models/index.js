@@ -75,6 +75,10 @@ UserInvite.belongsTo(LoverRequest, {
   as: 'loverRequest',
 });
 
+UserInvite.belongsTo(UserRequest, {
+  as: 'userRequest',
+});
+
 UserEvent.belongsTo(Relationship, {
   as: 'relationship',
 });
