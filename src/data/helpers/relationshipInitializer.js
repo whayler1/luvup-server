@@ -48,3 +48,21 @@ export const createRelationshipWithLoverRequest = async (
     },
   };
 };
+
+export const createRelationshipWithInvite = async (
+  senderId,
+  recipientEmail,
+  recipientFirstName,
+  recipientLastName,
+) => {
+  /* eslint-disable no-unused-vars */
+  const [sender, placeholderUser, relationship] = await Promise.all([
+    User.findById(senderId),
+    User.createPlaceholderUser(
+      recipientEmail,
+      recipientFirstName,
+      recipientLastName,
+    ),
+    Relationship.create(),
+  ]);
+};

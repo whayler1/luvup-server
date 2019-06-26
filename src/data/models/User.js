@@ -111,4 +111,28 @@ User.createPlaceholderUserFromUser = async function createPlaceholderUserFromUse
   });
 };
 
+User.createPlaceholderUser = async function createPlaceholderUser(
+  email,
+  firstName,
+  lastName,
+) {
+  const userRequest = await UserRequest.create({
+    email,
+    code: 'placholder',
+  });
+  return this.create({
+    id: userRequest.id,
+    email,
+    isPlaceholder: true,
+    /**
+     * JW: 😭 Set user to 20 char limit and uuid is more. Should probably alter the db
+     */
+    username: userRequest.id.substr(0, 20),
+    firstName,
+    lastName,
+    fullName: `${firstName} ${lastName}`,
+    password: userRequest.id,
+  });
+};
+
 export default User;
