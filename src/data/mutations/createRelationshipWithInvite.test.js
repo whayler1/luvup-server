@@ -96,7 +96,7 @@ describe('createRelationshipWithInvite', () => {
         relationshipId,
         senderId,
         loverRequestId,
-        // userRequestId,
+        userRequestId,
         recipientEmail,
         recipientFirstName,
         recipientLastName,
@@ -109,7 +109,7 @@ describe('createRelationshipWithInvite', () => {
     expect(senderId).toBe(user.id);
     expect(isUUID.v1(loverRequestId)).toBe(true);
     expect(loverRequestId).toBe(loverRequest.id);
-
+    expect(userRequestId).toBeNull();
     expect(recipientEmail).toBe('recipient@email.com');
     expect(recipientFirstName).toBe('Erlich');
     expect(recipientLastName).toBe('Bachman');
