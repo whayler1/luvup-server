@@ -6,6 +6,9 @@ export {
 export {
   default as trackCreateLoverRequestAndRelationshipAndPlaceholderLover,
 } from './trackCreateLoverRequestAndRelationshipAndPlaceholderLover';
+export {
+  default as trackCreateRelationshipWithInvite,
+} from './trackCreateRelationshipWithInvite';
 export { default as trackAcceptLoverRequest } from './trackAcceptLoverRequest';
 
 export default analytics;

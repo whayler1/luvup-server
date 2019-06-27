@@ -5,6 +5,9 @@ import { graphql } from 'graphql';
 import schema from '../schema';
 import sequelize from '../sequelize';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
+import trackCreateRelationshipWithInvite from '../../services/analytics/trackCreateRelationshipWithInvite';
+
+jest.mock('../../services/analytics/trackCreateRelationshipWithInvite');
 
 describe('createRelationshipWithInvite', () => {
   let user;
@@ -113,5 +116,23 @@ describe('createRelationshipWithInvite', () => {
     expect(recipientEmail).toBe('recipient@email.com');
     expect(recipientFirstName).toBe('Erlich');
     expect(recipientLastName).toBe('Bachman');
+  });
+
+  it('calls analytics', () => {
+    const {
+      loverRequest,
+      relationship,
+      userInvite,
+    } = res.data.createRelationshipWithInvite;
+    const [userId, options] = trackCreateRelationshipWithInvite.mock.calls[0];
+    expect(userId).toBe(user.id);
+    expect(options).toMatchObject({
+      loverRequestId: loverRequest.id,
+      relationshipId: relationship.id,
+      userInviteId: userInvite.id,
+      recipientEmail: 'recipient@email.com',
+      recipientFirstName: 'Erlich',
+      recipientLastName: 'Bachman',
+    });
   });
 });

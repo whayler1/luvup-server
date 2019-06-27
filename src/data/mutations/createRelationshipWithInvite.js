@@ -7,8 +7,8 @@ import {
   validateJwtToken,
   createRelationshipWithInvite as createRelationshipWithInviteHelper,
 } from '../helpers';
-// import { createRelationshipWithInvite as sendPushNotifications } from '../../services/pushNotifications';
-// import { trackCreateLoverRequestAndRelationshipAndPlaceholderLover as trackAnalytics } from '../../services/analytics';
+
+import { trackCreateRelationshipWithInvite as trackAnalytics } from '../../services/analytics';
 // import { sendLoverRequestSentEmails } from '../../emails';
 
 const createRelationshipWithInvite = {
@@ -38,16 +38,18 @@ const createRelationshipWithInvite = {
       recipientLastName,
     );
 
-    // const { loverRequest: { sender, recipient } } = res;
+    const { loverRequest, relationship, userInvite } = res;
 
     // sendPushNotifications(sender, recipient);
     // sendLoverRequestSentEmails(sender, recipient);
-    // trackAnalytics(
-    //   sender.id,
-    //   recipient.id,
-    //   res.loverRequest.id,
-    //   res.relationship.id,
-    // );
+    trackAnalytics(verify.id, {
+      loverRequestId: loverRequest.id,
+      relationshipId: relationship.id,
+      recipientEmail,
+      recipientFirstName,
+      recipientLastName,
+      userInviteId: userInvite.id,
+    });
 
     return res;
   },
