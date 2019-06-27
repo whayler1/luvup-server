@@ -90,7 +90,6 @@ export const createRelationshipWithInvite = async (
       ...relationship.dataValues,
       lovers: [placeholderLover],
     },
-    sender,
     userInvite,
   };
 };

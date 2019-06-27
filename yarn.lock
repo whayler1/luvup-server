@@ -3840,6 +3840,10 @@ graphql-subscriptions@^0.5.4:
     es6-promise "^4.1.1"
     iterall "^1.1.3"
 
+graphql-type-email@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/graphql-type-email/-/graphql-type-email-0.1.0.tgz#0feebbcd8cbd36333464906a7a8311072e13b154"
+
 graphql@^0.10.3:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.10.3.tgz#c313afd5518e673351bee18fb63e2a0e487407ab"

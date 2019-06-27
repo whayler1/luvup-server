@@ -35,6 +35,7 @@ import createLoverRequestAndRelationshipAndPlaceholderLover from './mutations/cr
 import sendCoin from './mutations/sendCoin';
 import sendJalapeno from './mutations/sendJalapeno';
 import createRelationshipScore from './mutations/createRelationshipScore';
+import createRelationshipWithInvite from './mutations/createRelationshipWithInvite';
 import endRelationship from './mutations/endRelationship';
 import changePassword from './mutations/changePassword';
 import sendNewPassword from './mutations/sendNewPassword';
@@ -93,6 +94,7 @@ const schema = new Schema({
       sendCoin,
       sendJalapeno,
       createRelationshipScore,
+      createRelationshipWithInvite,
       endRelationship,
       changePassword,
       sendNewPassword,
