@@ -1,7 +1,9 @@
+import isUUID from 'is-uuid';
+import isString from 'lodash/isString';
 import { graphql } from 'graphql';
+
 import schema from '../schema';
 import sequelize from '../sequelize';
-
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 
 describe('createRelationshipWithInvite', () => {
@@ -37,7 +39,21 @@ describe('createRelationshipWithInvite', () => {
     res = await graphql(schema, query, rootValue, sequelize);
   });
 
-  it('doesnt splode', () => {
-    console.log('res', res);
+  it('returns a loverRequest', () => {
+    const {
+      id,
+      isAccepted,
+      isSenderCanceled,
+      isRecipientCanceled,
+      createdAt,
+      recipient,
+    } = res.data.createRelationshipWithInvite.loverRequest;
+
+    expect(isUUID.v1(id)).toBe(true);
+    expect(isAccepted).toBe(false);
+    expect(isSenderCanceled).toBe(false);
+    expect(isRecipientCanceled).toBe(false);
+    expect(isString(createdAt)).toBe(true);
+    expect(recipient).toBeNull();
   });
 });
