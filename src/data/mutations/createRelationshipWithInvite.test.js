@@ -6,8 +6,10 @@ import schema from '../schema';
 import sequelize from '../sequelize';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import trackCreateRelationshipWithInvite from '../../services/analytics/trackCreateRelationshipWithInvite';
+import sendCreateRelationshipWithInviteEmails from '../../emails/sendCreateRelationshipWithInviteEmails';
 
 jest.mock('../../services/analytics/trackCreateRelationshipWithInvite');
+jest.mock('../../emails/sendCreateRelationshipWithInviteEmails');
 
 describe('createRelationshipWithInvite', () => {
   let user;
@@ -28,7 +30,8 @@ describe('createRelationshipWithInvite', () => {
       ) {
         loverRequest {
           id isAccepted isSenderCanceled isRecipientCanceled createdAt
-          recipient { id email isPlaceholder username firstName lastName }
+          recipient { id }
+          sender { id email isPlaceholder username firstName lastName }
         }
         relationship {
           id createdAt updatedAt endDate
@@ -134,5 +137,35 @@ describe('createRelationshipWithInvite', () => {
       recipientFirstName: 'Erlich',
       recipientLastName: 'Bachman',
     });
+  });
+
+  it('sends emails', () => {
+    const {
+      loverRequest,
+      relationship,
+      userInvite,
+    } = res.data.createRelationshipWithInvite;
+    const {
+      sender,
+      recipientEmail,
+      recipientFirstName,
+      recipientLastName,
+      userInviteId,
+    } = sendCreateRelationshipWithInviteEmails.mock.calls[0][0];
+    const loverRequestSender = loverRequest.sender;
+    expect(sender.dataValues).toMatchObject({
+      id: loverRequestSender.id,
+      email: loverRequestSender.email,
+      emailConfirmed: true,
+      isPlaceholder: false,
+      username: loverRequestSender.username,
+      firstName: loverRequestSender.firstName,
+      lastName: loverRequestSender.lastName,
+      RelationshipId: relationship.id,
+    });
+    expect(recipientEmail).toBe('recipient@email.com');
+    expect(recipientFirstName).toBe('Erlich');
+    expect(recipientLastName).toBe('Bachman');
+    expect(userInviteId).toBe(userInvite.id);
   });
 });

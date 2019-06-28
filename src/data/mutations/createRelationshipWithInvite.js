@@ -9,7 +9,7 @@ import {
 } from '../helpers';
 
 import { trackCreateRelationshipWithInvite as trackAnalytics } from '../../services/analytics';
-// import { sendLoverRequestSentEmails } from '../../emails';
+import { sendCreateRelationshipWithInviteEmails } from '../../emails';
 
 const createRelationshipWithInvite = {
   type: new GraphQLObjectType({
@@ -40,8 +40,13 @@ const createRelationshipWithInvite = {
 
     const { loverRequest, relationship, userInvite } = res;
 
-    // sendPushNotifications(sender, recipient);
-    // sendLoverRequestSentEmails(sender, recipient);
+    sendCreateRelationshipWithInviteEmails({
+      sender: loverRequest.sender,
+      recipientEmail,
+      recipientFirstName,
+      recipientLastName,
+      userInviteId: userInvite.id,
+    });
     trackAnalytics(verify.id, {
       loverRequestId: loverRequest.id,
       relationshipId: relationship.id,

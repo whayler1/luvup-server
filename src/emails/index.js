@@ -8,3 +8,6 @@ export {
 export {
   default as sendAcceptLoverRequestEmails,
 } from './sendAcceptLoverRequestEmails';
+export {
+  default as sendCreateRelationshipWithInviteEmails,
+} from './sendCreateRelationshipWithInviteEmails';
