@@ -1,5 +1,6 @@
 import upperFirst from 'lodash/upperFirst';
 import emailHelper from '../data/helpers/email';
+import { getUserInviteLink } from '../services/deepLinks';
 
 const sendSenderEmail = ({ sender, recipientEmail, recipientFirstName }) =>
   emailHelper.sendEmail({
@@ -18,8 +19,9 @@ const sendRecipientEmail = ({
   recipientFirstName,
   recipientLastName,
   userInviteId,
-}) =>
-  emailHelper.sendEmail({
+}) => {
+  const userInviteLink = getUserInviteLink(userInviteId);
+  return emailHelper.sendEmail({
     to: recipientEmail,
     subject: `${upperFirst(sender.firstName)} ${upperFirst(
       sender.lastName,
@@ -30,10 +32,11 @@ const sendRecipientEmail = ({
     <p>${upperFirst(sender.firstName)} ${upperFirst(
       sender.lastName,
     )} invited you to be in a relationship on Luvup!</p>
-    <p>Luvup is an app that makes staying present in your relationship fun. Go to <a href="//luvup/${userInviteId}">//luvup/${userInviteId}</a> to accept (or deny) ${upperFirst(
+    <p>Luvup is an app that makes staying present in your relationship fun. Go to <a href="${userInviteLink}">${userInviteLink}</a> to accept (or deny) ${upperFirst(
       sender.firstName,
     )}'s invite.'</p>`,
   });
+};
 
 const sendCreateRelationshipWithInviteEmails = ({
   sender,
