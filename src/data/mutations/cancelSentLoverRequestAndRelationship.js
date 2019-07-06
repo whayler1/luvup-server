@@ -27,12 +27,14 @@ const cancelSentLoverRequestAndRelationship = {
       lovers,
     } = await LoverRequest.cancelBySenderId(verify.id);
 
-    const recipient = await User.findById(loverRequest.recipientId);
+    if (loverRequest.recipientId) {
+      const recipient = await User.findById(loverRequest.recipientId);
 
-    sendLoverRequestCanceledEmail(
-      getUserFromLoversById(verify.id, lovers),
-      recipient,
-    );
+      sendLoverRequestCanceledEmail(
+        getUserFromLoversById(verify.id, lovers),
+        recipient,
+      );
+    }
 
     trackCancelSentLoverRequestAndRelationship(
       verify.id,
