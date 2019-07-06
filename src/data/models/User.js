@@ -63,6 +63,10 @@ User.findById = async function findById(id) {
   return this.findOne({ where: { id } });
 };
 
+User.findByEmail = async function findByEmail(email) {
+  return this.findOne({ where: { email } });
+};
+
 User.createSkipUserRequest = async function createSkipUserRequest(opts = {}) {
   const { email, username, firstName, lastName } = opts;
   const randomId = uuid();

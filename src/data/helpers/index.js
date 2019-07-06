@@ -11,3 +11,4 @@ export {
 export {
   default as acceptLoverRequestAndDuplicatePlaceholderDataForLover,
 } from './acceptLoverRequestAndDuplicatePlaceholderDataForLover';
+export { default as sanitizeEmail } from './sanitizeEmail';
