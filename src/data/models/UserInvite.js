@@ -44,4 +44,19 @@ const UserInvite = Model.define('UserInvite', {
   },
 });
 
+UserInvite.findWithSenderAndRelationship = async function findWithSenderAndRelationship(
+  relationshipId,
+  senderId,
+) {
+  const userInvite = await UserInvite.findOne({
+    where: { relationshipId, senderId },
+  });
+
+  if (!userInvite) {
+    throw new Error('User invite does not exist');
+  }
+
+  return userInvite;
+};
+
 export default UserInvite;
