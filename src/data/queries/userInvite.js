@@ -9,7 +9,7 @@ const userInvite = {
     name: 'UserInviteResource',
     description: 'returns a user invite if there is one currently pending',
     fields: {
-      userInvite: UserInviteType,
+      userInvite: { type: UserInviteType },
     },
   }),
   resolve: async ({ request }) => {
