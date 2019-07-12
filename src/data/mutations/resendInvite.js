@@ -13,7 +13,7 @@ import { trackResendInvite } from '../../services/analytics';
 
 const resendInvite = {
   type: new GraphQLObjectType({
-    name: 'ResendInvite',
+    name: 'ResendInviteType',
     fields: {
       userInvite: { type: UserInviteType },
     },
@@ -46,7 +46,7 @@ const resendInvite = {
     });
     trackResendInvite(verify.id, userInviteId, recipientEmail);
 
-    return {};
+    return { userInvite };
   },
 };
 
