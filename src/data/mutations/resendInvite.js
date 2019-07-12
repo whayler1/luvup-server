@@ -5,6 +5,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 
+import UserInviteType from '../types/UserInviteType';
 import { User, UserInvite } from '../models';
 import { validateJwtToken } from '../helpers';
 import { sendInviteRecipientEmail } from '../../emails';
@@ -13,11 +14,13 @@ import { trackResendInvite } from '../../services/analytics';
 const resendInvite = {
   type: new GraphQLObjectType({
     name: 'ResendInvite',
-    fields: {},
+    fields: {
+      userInvite: { type: UserInviteType },
+    },
   }),
   args: {
-    userInviteId: { new: GraphQLNonNull(GraphQLID) },
-    recipientEmail: { new: GraphQLNonNull(GraphQLString) },
+    userInviteId: { type: new GraphQLNonNull(GraphQLID) },
+    recipientEmail: { type: new GraphQLNonNull(GraphQLString) },
   },
   resolve: async ({ request }, { userInviteId, recipientEmail }) => {
     const verify = await validateJwtToken(request);
@@ -29,6 +32,9 @@ const resendInvite = {
 
     if (!userInvite) {
       throw new Error(`No userInvite with id ${userInviteId}`);
+    }
+    if (!userInvite.senderId === sender.id) {
+      throw new Error('You do not have permission to resend this invite');
     }
 
     sendInviteRecipientEmail({
