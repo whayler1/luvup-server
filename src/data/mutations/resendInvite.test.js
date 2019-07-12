@@ -5,8 +5,10 @@ import schema from '../schema';
 import createLoggedInUser from '../test-helpers/create-logged-in-user';
 import { UserInvite } from '../models';
 import sendInviteRecipientEmail from '../../emails/sendInviteRecipientEmail';
+import trackResendInvite from '../../services/analytics/trackResendInvite';
 
 jest.mock('../../emails/sendInviteRecipientEmail');
+jest.mock('../../services/analytics/trackResendInvite');
 
 describe('resendInvite', () => {
   let user;
@@ -45,6 +47,18 @@ describe('resendInvite', () => {
     expect(call.recipientFirstName).toBe('Pat');
     expect(call.recipientLastName).toBe('Renolds');
     expect(call.userInviteId).toBe(userInvite.id);
+  });
+
+  it('should call analytics', () => {
+    const [
+      trackUserId,
+      trackUserInviteId,
+      trackRecipientEmail,
+    ] = trackResendInvite.mock.calls[0];
+    // console.log('\n\n call', track);
+    expect(trackUserId).toBe(user.id);
+    expect(trackUserInviteId).toBe(userInvite.id);
+    expect(trackRecipientEmail).toBe('new@email.com');
   });
 
   it('should return user invite id', async () => {
