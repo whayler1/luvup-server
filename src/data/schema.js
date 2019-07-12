@@ -43,6 +43,7 @@ import sendNewPassword from './mutations/sendNewPassword';
 import resetPasswordWithGeneratedPassword from './mutations/resetPasswordWithGeneratedPassword';
 import confirmUserRequestCode from './mutations/confirmUserRequestCode';
 import resendLoverRequestEmail from './mutations/resendLoverRequestEmail';
+import resendInvite from './mutations/resendInvite';
 import setExpoPushToken from './mutations/setExpoPushToken';
 import invalidateExpoPushToken from './mutations/invalidateExpoPushToken';
 import createLoveNote from './mutations/createLoveNote';
@@ -85,14 +86,13 @@ const schema = new Schema({
       userRequest,
       confirmUser,
       confirmUserRequestCode,
-      // sendNewPassword,
-      // resetPassword,
       requestLover,
       acceptLoverRequest,
       cancelLoverRequest,
       cancelSentLoverRequestAndRelationship,
       createLoverRequestAndRelationshipAndPlaceholderLover,
       resendLoverRequestEmail,
+      resendInvite,
       sendCoin,
       sendJalapeno,
       createRelationshipScore,
