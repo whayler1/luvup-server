@@ -44,6 +44,10 @@ const UserInvite = Model.define('UserInvite', {
   },
 });
 
+UserInvite.findById = async function findById(id) {
+  return this.findOne({ where: { id } });
+};
+
 UserInvite.findWithSenderAndRelationship = async function findWithSenderAndRelationship(
   relationshipId,
   senderId,

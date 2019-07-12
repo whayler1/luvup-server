@@ -10,5 +10,6 @@ export {
   default as trackCreateRelationshipWithInvite,
 } from './trackCreateRelationshipWithInvite';
 export { default as trackAcceptLoverRequest } from './trackAcceptLoverRequest';
+export { default as trackResendInvite } from './trackResendInvite';
 
 export default analytics;
