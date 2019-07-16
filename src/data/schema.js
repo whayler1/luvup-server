@@ -13,6 +13,8 @@ import coinCount from './queries/coinCount';
 import jalapenos from './queries/jalapenos';
 import sentJalapenos from './queries/sentJalapenos';
 import userEvents from './queries/userEvents';
+import userInvite from './queries/userInvite';
+import userInviteWithId from './queries/userInviteWithId';
 import relationshipScores from './queries/relationshipScores';
 import relationshipScoresByDay from './queries/relationshipScoresByDay';
 import unviewedEventCounts from './queries/unviewedEventCounts';
@@ -35,12 +37,14 @@ import createLoverRequestAndRelationshipAndPlaceholderLover from './mutations/cr
 import sendCoin from './mutations/sendCoin';
 import sendJalapeno from './mutations/sendJalapeno';
 import createRelationshipScore from './mutations/createRelationshipScore';
+import createRelationshipWithInvite from './mutations/createRelationshipWithInvite';
 import endRelationship from './mutations/endRelationship';
 import changePassword from './mutations/changePassword';
 import sendNewPassword from './mutations/sendNewPassword';
 import resetPasswordWithGeneratedPassword from './mutations/resetPasswordWithGeneratedPassword';
 import confirmUserRequestCode from './mutations/confirmUserRequestCode';
 import resendLoverRequestEmail from './mutations/resendLoverRequestEmail';
+import resendInvite from './mutations/resendInvite';
 import setExpoPushToken from './mutations/setExpoPushToken';
 import invalidateExpoPushToken from './mutations/invalidateExpoPushToken';
 import createLoveNote from './mutations/createLoveNote';
@@ -64,6 +68,8 @@ const schema = new Schema({
       jalapenos,
       sentJalapenos,
       userEvents,
+      userInvite,
+      userInviteWithId,
       relationshipScores,
       relationshipScoresByDay,
       unviewedEventCounts,
@@ -82,17 +88,17 @@ const schema = new Schema({
       userRequest,
       confirmUser,
       confirmUserRequestCode,
-      // sendNewPassword,
-      // resetPassword,
       requestLover,
       acceptLoverRequest,
       cancelLoverRequest,
       cancelSentLoverRequestAndRelationship,
       createLoverRequestAndRelationshipAndPlaceholderLover,
       resendLoverRequestEmail,
+      resendInvite,
       sendCoin,
       sendJalapeno,
       createRelationshipScore,
+      createRelationshipWithInvite,
       endRelationship,
       changePassword,
       sendNewPassword,

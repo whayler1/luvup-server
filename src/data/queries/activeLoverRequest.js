@@ -14,7 +14,7 @@ const activeLoverRequest = {
     },
   }),
   resolve: async ({ request }) => {
-    const id_token = _.at(request, 'cookies.id_token')[0];
+    const id_token = _.get(request, 'cookies.id_token');
     if (!id_token) {
       return {};
     }
@@ -37,7 +37,7 @@ const activeLoverRequest = {
         const recipient = await loverRequest.getRecipient();
         return {
           loverRequest: Object.assign({}, loverRequest.dataValues, {
-            recipient: recipient.dataValues,
+            recipient: _.get(recipient, 'dataValues', {}),
           }),
         };
       }

@@ -63,6 +63,10 @@ User.findById = async function findById(id) {
   return this.findOne({ where: { id } });
 };
 
+User.findByEmail = async function findByEmail(email) {
+  return this.findOne({ where: { email } });
+};
+
 User.createSkipUserRequest = async function createSkipUserRequest(opts = {}) {
   const { email, username, firstName, lastName } = opts;
   const randomId = uuid();
@@ -108,6 +112,30 @@ User.createPlaceholderUserFromUser = async function createPlaceholderUserFromUse
     lastName: user.lastName,
     fullName: user.fullName,
     password: randomId,
+  });
+};
+
+User.createPlaceholderUser = async function createPlaceholderUser(
+  email,
+  firstName,
+  lastName,
+) {
+  const userRequest = await UserRequest.create({
+    email,
+    code: 'placholder',
+  });
+  return this.create({
+    id: userRequest.id,
+    email,
+    isPlaceholder: true,
+    /**
+     * JW: 😭 Set user to 20 char limit and uuid is more. Should probably alter the db
+     */
+    username: userRequest.id.substr(0, 20),
+    firstName,
+    lastName,
+    fullName: `${firstName} ${lastName}`,
+    password: userRequest.id,
   });
 };
 

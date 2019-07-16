@@ -3,6 +3,7 @@ import {
   GraphQLString,
   GraphQLID,
   GraphQLBoolean,
+  GraphQLNonNull,
 } from 'graphql';
 import isString from 'lodash/isString';
 
@@ -34,7 +35,7 @@ const resendLoverRequestEmail = {
     },
   }),
   args: {
-    loverRequestId: { type: GraphQLID },
+    loverRequestId: { type: new GraphQLNonNull(GraphQLID) },
     email: { type: GraphQLString },
   },
   resolve: async ({ request }, { loverRequestId, email }) => {

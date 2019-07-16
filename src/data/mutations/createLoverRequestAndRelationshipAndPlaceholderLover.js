@@ -2,8 +2,10 @@ import { GraphQLObjectType, GraphQLNonNull, GraphQLID } from 'graphql';
 
 import LoverRequestType from '../types/LoverRequestType';
 import RelationshipType from '../types/RelationshipType';
-import { LoverRequest } from '../models';
-import { validateJwtToken } from '../helpers';
+import {
+  validateJwtToken,
+  createRelationshipWithLoverRequest,
+} from '../helpers';
 import { createLoverRequestAndRelationshipAndPlaceholderLover as sendPushNotifications } from '../../services/pushNotifications';
 import { trackCreateLoverRequestAndRelationshipAndPlaceholderLover as trackAnalytics } from '../../services/analytics';
 import { sendLoverRequestSentEmails } from '../../emails';
@@ -22,7 +24,7 @@ const createLoverRequestAndRelationshipAndPlaceholderLover = {
   resolve: async ({ request }, { recipientId }) => {
     const verify = await validateJwtToken(request);
 
-    const res = await LoverRequest.createAndAddRelationshipAndPlaceholderLover(
+    const res = await createRelationshipWithLoverRequest(
       verify.id,
       recipientId,
     );
