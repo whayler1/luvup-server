@@ -1,12 +1,3 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 import path from 'path';
 import express from 'express';
 import cookieParser from 'cookie-parser';
@@ -185,6 +176,20 @@ app.use(
     rootValue: { request: req },
     pretty: __DEV__,
   })),
+);
+
+app.get('/apple-app-site-association', (req, res) =>
+  res.status(200).json({
+    applinks: {
+      apps: [],
+      details: [
+        {
+          appID: 'QZMRJZMZAB.io.terriblesolutions.luvup',
+          paths: ['/user-invite/*'],
+        },
+      ],
+    },
+  }),
 );
 
 //
