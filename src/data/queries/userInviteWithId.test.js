@@ -28,7 +28,7 @@ describe('userInviteWithId', () => {
         userInviteWithId(userInviteId: "${userInvite.id}") {
           userInvite { id senderId recipientEmail recipientFirstName recipientLastName }
           sender { id email isPlaceholder username firstName lastName }
-          loverRequest { id }
+          loverRequest { id isAccepted isSenderCanceled isRecipientCanceled }
         }
       }`;
 
@@ -57,7 +57,12 @@ describe('userInviteWithId', () => {
     });
 
     it('returns a loverRequest', () => {
-      expect(res.data.userInviteWithId.loverRequest.id).toBe(loverRequest.id);
+      expect(res.data.userInviteWithId.loverRequest).toMatchObject({
+        id: loverRequest.id,
+        isAccepted: false,
+        isSenderCanceled: false,
+        isRecipientCanceled: false,
+      });
     });
   });
 });
