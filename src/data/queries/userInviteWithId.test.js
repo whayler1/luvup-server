@@ -2,18 +2,23 @@ import { graphql } from 'graphql';
 import sequelize from '../sequelize';
 import schema from '../schema';
 
-import { User, UserInvite } from '../models';
+import { User, LoverRequest, UserInvite } from '../models';
 
 describe('userInviteWithId', () => {
   describe('when user invite exists', () => {
     let sender;
     let userInvite;
+    let loverRequest;
     let res;
 
     beforeAll(async () => {
       sender = await User.createSkipUserRequest();
+      loverRequest = await LoverRequest.create({
+        UserId: sender.id,
+      });
       userInvite = await UserInvite.create({
         senderId: sender.id,
+        loverRequestId: loverRequest.id,
         recipientEmail: 'fake@user.com',
         recipientFirstName: 'Bob',
         recipientLastName: 'Menedez',
@@ -23,6 +28,7 @@ describe('userInviteWithId', () => {
         userInviteWithId(userInviteId: "${userInvite.id}") {
           userInvite { id senderId recipientEmail recipientFirstName recipientLastName }
           sender { id email isPlaceholder username firstName lastName }
+          loverRequest { id }
         }
       }`;
 
@@ -48,6 +54,10 @@ describe('userInviteWithId', () => {
         firstName: 'Jane',
         lastName: 'Doe',
       });
+    });
+
+    it('returns a loverRequest', () => {
+      expect(res.data.userInviteWithId.loverRequest.id).toBe(loverRequest.id);
     });
   });
 });

@@ -12,7 +12,6 @@ const LoverRequest = Model.define('LoverRequest', {
 
   relationshipId: {
     type: DataType.UUID,
-    defaultValue: DataType.UUIDV1,
   },
 
   isAccepted: {

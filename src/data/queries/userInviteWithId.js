@@ -2,7 +2,8 @@ import { GraphQLObjectType, GraphQLNonNull, GraphQLID } from 'graphql';
 
 import UserInviteType from '../types/UserInviteType';
 import UserType from '../types/UserType';
-import { User, UserInvite } from '../models';
+import LoverRequestType from '../types/LoverRequestType';
+import { User, LoverRequest, UserInvite } from '../models';
 
 const userInviteWithId = {
   type: new GraphQLObjectType({
@@ -11,6 +12,7 @@ const userInviteWithId = {
     fields: {
       userInvite: { type: UserInviteType },
       sender: { type: UserType },
+      loverRequest: { type: LoverRequestType },
     },
   }),
   args: {
@@ -21,8 +23,11 @@ const userInviteWithId = {
     if (!userInvite) {
       throw new Error(`User invite with id ${userInviteId} does not exist`);
     }
-    const sender = await User.findById(userInvite.senderId);
-    return { userInvite, sender };
+    const [sender, loverRequest] = await Promise.all([
+      User.findById(userInvite.senderId),
+      LoverRequest.findById(userInvite.loverRequestId),
+    ]);
+    return { userInvite, sender, loverRequest };
   },
 };
 
