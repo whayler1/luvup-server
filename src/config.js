@@ -24,13 +24,13 @@ module.exports = {
   // internet access or can't send emails for some reason.
   disableEmail: process.env.DISABLE_EMAIL || false,
 
-  supportEmail: process.env.SUPPORT_EMAIL || 'justin@luvup.io',
+  supportEmail: process.env.SUPPORT_EMAIL,
 
   inviteFromEmail: process.env.INVITE_FROM_EMAIL,
   inviteFromPassword: process.env.INVITE_FROM_PASSWORD,
 
   // Database
-  databaseUrl: process.env.DATABASE_URL || 'sqlite:database.sqlite',
+  databaseUrl: process.env.DATABASE_URL,
 
   // Web analytics
   analytics: {
@@ -41,29 +41,27 @@ module.exports = {
 
   // Authentication
   auth: {
-    jwt: { secret: process.env.JWT_SECRET || 'React Starter Kit' },
+    jwt: { secret: process.env.JWT_SECRET },
 
     // https://developers.facebook.com/
     facebook: {
-      id: process.env.FACEBOOK_APP_ID || '186244551745631',
+      id: process.env.FACEBOOK_APP_ID,
       secret:
-        process.env.FACEBOOK_APP_SECRET || 'a970ae3240ab4b9b8aae0f9f0661c6fc',
+        process.env.FACEBOOK_APP_SECRET,
     },
 
     // https://cloud.google.com/console/project
     google: {
       id:
-        process.env.GOOGLE_CLIENT_ID ||
-        '251410730550-ahcg0ou5mgfhl8hlui1urru7jn5s12km.apps.googleusercontent.com',
-      secret: process.env.GOOGLE_CLIENT_SECRET || 'Y8yR9yZAhm9jQ8FKAL8QIEcd',
+        process.env.GOOGLE_CLIENT_ID,
+      secret: process.env.GOOGLE_CLIENT_SECRET,
     },
 
     // https://apps.twitter.com/
     twitter: {
-      key: process.env.TWITTER_CONSUMER_KEY || 'Ie20AZvLJI2lQD5Dsgxgjauns',
+      key: process.env.TWITTER_CONSUMER_KEY,
       secret:
-        process.env.TWITTER_CONSUMER_SECRET ||
-        'KTZ6cxoKnEakQCeSpZlaUCJWGAlTEBJj0y2EMkUBujA7zWSvaQ',
+        process.env.TWITTER_CONSUMER_SECRET,
     },
   },
 };
